@@ -8,10 +8,5 @@ namespace mpstyle.microservice.toolkit
         {
             return new DateTimeOffset(dateTime).ToUniversalTime().ToUnixTimeMilliseconds();
         }
-
-        public static string ToFormatedDate(this long timestamp, string format)
-        {
-            return (new DateTime(1970, 1, 1)).AddMilliseconds(timestamp).ToString(format);
-        }
     }
 }

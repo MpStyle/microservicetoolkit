@@ -10,9 +10,9 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
     {
         private readonly string connectionString;
 
-        public SQLServerConnectionManager(IConfigurationManager configurationManager)
+        public SQLServerConnectionManager(string connectionString)
         {
-            this.connectionString = configurationManager.GetString(SettingKey.Database.CONNECTION_STRING);
+            this.connectionString = connectionString;
         }
 
         public T Execute<T>(Func<DbCommand, T> lambda)

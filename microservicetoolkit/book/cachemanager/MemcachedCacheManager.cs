@@ -10,9 +10,9 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
         private readonly MemcachedCluster cluster;
         private readonly IMemcachedClient client;
 
-        public MemcachedCacheManager(IConfigurationManager configurationManager)
+        public MemcachedCacheManager(IConfigurationManager configurationManager, string servers)
         {
-            this.cluster = new MemcachedCluster(configurationManager.GetString(SettingKey.Cache.SERVERS));
+            this.cluster = new MemcachedCluster(servers);
             this.cluster.Start();
             this.client = cluster.GetClient();
         }

@@ -14,11 +14,11 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
         protected string ConnectionString { get; private set; }
         #endregion
 
-        protected EvolveMigrationManager(ILogger logger, IConfigurationManager configurationManager)
+        protected EvolveMigrationManager(ILogger logger, MigrationManagerConfiguration configuration)
         {
             this.Logger = logger;
-            this.MigrationExtension = configurationManager.GetString(SettingKey.Migration.EXTENSION);
-            this.ConnectionString = configurationManager.GetString(SettingKey.Database.CONNECTION_STRING);
+            this.MigrationExtension = configuration.Extension;
+            this.ConnectionString = configuration.ConnectionString;
         }
 
         protected ApplyResult Apply(IDbConnection dbConnection, string migrationsFolder)
@@ -48,5 +48,11 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
 
             return new ApplyResult() { Success = true };
         }
+    }
+
+    public class MigrationManagerConfiguration
+    {
+        public string ConnectionString { get; set; }
+        public string Extension { get; set; }
     }
 }

@@ -24,16 +24,16 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         private Task handlerTask = null;
         private readonly CancellationToken handlerCancellationToken = new CancellationToken();
 
-        public ServiceBusMessageMediator(IConfigurationManager configurationManager, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
+        public ServiceBusMessageMediator(ServiceMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
         {
             this.serviceFactory = serviceFactory;
             this.logger = logger;
 
-            var connectionStringBuilder = new ServiceBusConnectionStringBuilder(configurationManager.GetString(SettingKey.ServiceBus.CONNECTION_STRING));
+            var connectionStringBuilder = new ServiceBusConnectionStringBuilder(configuration.ConnectionString);
             var connection = connectionStringBuilder.GetNamespaceConnectionString();
-            var requestQueueName = configurationManager.GetString(SettingKey.ServiceBus.QUEUE_NAME);
-            var replyQueueName = configurationManager.GetString(SettingKey.ServiceBus.REPLY_QUEUE_NAME);
-            var consumersPerQueue = configurationManager.GetInt(SettingKey.ServiceBus.CONSUMERS_PER_QUEUE);
+            var requestQueueName = configuration.QueueName;
+            var replyQueueName = configuration.ReplayQueueName;
+            var consumersPerQueue = configuration.ConsumersPerQueue;
 
             this.requestClient = new QueueClient(connection, requestQueueName, ReceiveMode.PeekLock);
             this.replySessionClient = new SessionClient(connection, replyQueueName, ReceiveMode.PeekLock);
@@ -119,15 +119,15 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
             private readonly ILogger<ServiceBusMessageMediator> logger;
             private readonly IQueueClient incomingQueueClient;
             private readonly IQueueClient outgoingQueueClient;
-            private readonly Func<string, IService> aaa;
-            private readonly int maxConsumer;
+            private readonly Func<string, IService> serviceBuilder;
+            private readonly uint maxConsumer;
 
-            public RequestReplyHandler(ILogger<ServiceBusMessageMediator> logger, IQueueClient incomingQueueClient, IQueueClient outgoingQueueClient, Func<string, IService> aaa, int maxConsumer)
+            public RequestReplyHandler(ILogger<ServiceBusMessageMediator> logger, IQueueClient incomingQueueClient, IQueueClient outgoingQueueClient, Func<string, IService> serviceBuilder, uint maxConsumer)
             {
                 this.logger = logger;
                 this.incomingQueueClient = incomingQueueClient;
                 this.outgoingQueueClient = outgoingQueueClient;
-                this.aaa = aaa;
+                this.serviceBuilder = serviceBuilder;
                 this.maxConsumer = maxConsumer;
             }
 
@@ -140,7 +140,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
 
                     var requestMessage = Encoding.UTF8.GetString(request.Body);
                     var rpcMessage = JsonSerializer.Deserialize<ServiceBusMessage>(requestMessage);
-                    var service = this.aaa.Invoke(rpcMessage.Pattern);
+                    var service = this.serviceBuilder.Invoke(rpcMessage.Pattern);
                     var response = JsonSerializer.Serialize(new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND });
 
                     if (service != null)
@@ -165,7 +165,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                 }, new MessageHandlerOptions(async args => logger.LogError(args.Exception.Message))
                 {
                     AutoComplete = false,
-                    MaxConcurrentCalls = this.maxConsumer
+                    MaxConcurrentCalls = (int)this.maxConsumer
                 });
 
                 return Task.CompletedTask;
@@ -177,5 +177,13 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                 await outgoingQueueClient.CloseAsync();
             }
         }
+    }
+
+    public class ServiceMessageMediatorConfiguration
+    {
+        public string QueueName { get; set; }
+        public string ReplayQueueName { get; set; }
+        public string ConnectionString { get; set; }
+        public uint ConsumersPerQueue { get; set; }
     }
 }

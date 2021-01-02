@@ -7,8 +7,8 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
 {
     public class SQLServerMigrationsManager : EvolveMigrationManager
     {
-        public SQLServerMigrationsManager(ILogger<SQLServerMigrationsManager> logger, IConfigurationManager configurationManager)
-            : base(logger, configurationManager)
+        public SQLServerMigrationsManager(ILogger<SQLServerMigrationsManager> logger, MigrationManagerConfiguration configuration)
+            : base(logger, configuration)
         {
         }
 

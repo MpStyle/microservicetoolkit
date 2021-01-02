@@ -6,8 +6,8 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
 {
     public class MySQLMigrationManager : EvolveMigrationManager
     {
-        public MySQLMigrationManager(ILogger<MySQLMigrationManager> logger, IConfigurationManager configurationManager)
-            : base(logger, configurationManager)
+        public MySQLMigrationManager(ILogger<MySQLMigrationManager> logger, MigrationManagerConfiguration configuration)
+            : base(logger, configuration)
         {
         }
 
