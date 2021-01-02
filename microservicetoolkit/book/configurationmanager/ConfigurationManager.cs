@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 
-namespace mpstyle.microservice.toolkit.book.messagemediator
+namespace mpstyle.microservice.toolkit.book.configurationmanager
 {
     public class ConfigurationManager : IConfigurationManager
     {
