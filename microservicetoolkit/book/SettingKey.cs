@@ -20,6 +20,14 @@
             public const string REPLY_QUEUE_NAME = "mt:rpc:replyQueueName";
         }
 
+        public static class ServiceBus
+        {
+            public const string QUEUE_NAME = "mt:servicebus:queueName";
+            public const string CONNECTION_STRING = "mt:servicebus:connectionstring";
+            public const string CONSUMERS_PER_QUEUE = "mt:servicebus:consumersPerQueue";
+            public const string REPLY_QUEUE_NAME = "mt:servicebus:replyQueueName";
+        }
+
         public static class Migration
         {
             public const string EXTENSION = "mt:migration:extension";
