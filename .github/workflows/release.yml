@@ -21,4 +21,4 @@ jobs:
       - name: Pack
         run: dotnet pack ./microservicetoolkit/mpstyle.microservice.toolkit.csproj -c Release
       - name: Release
-        run: dotnet nuget push ./microservicetoolkit/bin/Release/mpstyle.microservice.toolkit.0.0.5.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservicetoolkit/bin/Release/mpstyle.microservice.toolkit.0.0.6.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
