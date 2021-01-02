@@ -12,9 +12,9 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
         {
         }
 
-        public ApplyResult Apply(string migrationsFolder)
+        public override ApplyResult Apply(string migrationsFolder)
         {
-            return Apply(new SqlConnection(this.ConnectionString), migrationsFolder);
+            return ApplyMigration(new SqlConnection(this.ConnectionString), migrationsFolder);
         }
     }
 }

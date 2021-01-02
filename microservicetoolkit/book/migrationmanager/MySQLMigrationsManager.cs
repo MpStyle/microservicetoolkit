@@ -11,9 +11,9 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
         {
         }
 
-        public ApplyResult Apply(string migrationsFolder)
+        public override ApplyResult Apply(string migrationsFolder)
         {
-            return Apply(new MySqlConnection(this.ConnectionString), migrationsFolder);
+            return ApplyMigration(new MySqlConnection(this.ConnectionString), migrationsFolder);
         }
     }
 }
