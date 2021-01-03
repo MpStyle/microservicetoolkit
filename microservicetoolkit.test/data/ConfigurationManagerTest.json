@@ -1,0 +1,16 @@
+{
+    "stringValue": "Hello World!",
+    "intValue": 666,
+    "boolValue": true,
+    "intArrayValue": [
+        1,
+        2,
+        3,
+        4
+    ],
+    "stringArrayValue": [
+        "Hello",
+        "World",
+        "!"
+    ]
+}

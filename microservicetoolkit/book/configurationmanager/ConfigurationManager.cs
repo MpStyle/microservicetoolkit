@@ -24,7 +24,7 @@ namespace mpstyle.microservice.toolkit.book.configurationmanager
             }
             catch (Exception ex)
             {
-                this.logger.LogDebug(ex, $"{this.GetType()} parsing boolean configuration \"{key}\"");
+                this.logger.LogDebug(ex, $"Error while parsing boolean configuration \"{key}\"");
                 return default;
             }
         }
@@ -37,7 +37,7 @@ namespace mpstyle.microservice.toolkit.book.configurationmanager
             }
             catch (Exception ex)
             {
-                this.logger.LogDebug(ex, $"{this.GetType()} parsing integer configuration \"{key}\"");
+                this.logger.LogDebug(ex, $"Error while parsing integer configuration \"{key}\"");
                 return default;
             }
         }
@@ -50,7 +50,35 @@ namespace mpstyle.microservice.toolkit.book.configurationmanager
             }
             catch (Exception ex)
             {
-                this.logger.LogDebug(ex, $"{this.GetType()} parsing string configuration \"{key}\"");
+                this.logger.LogDebug(ex, $"Error while parsing string configuration \"{key}\"");
+                return default;
+            }
+        }
+
+        public string[] GetStringArray(string key)
+        {
+            try
+            {
+                var section = configuration.GetSection(key);
+                return section.Get<string[]>();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogDebug(ex, $"Error while parsing string array configuration \"{key}\"");
+                return default;
+            }
+        }
+
+        public int[] GetIntArray(string key)
+        {
+            try
+            {
+                var section = configuration.GetSection(key);
+                return section.Get<int[]>();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogDebug(ex, $"Error while parsing int array configuration \"{key}\"");
                 return default;
             }
         }
