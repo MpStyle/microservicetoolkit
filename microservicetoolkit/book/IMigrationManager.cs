@@ -16,7 +16,6 @@ namespace mpstyle.microservice.toolkit.book
 
     public class MigrationManagerConfiguration<T> where T : IDbConnection
     {
-        public string ConnectionString { get; set; }
         public string Extension { get; set; }
         public string Folder { get; set; }
         public T DbConnection { get; set; }
