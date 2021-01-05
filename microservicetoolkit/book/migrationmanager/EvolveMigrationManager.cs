@@ -6,39 +6,35 @@ using System.IO;
 
 namespace mpstyle.microservice.toolkit.book.migrationmanager
 {
-    public abstract class EvolveMigrationManager : IMigrationManager
+    public abstract class EvolveMigrationManager<T> : IMigrationManager<T>
+        where T : IDbConnection
     {
         #region Fields
         protected ILogger Logger { get; private set; }
-        protected string MigrationExtension { get; private set; }
-        protected string ConnectionString { get; private set; }
         #endregion
 
-        protected EvolveMigrationManager(ILogger logger, MigrationManagerConfiguration configuration)
+        protected EvolveMigrationManager(ILogger logger)
         {
             this.Logger = logger;
-            this.MigrationExtension = configuration.Extension;
-            this.ConnectionString = configuration.ConnectionString;
         }
 
-        protected ApplyResult ApplyMigration(IDbConnection dbConnection, string migrationsFolder)
+        public ApplyResult Apply(MigrationManagerConfiguration<T> configuration)
         {
             try
             {
-                if (Directory.GetFiles(migrationsFolder, $"*{this.MigrationExtension}").Length == 0)
+                if (Directory.GetFiles(configuration.Folder, $"*{configuration.Extension}").Length == 0)
                 {
                     throw new Exception("Migration files not found");
                 }
 
-                var evolve = new Evolve.Evolve(dbConnection, msg => this.Logger.LogInformation(msg))
+                var evolve = new Evolve.Evolve(configuration.DbConnection, msg => this.Logger.LogInformation(msg))
                 {
-                    Locations = new[] { migrationsFolder },
+                    Locations = new[] { configuration.Folder },
                     IsEraseDisabled = true,
-                    SqlMigrationSuffix = this.MigrationExtension
+                    SqlMigrationSuffix = configuration.Extension
                 };
 
                 evolve.Migrate();
-                dbConnection.Close();
             }
             catch (Exception ex)
             {
@@ -48,13 +44,5 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
 
             return new ApplyResult() { Success = true };
         }
-
-        public abstract ApplyResult Apply(string migrationsFolder);
-    }
-
-    public class MigrationManagerConfiguration
-    {
-        public string ConnectionString { get; set; }
-        public string Extension { get; set; }
     }
 }

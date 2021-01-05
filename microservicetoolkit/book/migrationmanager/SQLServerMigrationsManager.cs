@@ -5,16 +5,11 @@ using System.Data.SqlClient;
 
 namespace mpstyle.microservice.toolkit.book.migrationmanager
 {
-    public class SQLServerMigrationsManager : EvolveMigrationManager
+    public class SQLServerMigrationsManager : EvolveMigrationManager<SqlConnection>
     {
-        public SQLServerMigrationsManager(ILogger<SQLServerMigrationsManager> logger, MigrationManagerConfiguration configuration)
-            : base(logger, configuration)
+        public SQLServerMigrationsManager(ILogger<SQLServerMigrationsManager> logger)
+            : base(logger)
         {
-        }
-
-        public override ApplyResult Apply(string migrationsFolder)
-        {
-            return ApplyMigration(new SqlConnection(this.ConnectionString), migrationsFolder);
         }
     }
 }
