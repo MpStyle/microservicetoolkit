@@ -3,9 +3,9 @@ using System;
 
 namespace mpstyle.microservice.toolkit.book
 {
-    public interface IMigrationManager<T> where T : IDbConnection
+    public interface IMigrationManager
     {
-        ApplyResult Apply(MigrationManagerConfiguration<T> configuration);
+        ApplyResult ApplyMigration(MigrationManagerConfiguration configuration);
     }
 
     public class ApplyResult
@@ -14,10 +14,10 @@ namespace mpstyle.microservice.toolkit.book
         public bool Success { get; set; }
     }
 
-    public class MigrationManagerConfiguration<T> where T : IDbConnection
+    public class MigrationManagerConfiguration
     {
         public string Extension { get; set; }
         public string Folder { get; set; }
-        public T DbConnection { get; set; }
+        public IDbConnection DbConnection { get; set; }
     }
 }

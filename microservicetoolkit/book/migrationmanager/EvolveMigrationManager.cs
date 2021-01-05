@@ -6,8 +6,7 @@ using System.IO;
 
 namespace mpstyle.microservice.toolkit.book.migrationmanager
 {
-    public abstract class EvolveMigrationManager<T> : IMigrationManager<T>
-        where T : IDbConnection
+    public abstract class EvolveMigrationManager : IMigrationManager
     {
         #region Fields
         protected ILogger Logger { get; private set; }
@@ -18,7 +17,7 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
             this.Logger = logger;
         }
 
-        public ApplyResult Apply(MigrationManagerConfiguration<T> configuration)
+        public ApplyResult ApplyMigration(MigrationManagerConfiguration configuration)
         {
             try
             {
