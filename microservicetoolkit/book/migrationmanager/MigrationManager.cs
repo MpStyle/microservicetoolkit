@@ -8,12 +8,12 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
     public class MigrationManager : IMigrationManager
     {
         #region Fields
-        protected ILogger Logger { get; private set; }
+        private readonly ILogger logger;
         #endregion
 
-        protected MigrationManager(ILogger logger)
+        public MigrationManager(ILogger logger)
         {
-            this.Logger = logger;
+            this.logger = logger;
         }
 
         public ApplyResult Apply(MigrationManagerConfiguration configuration)
@@ -25,7 +25,7 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
                     throw new Exception("Migration files not found");
                 }
 
-                var evolve = new Evolve.Evolve(configuration.DbConnection, msg => this.Logger.LogInformation(msg))
+                var evolve = new Evolve.Evolve(configuration.DbConnection, msg => this.logger.LogInformation(msg))
                 {
                     Locations = new[] { configuration.Folder },
                     IsEraseDisabled = true,
@@ -36,7 +36,7 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
             }
             catch (Exception ex)
             {
-                this.Logger.LogDebug(ex, "Error while applying migrations");
+                this.logger.LogDebug(ex, "Error while applying migrations");
                 return new ApplyResult() { Exception = ex };
             }
 
