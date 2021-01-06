@@ -7,7 +7,7 @@ using System;
 
 using Xunit;
 
-namespace microservicetoolkit.test.book.configurationmanager
+namespace mpstyle.microservice.toolkit.test.book.configurationmanager
 {
     public class ConfigurationManagerTest : IDisposable
     {

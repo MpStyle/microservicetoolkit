@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 
-namespace microservicetoolkit.test
+namespace mpstyle.microservice.toolkit.test
 {
     class DoNothingLogger<T> : ILogger<T>
     {
