@@ -1,23 +1,22 @@
 ﻿using Microsoft.Extensions.Logging;
 
 using System;
-using System.Data;
 using System.IO;
 
 namespace mpstyle.microservice.toolkit.book.migrationmanager
 {
-    public abstract class EvolveMigrationManager : IMigrationManager
+    public class MigrationManager : IMigrationManager
     {
         #region Fields
         protected ILogger Logger { get; private set; }
         #endregion
 
-        protected EvolveMigrationManager(ILogger logger)
+        protected MigrationManager(ILogger logger)
         {
             this.Logger = logger;
         }
 
-        public ApplyResult ApplyMigration(MigrationManagerConfiguration configuration)
+        public ApplyResult Apply(MigrationManagerConfiguration configuration)
         {
             try
             {
@@ -37,7 +36,7 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
             }
             catch (Exception ex)
             {
-                this.Logger.LogDebug(ex, "Error");
+                this.Logger.LogDebug(ex, "Error while applying migrations");
                 return new ApplyResult() { Exception = ex };
             }
 

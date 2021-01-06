@@ -5,7 +5,7 @@ namespace mpstyle.microservice.toolkit.book
 {
     public interface IMigrationManager
     {
-        ApplyResult ApplyMigration(MigrationManagerConfiguration configuration);
+        ApplyResult Apply(MigrationManagerConfiguration configuration);
     }
 
     public class ApplyResult
