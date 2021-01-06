@@ -36,7 +36,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                 Uri = new Uri(configuration.ConnectionString)
             };
 
-            this.connection = factory.CreateConnection("tvguide-api-server");
+            this.connection = factory.CreateConnection(configuration.ConnectionName);
             this.channel = connection.CreateModel();
 
             this.channel.QueueDeclare(queue: requestQueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
@@ -144,7 +144,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                     Uri = new Uri(configuration.ConnectionString)
                 };
 
-                this.connection = factory.CreateConnection("tvguide-api-client");
+                this.connection = factory.CreateConnection(configuration.ConnectionName);
                 this.channel = this.connection.CreateModel();
 
                 this.channel.QueueDeclare(queue: replyQueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
@@ -206,6 +206,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
 
     public class RpcMessageMediatorConfiguration
     {
+        public string ConnectionName { get; set; }
         public string QueueName { get; set; }
         public string ReplayQueueName { get; set; }
         public string ConnectionString { get; set; }
