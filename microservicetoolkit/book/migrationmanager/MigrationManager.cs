@@ -8,10 +8,10 @@ namespace mpstyle.microservice.toolkit.book.migrationmanager
     public class MigrationManager : IMigrationManager
     {
         #region Fields
-        private readonly ILogger logger;
+        private readonly ILogger<MigrationManager> logger;
         #endregion
 
-        public MigrationManager(ILogger logger)
+        public MigrationManager(ILogger<MigrationManager> logger)
         {
             this.logger = logger;
         }
