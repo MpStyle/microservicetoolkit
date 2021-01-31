@@ -15,16 +15,16 @@ using System.Threading.Tasks;
 namespace mpstyle.microservice.toolkit.book.messagemediator
 {
 
-    public class RpcMessageMediator : Disposable, IMessageMediator
+    public class RabbitMQMessageMediator : Disposable, IMessageMediator
     {
         private readonly Dictionary<string, Type> services = new Dictionary<string, Type>();
         private readonly IModel channel;
         private readonly IConnection connection;
         private readonly RpcClient rpcClient;
         private readonly ServiceFactory serviceFactory;
-        private readonly ILogger<RpcMessageMediator> logger;
+        private readonly ILogger<RabbitMQMessageMediator> logger;
 
-        public RpcMessageMediator(RpcMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<RpcMessageMediator> logger)
+        public RabbitMQMessageMediator(RpcMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<RabbitMQMessageMediator> logger)
         {
             this.logger = logger;
             this.serviceFactory = serviceFactory;
