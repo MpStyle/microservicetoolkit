@@ -32,7 +32,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
         public string TopicName { get; set; }
     }
 
-    public abstract class ServiceBusSubscriber : ISubscriber, IAsyncDisposable
+    public class ServiceBusSubscriber : ISubscriber, IAsyncDisposable
     {
         private readonly ServiceBusSubscriberSettings settings;
 
@@ -43,7 +43,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
         public ISubscriber.OnMessageDelegate OnMessage { get; set; }
         public ISubscriber.OnErrorDelegate OnError { get; set; }
 
-        protected ServiceBusSubscriber(ServiceBusSubscriberSettings settings)
+        public ServiceBusSubscriber(ServiceBusSubscriberSettings settings)
         {
             this.settings = settings;
         }
@@ -88,8 +88,17 @@ namespace mpstyle.microservice.toolkit.book.pubsub
             GC.SuppressFinalize(this);
         }
 
-        private Task OnMessageListener(ProcessMessageEventArgs args) => this.OnMessage(args.Message.Body.ToString());
-        private Task OnErrorListener(ProcessErrorEventArgs args) => this.OnError(args.Exception);
+        private Task OnMessageListener(ProcessMessageEventArgs args)
+        {
+            this.OnMessage(args.Message.Body.ToString());
+            return Task.CompletedTask;
+        }
+
+        private Task OnErrorListener(ProcessErrorEventArgs args)
+        {
+            this.OnError(args.Exception);
+            return Task.CompletedTask;
+        }
     }
 
     public sealed class ServiceBusSubscriberSettings

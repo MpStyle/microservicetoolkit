@@ -10,8 +10,8 @@ namespace mpstyle.microservice.toolkit.book
 
     public interface ISubscriber
     {
-        delegate Task OnMessageDelegate(string message);
-        delegate Task OnErrorDelegate(Exception ex);
+        delegate void OnMessageDelegate(string message);
+        delegate void OnErrorDelegate(Exception ex);
 
         public OnMessageDelegate OnMessage { get; set; }
         public OnErrorDelegate OnError { get; set; }

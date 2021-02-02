@@ -15,8 +15,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
 
         public Task Publish(string message)
         {
-            LocalMessageBroker.GetInstance().Publish(this.settings.TopicName, message);
-            return Task.CompletedTask;
+            return LocalMessageBroker.GetInstance().Publish(this.settings.TopicName, message);
         }
     }
 
@@ -44,7 +43,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
             return Task.CompletedTask;
         }
 
-        public void OnMessageReceived(string message)
+        internal void OnMessageReceived(string message)
         {
             this.OnMessage(message);
         }
@@ -56,14 +55,14 @@ namespace mpstyle.microservice.toolkit.book.pubsub
         public string SubscriptionName { get; set; }
     }
 
-    class LocalMessageBroker
+    internal class LocalMessageBroker
     {
         private readonly Dictionary<string, List<LocalSubscriber>> subscribers = new Dictionary<string, List<LocalSubscriber>>();
         private static LocalMessageBroker messageBroker;
 
         private LocalMessageBroker() { }
 
-        public static LocalMessageBroker GetInstance()
+        internal static LocalMessageBroker GetInstance()
         {
             if (messageBroker == null)
             {
@@ -73,17 +72,24 @@ namespace mpstyle.microservice.toolkit.book.pubsub
             return messageBroker;
         }
 
-        public void Publish(string topic, string message)
+        internal Task Publish(string topic, string message)
         {
-            var task = new Task(() =>
+            if (this.subscribers.ContainsKey(topic))
             {
-                (this.subscribers[topic] ?? new List<LocalSubscriber>()).ForEach(s => s.OnMessageReceived(message));
-            });
+                var task = new Task(() =>
+                {
+                    this.subscribers[topic].ForEach(s => s.OnMessageReceived(message));
+                });
 
-            task.Start();
+                task.Start();
+
+                return task;
+            }
+
+            return Task.CompletedTask;
         }
 
-        public void Subscribe(string topic, LocalSubscriber subscriber)
+        internal void Subscribe(string topic, LocalSubscriber subscriber)
         {
             if (this.subscribers.ContainsKey(topic) == false)
             {

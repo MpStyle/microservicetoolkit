@@ -15,7 +15,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
         public RabbitMQPublisher(RabbitMQPublisherSettings settings)
         {
             this.settings = settings;
-            this.connectionFactory = new ConnectionFactory() { HostName = this.settings.ConnectionString };
+            this.connectionFactory = new ConnectionFactory() { Uri = new Uri(this.settings.ConnectionString) };
         }
 
         public Task Publish(string message)
@@ -23,7 +23,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
             using (var connection = this.connectionFactory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.ExchangeDeclare(exchange: this.settings.TopicName, type: ExchangeType.Fanout);
+                channel.ExchangeDeclare(exchange: this.settings.TopicName, type: ExchangeType.Fanout, durable: true);
 
                 var body = Encoding.UTF8.GetBytes(message);
                 channel.BasicPublish(exchange: this.settings.TopicName,
@@ -51,6 +51,7 @@ namespace mpstyle.microservice.toolkit.book.pubsub
 
         private IModel channel;
         private IConnection connection;
+        private AsyncEventingBasicConsumer consumer;
 
         public ISubscriber.OnMessageDelegate OnMessage { get; set; }
         public ISubscriber.OnErrorDelegate OnError { get; set; }
@@ -58,37 +59,43 @@ namespace mpstyle.microservice.toolkit.book.pubsub
         public RabbitMQSubscriber(RabbitMQSubscriberSettings settings)
         {
             this.settings = settings;
-            this.connectionFactory = new ConnectionFactory() { HostName = this.settings.ConnectionString };
+            this.connectionFactory = new ConnectionFactory()
+            {
+                Uri = new Uri(this.settings.ConnectionString),
+                DispatchConsumersAsync = true
+            };
         }
 
         public Task Subscribe()
         {
             this.connection = this.connectionFactory.CreateConnection();
-
             this.channel = connection.CreateModel();
-            this.channel.ExchangeDeclare(exchange: this.settings.TopicName, type: ExchangeType.Fanout);
 
-            var queueName = this.channel.QueueDeclare().QueueName;
+            this.channel.ExchangeDeclare(exchange: this.settings.TopicName, type: ExchangeType.Fanout, durable: true);
+
+            var queueName = this.channel.QueueDeclare(queue: this.settings.SubscriptionName, exclusive: false).QueueName;
             this.channel.QueueBind(queue: queueName,
                               exchange: this.settings.TopicName,
                               routingKey: "");
 
-            var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.Received += this.OnMessageListener;
+            this.consumer = new AsyncEventingBasicConsumer(channel);
+            this.consumer.Received += async (sender, ea) =>
+            {
+                var body = ea.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                this.OnMessage(message);
+                if (sender is AsyncEventingBasicConsumer consumer)
+                {
+                    consumer.Model.BasicAck(ea.DeliveryTag, true);
+                }
+                await Task.Yield();
+            };
             this.channel.BasicConsume(queue: queueName,
-                                 autoAck: true,
-                                 consumer: consumer);
+                                 autoAck: false,
+                                 consumerTag: this.settings.SubscriptionName,
+                                 consumer: this.consumer);
 
             return Task.CompletedTask;
-        }
-
-        private async Task OnMessageListener(object sender, BasicDeliverEventArgs ea)
-        {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
-            await this.OnMessage(message);
-            (sender as IModel).BasicAck(ea.DeliveryTag, false);
-            await Task.Yield();
         }
 
         protected virtual void Dispose(bool disposing)
