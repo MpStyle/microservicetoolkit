@@ -63,11 +63,11 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         public async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(string pattern, TRequest request)
         {
             var replySessionId = Guid.NewGuid().ToString();
-            IMessageSession session = await this.replySessionClient.AcceptMessageSessionAsync(replySessionId);
+            var session = await this.replySessionClient.AcceptMessageSessionAsync(replySessionId);
 
             try
             {
-                string rawMessage = JsonSerializer.Serialize(new ServiceBusMessage
+                var rawMessage = JsonSerializer.Serialize(new ServiceBusMessage
                 {
                     Pattern = pattern,
                     Payload = JsonSerializer.Serialize(request)
@@ -83,8 +83,8 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                 await this.requestClient.SendAsync(message);
 
                 // Receive reply
-                Message reply = await session.ReceiveAsync(TimeSpan.FromSeconds(10)); // 10s timeout
-                ServiceResponse<TPayload> response = new ServiceResponse<TPayload> { Error = ErrorCode.INVALID_SERVICE };
+                var reply = await session.ReceiveAsync(TimeSpan.FromSeconds(10)); // 10s timeout
+                var response = new ServiceResponse<TPayload> { Error = ErrorCode.INVALID_SERVICE };
 
                 if (reply != null)
                 {
@@ -162,7 +162,10 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
 
                     await outgoingQueueClient.SendAsync(replyMessage);
                     await incomingQueueClient.CompleteAsync(request.SystemProperties.LockToken);
-                }, new MessageHandlerOptions(async args => logger.LogError(args.Exception.Message))
+                }, new MessageHandlerOptions(args => {
+                    logger.LogError(args.Exception.Message);
+                    return Task.CompletedTask;
+                })
                 {
                     AutoComplete = false,
                     MaxConcurrentCalls = (int)this.maxConsumer

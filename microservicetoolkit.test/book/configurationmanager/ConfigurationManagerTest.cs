@@ -17,40 +17,40 @@ namespace mpstyle.microservice.toolkit.test.book.configurationmanager
         public void GetString()
         {
             var stringValue = this.configurationManager.GetString("stringValue");
-            Assert.Equal(stringValue, "Hello World!");
+            Assert.Equal("Hello World!", stringValue);
         }
 
         [Fact]
         public void GetInt()
         {
             var intValue = this.configurationManager.GetInt("intValue");
-            Assert.Equal(intValue, 666);
+            Assert.Equal(666, intValue);
         }
 
         [Fact]
         public void GetBool()
         {
             var boolValue = this.configurationManager.GetBool("boolValue");
-            Assert.Equal(boolValue, true);
+            Assert.True(boolValue);
         }
 
         [Fact]
         public void GetStringArray()
         {
             var stringArrayValue = this.configurationManager.GetStringArray("stringArrayValue");
-            Assert.Equal(stringArrayValue[0], "Hello");
-            Assert.Equal(stringArrayValue[1], "World");
-            Assert.Equal(stringArrayValue[2], "!");
+            Assert.Equal("Hello", stringArrayValue[0]);
+            Assert.Equal("World", stringArrayValue[1]);
+            Assert.Equal("!", stringArrayValue[2]);
         }
 
         [Fact]
         public void GetIntArray()
         {
             var intArrayValue = this.configurationManager.GetIntArray("intArrayValue");
-            Assert.Equal(intArrayValue[0], 1);
-            Assert.Equal(intArrayValue[1], 2);
-            Assert.Equal(intArrayValue[2], 3);
-            Assert.Equal(intArrayValue[3], 4);
+            Assert.Equal(1,intArrayValue[0]);
+            Assert.Equal(2,intArrayValue[1]);
+            Assert.Equal(3,intArrayValue[2]);
+            Assert.Equal(4,intArrayValue[3]);
         }
 
         #region SetUp & TearDown
