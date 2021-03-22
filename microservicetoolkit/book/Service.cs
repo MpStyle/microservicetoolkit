@@ -40,6 +40,15 @@ namespace mpstyle.microservice.toolkit.book
                 Error = error
             };
         }
+
+        public ServiceResponse<TPayload> Response(TPayload payload, int error)
+        {
+            return new ServiceResponse<TPayload>()
+            {
+                Payload = payload,
+                Error = error
+            };
+        }
     }
 
     public interface IService { }
