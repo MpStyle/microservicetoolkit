@@ -41,7 +41,7 @@ namespace mpstyle.microservice.toolkit.book
             };
         }
 
-        public ServiceResponse<TPayload> Response(TPayload payload, int error)
+        public ServiceResponse<TPayload> Response(TPayload payload, int? error)
         {
             return new ServiceResponse<TPayload>()
             {
