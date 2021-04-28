@@ -37,6 +37,15 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
 
         public DbParameter GetParameter<T>(string name, T value)
         {
+            if (value == null)
+            {
+                return new SqliteParameter
+                {
+                    ParameterName = name,
+                    Value = DBNull.Value
+                };
+            }
+            
             return new SqliteParameter
             {
                 ParameterName = name,
