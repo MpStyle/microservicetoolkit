@@ -3,7 +3,6 @@
 using mpstyle.microservice.toolkit.entity;
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
@@ -11,56 +10,43 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
 {
     public class LocalMessageMediator : IMessageMediator
     {
-        private readonly ServiceFactory serviceFactory;
-        private readonly ILogger<LocalMessageMediator> logger;
-        private readonly Dictionary<string, Type> services = new Dictionary<string, Type>();
+        public ServiceFactory ServiceFactory { get; init; }
+        public ILogger<IMessageMediator> Logger { get; init; }
 
-        public LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
+        public LocalMessageMediator(ILogger<LocalMessageMediator> logger, ServiceFactory serviceFactory)
         {
-            this.serviceFactory = serviceFactory;
-            this.logger = logger;
+            this.ServiceFactory = serviceFactory;
+            this.Logger = logger;
         }
 
-        public IMessageMediator RegisterService(Type service)
-        {
-            services.Add(service.Name, service);
-            return this;
-        }
-
-        public Task<ServiceResponse<TResponse>> Send<TRequest, TResponse>(string pattern, TRequest message)
+        public async Task<ServiceResponse<object>> Send(string pattern, object message)
         {
             try
             {
-                services.TryGetValue(pattern, out Type serviceType);
-                var service = serviceFactory(serviceType);
+                var service = this.ServiceFactory(pattern);
 
                 if (service == null)
                 {
                     throw new ServiceNotFoundException(pattern);
                 }
 
-                if (service is Service<TRequest, TResponse> callableService)
-                {
-                    return callableService.Run(message);
-                }
-
-                throw new ServiceNotFoundException(pattern);
+                return await service.Run(message);
             }
             catch (ServiceNotFoundException ex)
             {
-                logger.LogDebug(ex.ToString());
-                return Task.FromResult(new ServiceResponse<TResponse>
+                this.Logger.LogDebug(ex.ToString());
+                return new ServiceResponse<object>
                 {
                     Error = ErrorCode.SERVICE_NOT_FOUND
-                });
+                };
             }
             catch (Exception ex)
             {
-                logger.LogDebug(ex.ToString());
-                return Task.FromResult(new ServiceResponse<TResponse>
+                this.Logger.LogDebug(ex.ToString());
+                return new ServiceResponse<object>
                 {
                     Error = ErrorCode.UNKNOWN
-                });
+                };
             }
         }
     }

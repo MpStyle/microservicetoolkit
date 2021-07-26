@@ -7,27 +7,25 @@ using RabbitMQ.Client.Events;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book.messagemediator
 {
-
     public class RabbitMQMessageMediator : Disposable, IMessageMediator
     {
-        private readonly Dictionary<string, Type> services = new Dictionary<string, Type>();
         private readonly IModel channel;
         private readonly IConnection connection;
         private readonly RpcClient rpcClient;
-        private readonly ServiceFactory serviceFactory;
-        private readonly ILogger<RabbitMQMessageMediator> logger;
+
+        public ServiceFactory ServiceFactory { get; init; }
+        public ILogger<IMessageMediator> Logger { get; init; }
 
         public RabbitMQMessageMediator(RpcMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<RabbitMQMessageMediator> logger)
         {
-            this.logger = logger;
-            this.serviceFactory = serviceFactory;
+            this.Logger = logger;
+            this.ServiceFactory = serviceFactory;
             this.rpcClient = new RpcClient(configuration);
 
             var requestQueueName = configuration.QueueName;
@@ -50,34 +48,22 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
             }
         }
 
-        public IMessageMediator RegisterService(Type service)
-        {
-            this.services.Add(service.Name, service);
-            return this;
-        }
-
-        public async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(string pattern, TRequest message)
+        public async Task<ServiceResponse<object>> Send(string pattern, object message)
         {
             try
             {
-                var service = this.services[pattern];
-                if (service == null || (service is Service<TRequest, TPayload>) == false)
-                {
-                    return new ServiceResponse<TPayload> { Error = ErrorCode.INVALID_SERVICE };
-                }
-
                 var response = await rpcClient.SendAsync(new RpcMessage
                 {
                     Pattern = pattern,
                     Payload = JsonSerializer.Serialize(message)
                 });
 
-                return JsonSerializer.Deserialize<ServiceResponse<TPayload>>(response);
+                return JsonSerializer.Deserialize<ServiceResponse<object>>(response);
             }
             catch (Exception ex)
             {
-                this.logger.LogDebug(ex.ToString());
-                return new ServiceResponse<TPayload>
+                this.Logger.LogDebug(ex.ToString());
+                return new ServiceResponse<object>
                 {
                     Error = ErrorCode.UNKNOWN
                 };
@@ -94,22 +80,15 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
             var requestMessage = Encoding.UTF8.GetString(body);
             var rpcMessage = JsonSerializer.Deserialize<RpcMessage>(requestMessage);
 
-            this.services.TryGetValue(rpcMessage.Pattern, out var serviceType);
-
-            var service = this.serviceFactory(serviceType);
-            var response = JsonSerializer.Serialize(new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND });
+            var service = this.ServiceFactory(rpcMessage.Pattern);
+            var response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
 
             if (service != null)
             {
-                var method = service.GetType().GetMethod("ORun");
-
-                if (method != null)
-                {
-                    response = await (Task<string>)method.Invoke(service, new object[] { rpcMessage.Payload });
-                }
+                response = await service.Run(JsonSerializer.Serialize(rpcMessage.Payload));
             }
 
-            var responseBytes = Encoding.UTF8.GetBytes(response);
+            var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
             channel.BasicPublish(exchange: string.Empty, routingKey: props.ReplyTo, basicProperties: replyProps, body: responseBytes);
             channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
         }
