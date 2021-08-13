@@ -1,5 +1,8 @@
 # Microservice Toolkit
 
+![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)
+![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)
+
 Everything you need for your entire micro services development life cycle. 
 
 __Microservice Toolkit__ is the fastest and smartest way to produce industry-leading microservices that users love.
