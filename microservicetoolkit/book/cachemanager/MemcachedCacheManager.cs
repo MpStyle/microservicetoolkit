@@ -17,6 +17,11 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
             this.client = cluster.GetClient();
         }
 
+        public Task<bool> Delete(string key)
+        {
+            return this.client.DeleteAsync(key);
+        }
+
         public async Task<string> Get(string key)
         {
             var response = await this.client.GetAsync(key);

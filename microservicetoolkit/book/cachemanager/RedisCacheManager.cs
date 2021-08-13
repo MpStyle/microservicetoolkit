@@ -17,6 +17,12 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
             this.logger = logger;
         }
 
+        public Task<bool> Delete(string key)
+        {
+            var db = this.connection.GetDatabase();
+            return db.KeyDeleteAsync(new RedisKey(key));
+        }
+
         public async Task<string> Get(string key)
         {
             this.logger.LogDebug($"Calling RedisCacheManager#Get({key ?? string.Empty})...");

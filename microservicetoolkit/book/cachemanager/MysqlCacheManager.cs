@@ -109,7 +109,7 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
             return this.Set(key, value, 0);
         }
 
-        private async Task<bool> Delete(string key)
+        public async Task<bool> Delete(string key)
         {
             var query = @"
                 DELETE FROM `cache`

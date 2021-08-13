@@ -74,6 +74,26 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
             Assert.Null(getResponse);
         }
 
+        [Fact]
+        public async void Delete()
+        {
+            var setResponse = await this.manager.Set("my_key", "my_value");
+
+            Assert.True(setResponse);
+
+            var getResponse = await this.manager.Get("my_key");
+
+            Assert.Equal("my_value", getResponse);
+
+            var deleteResponse = await this.manager.Delete("my_key");
+
+            Assert.True(deleteResponse);
+
+            getResponse = await this.manager.Get("my_key");
+
+            Assert.Null(getResponse);
+        }
+
         #region SetUp & TearDown
         public async Task InitializeAsync()
         {
