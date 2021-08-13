@@ -3,8 +3,16 @@ using System.Data.Common;
 
 namespace mpstyle.microservice.toolkit.book
 {
+    /// <summary>
+    /// The manager for the database migrations.
+    /// </summary>
     public interface IMigrationManager
     {
+        /// <summary>
+        /// Applies the database migration to the database.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         ApplyResult Apply(MigrationManagerConfiguration configuration);
     }
 
