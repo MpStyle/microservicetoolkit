@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("mpstyle.microservice.toolkit.test")]
 namespace mpstyle.microservice.toolkit
 {
-    public static class DateTimeExtensions
+    internal static class DateTimeExtensions
     {
-        public static long ToEpoch(this DateTime dateTime)
+        internal static long ToEpoch(this DateTime dateTime)
         {
             return new DateTimeOffset(dateTime).ToUniversalTime().ToUnixTimeMilliseconds();
         }
