@@ -156,7 +156,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
 
             public async Task<string> SendAsync(RpcMessage message)
             {
-                var correlationId = $"{Guid.NewGuid()}-{Guid.NewGuid()}-{DateTime.Now.ToEpoch()}";
+                var correlationId = $"{Guid.NewGuid()}-{Guid.NewGuid()}-{DateTime.UtcNow.ToEpoch()}";
                 var props = channel.CreateBasicProperties();
                 props.ReplyTo = this.replyQueueName;
                 props.CorrelationId = correlationId;

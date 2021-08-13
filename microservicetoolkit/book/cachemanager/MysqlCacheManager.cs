@@ -41,7 +41,7 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
                         var value = reader.GetString(0);
                         var issuedAt = reader.GetInt64(1);
 
-                        if (issuedAt == 0 || issuedAt >= DateTime.Now.ToUniversalTime().ToEpoch())
+                        if (issuedAt == 0 || issuedAt >= DateTime.UtcNow.ToEpoch())
                         {
                             return value;
                         }
