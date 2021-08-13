@@ -9,6 +9,7 @@
     <Product>Microservice Toolkit</Product>
     <Copyright>MIT License</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,4 +26,8 @@
     <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>
