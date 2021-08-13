@@ -40,7 +40,7 @@ public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 
 
 ## Key Features
-- Micro-services mediator
+- [Micro-services mediator](microservicetoolkit/book/messagemediator/README.md)
 - Cache manager
 - Configuration Manager
 - Database connection manager
