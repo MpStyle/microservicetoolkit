@@ -17,7 +17,10 @@
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    
+
+    <PackageReference Include="Npgsql" Version="5.0.7">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.2.62">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
