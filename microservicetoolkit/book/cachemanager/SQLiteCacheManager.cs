@@ -1,15 +1,27 @@
-﻿using System;
+﻿using mpstyle.microservice.toolkit.book.connectionmanager;
+
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book.cachemanager
 {
+    /// <summary>
+    /// Before use SQLiteCacheManager, create a cache table:
+    /// <code>
+    /// CREATE TABLE cache(
+    ///     id TEXT PRIMARY KEY,
+    ///     value TEXT NOT NULL,
+    ///     issuedAt INTEGER NOT NULL
+    /// );
+    /// </code>
+    /// </summary>
     public class SQLiteCacheManager : ICacheManager
     {
-        private readonly IConnectionManager connectionManager;
+        private readonly SQLiteConnectionManager connectionManager;
 
-        public SQLiteCacheManager(IConnectionManager connectionManager)
+        public SQLiteCacheManager(SQLiteConnectionManager connectionManager)
         {
             this.connectionManager = connectionManager;
         }
@@ -47,15 +59,28 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
                         }
                     }
 
-                    return null;
+                    return default;
                 }
             });
 
 
         }
 
+        /// <summary>
+        /// With a "issuedAt" with a time in the past will result in the key being deleted rather than expired.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="issuedAt"></param>
+        /// <returns></returns>
         public async Task<bool> Set(string key, string value, long issuedAt)
         {
+            if (issuedAt < DateTime.UtcNow.ToEpoch())
+            {
+                await this.Delete(key);
+                return false;
+            }
+
             var query = @"
                 INSERT INTO `cache` (
                     id,
@@ -66,15 +91,38 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
                     @value,
                     @issuedAt
                 )
-                ON DUPLICATE KEY UPDATE 
+                ON CONFLICT(id) DO UPDATE SET 
                     `value` = @value,
-                    issuedAt = @issuedAt
+                    issuedAt = @issuedAt;
             ";
 
             var parameters = new Dictionary<string, object>(){
                 {"@id", key},
                 {"@value", value},
                 {"@issuedAt", issuedAt}
+            };
+
+            return await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            {
+                cmd.CommandText = query;
+                foreach (var parameter in parameters)
+                {
+                    cmd.Parameters.Add(this.connectionManager.GetParameter(parameter.Key, parameter.Value));
+                }
+
+                return await cmd.ExecuteNonQueryAsync() != 0;
+            });
+        }
+
+        private async Task<bool> Delete(string key)
+        {
+            var query = @"
+                DELETE FROM `cache`
+                WHERE id = @id;
+            ";
+
+            var parameters = new Dictionary<string, object>(){
+                {"@id", key},
             };
 
             return await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
