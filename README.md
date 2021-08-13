@@ -1,7 +1,7 @@
 # Microservice Toolkit
 
-![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)
-![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)
+[![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
+[![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 
 Everything you need for your entire micro services development life cycle. 
 
