@@ -45,5 +45,10 @@ namespace mpstyle.microservice.toolkit.book
         }
 
         Task<ServiceResponse<object>> Send(string pattern, object message);
+
+        public Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+        {
+            return this.Send(pattern, message) as Task<ServiceResponse<TPayload>>;
+        }
     }
 }
