@@ -28,6 +28,11 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
             return this.client.SetAsync(key, value, new Expiration((uint)issuedAt));
         }
 
+        public Task<bool> Set(string key, string value)
+        {
+            return this.client.SetAsync(key, value);
+        }
+
         protected override void DisposeManage()
         {
             base.DisposeManage();

@@ -75,7 +75,7 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
         /// <returns></returns>
         public async Task<bool> Set(string key, string value, long issuedAt)
         {
-            if (issuedAt < DateTime.UtcNow.ToEpoch())
+            if (issuedAt != 0 && issuedAt < DateTime.UtcNow.ToEpoch())
             {
                 await this.Delete(key);
                 return false;
@@ -112,6 +112,11 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
 
                 return await cmd.ExecuteNonQueryAsync() != 0;
             });
+        }
+
+        public Task<bool> Set(string key, string value)
+        {
+            return this.Set(key, value, 0);
         }
 
         private async Task<bool> Delete(string key)

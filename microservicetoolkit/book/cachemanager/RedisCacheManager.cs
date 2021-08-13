@@ -44,5 +44,13 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
 
             return setResult;
         }
+
+        public async Task<bool> Set(string key, string value)
+        {
+            this.logger.LogDebug($"Calling RedisCacheManager#Set({key ?? string.Empty})...");
+            var db = this.connection.GetDatabase();
+            var setResult = await db.StringSetAsync(key, value);
+            return setResult;
+        }
     }
 }

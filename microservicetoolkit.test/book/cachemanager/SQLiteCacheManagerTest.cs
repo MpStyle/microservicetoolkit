@@ -29,6 +29,18 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
         }
 
         [Fact]
+        public async Task SetAndRetrieve_KeyValueWithoutExpiration()
+        {
+            var setResponse = await this.manager.Set("my_key", "my_value");
+
+            Assert.True(setResponse);
+
+            var getResponse = await this.manager.Get("my_key");
+
+            Assert.Equal("my_value", getResponse);
+        }
+
+        [Fact]
         public async Task SetAndRetrieve_ExpiredKeyValue()
         {
             var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
