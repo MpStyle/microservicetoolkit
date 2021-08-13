@@ -39,14 +39,17 @@ public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 ```
 
 
-## Features
+## Key Features
 - Micro-services mediator
 - Cache manager
 - Configuration Manager
 - Database connection manager
 - Migration Manager
 
-## How to release :rocket:
+### Release Notes
+[Version history](https://github.com/MpStyle/microservicetoolkit/releases)
+
+## How to release a new versione :rocket:
 
 To release a new version of the package:
 1. Update the version in the `mpstyle.microservice.toolkit.csproj` file.
