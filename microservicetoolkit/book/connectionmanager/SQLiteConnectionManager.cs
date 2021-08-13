@@ -10,6 +10,15 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
     {
         private readonly string connectionString;
 
+        /// <summary>
+        /// Example of supported connection strings:
+        /// - Local file: Data Source=hello.db
+        /// - In memoery: Data Source=:memory:
+        /// - Shareable in-memory database: Data Source=InMemorySample;Mode=Memory;Cache=Shared
+        /// 
+        /// For more details about connection string see https://docs.microsoft.com/it-it/dotnet/standard/data/sqlite/connection-strings
+        /// </summary>
+        /// <param name="connectionString"></param>
         public SQLiteConnectionManager(string connectionString)
         {
             this.connectionString = connectionString;
@@ -45,7 +54,7 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
                     Value = DBNull.Value
                 };
             }
-            
+
             return new SqliteParameter
             {
                 ParameterName = name,
