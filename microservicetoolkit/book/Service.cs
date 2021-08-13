@@ -1,22 +1,14 @@
 
-using Microsoft.Extensions.Logging;
-
 using mpstyle.microservice.toolkit.entity;
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book
 {
     public abstract class Service<TRequest, TPayload> : IService
     {
-        protected ILogger<IService> Logger { get; }
-
-        protected Service(ILogger<IService> logger)
-        {
-            this.Logger = logger;
-        }
-
         public abstract Task<ServiceResponse<TPayload>> Run(TRequest request);
 
         public async Task<ServiceResponse<object>> Run(object request)
@@ -29,7 +21,7 @@ namespace mpstyle.microservice.toolkit.book
             }
             catch (Exception ex)
             {
-                this.Logger.LogDebug(ex.Message);
+                Debug.WriteLine(ex.ToString());
                 return new ServiceResponse<object> { Error = ErrorCode.INVALID_SERVICE_EXECUTION };
             }
         }

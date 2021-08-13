@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-
+﻿
 using mpstyle.microservice.toolkit.entity;
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book
@@ -12,7 +12,6 @@ namespace mpstyle.microservice.toolkit.book
     public interface IMessageMediator
     {
         ServiceFactory ServiceFactory { get; init; }
-        ILogger<IMessageMediator> Logger { get; init; }
 
         /// <summary>
         /// Sends a message
@@ -35,7 +34,7 @@ namespace mpstyle.microservice.toolkit.book
             }
             catch (Exception ex)
             {
-                this.Logger.LogDebug(ex.Message);
+                Debug.WriteLine(ex.ToString());
 
                 return new ServiceResponse<TPayload>
                 {
