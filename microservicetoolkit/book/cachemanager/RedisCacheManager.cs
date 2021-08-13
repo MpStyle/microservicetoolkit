@@ -2,6 +2,7 @@
 
 using StackExchange.Redis;
 
+using System;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book.cachemanager
@@ -45,7 +46,7 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
 
             if (setResult)
             {
-                return await db.KeyExpireAsync(key, DateTimeUtils.UnixTimeStampToDateTime(issuedAt));
+                return await db.KeyExpireAsync(key, DateTimeOffset.FromUnixTimeMilliseconds(issuedAt).DateTime);
             }
 
             return setResult;
