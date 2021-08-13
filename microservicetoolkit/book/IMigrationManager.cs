@@ -1,5 +1,5 @@
-﻿using System.Data;
-using System;
+﻿using System;
+using System.Data.Common;
 
 namespace mpstyle.microservice.toolkit.book
 {
@@ -18,6 +18,6 @@ namespace mpstyle.microservice.toolkit.book
     {
         public string Extension { get; set; }
         public string Folder { get; set; }
-        public IDbConnection DbConnection { get; set; }
+        public DbConnection DbConnection { get; set; }
     }
 }
