@@ -26,7 +26,7 @@ namespace mpstyle.microservice.toolkit.book
             }
         }
 
-        public ServiceResponse<TPayload> SuccessfulResponse(TPayload payload)
+        protected ServiceResponse<TPayload> SuccessfulResponse(TPayload payload)
         {
             return new ServiceResponse<TPayload>()
             {
@@ -34,7 +34,7 @@ namespace mpstyle.microservice.toolkit.book
             };
         }
 
-        public ServiceResponse<TPayload> UnsuccessfulResponse(int error)
+        protected ServiceResponse<TPayload> UnsuccessfulResponse(int error)
         {
             return new ServiceResponse<TPayload>()
             {
@@ -42,7 +42,7 @@ namespace mpstyle.microservice.toolkit.book
             };
         }
 
-        public ServiceResponse<TPayload> Response(TPayload payload, int? error)
+        protected ServiceResponse<TPayload> Response(TPayload payload, int? error)
         {
             return new ServiceResponse<TPayload>()
             {
