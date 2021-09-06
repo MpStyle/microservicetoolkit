@@ -15,9 +15,9 @@ namespace mpstyle.microservice.toolkit.book
         /// <param name="pattern"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(string pattern, TRequest message)
+        public async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(string pattern, TRequest message)
         {
-            return this.Send(pattern, message) as Task<ServiceResponse<TPayload>>;
+            return await this.Send(pattern, message) as ServiceResponse<TPayload>;
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace mpstyle.microservice.toolkit.book
         /// <param name="pattern"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
-            return this.Send(pattern, message) as Task<ServiceResponse<TPayload>>;
+            return await this.Send(pattern, message) as ServiceResponse<TPayload>;
         }
     }
 }
