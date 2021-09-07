@@ -17,7 +17,7 @@ namespace mpstyle.microservice.toolkit.book
         /// <returns></returns>
         public async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(string pattern, TRequest message)
         {
-            return await this.Send(pattern, message) as ServiceResponse<TPayload>;
+            return await this.Send<TPayload>(pattern, message);
         }
 
         /// <summary>
@@ -37,7 +37,21 @@ namespace mpstyle.microservice.toolkit.book
         /// <returns></returns>
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
-            return await this.Send(pattern, message) as ServiceResponse<TPayload>;
+            var response = await this.Send(pattern, message);
+
+            if (response.Payload is not TPayload)
+            {
+                return new ServiceResponse<TPayload>
+                {
+                    Error = ErrorCode.INVALID_SERVICE_RESPONSE
+                };
+            }
+
+            return new ServiceResponse<TPayload>
+            {
+                Error = response.Error,
+                Payload = (TPayload)response.Payload
+            };
         }
     }
 }
