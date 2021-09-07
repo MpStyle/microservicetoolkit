@@ -42,14 +42,14 @@ public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 ```
 
 
-## Key Features
+## Key Features :key:
 - [Micro-services mediator](microservicetoolkit/book/messagemediator/README.md)
 - Cache manager
 - Configuration Manager
 - Database connection manager
 - Migration Manager
 
-### Release Notes
+### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
 
 ## How to release a new versione :rocket:
@@ -58,6 +58,6 @@ To release a new version of the package:
 1. Update the version in the `mpstyle.microservice.toolkit.csproj` file.
 3. Draft a release on [GitHub](https://github.com/MpStyle/microservicetoolkit/releases)
 
-## License
+## License :bookmark_tabs:
 
 [MIT License](https://opensource.org/licenses/MIT)
