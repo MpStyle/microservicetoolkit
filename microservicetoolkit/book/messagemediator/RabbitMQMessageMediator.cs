@@ -62,7 +62,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         {
             try
             {
-                var correlationId = $"{Guid.NewGuid()}-{Guid.NewGuid()}-{DateTime.UtcNow.ToEpoch()}";
+                var correlationId = $"{Guid.NewGuid()}-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
                 var props = channel.CreateBasicProperties();
                 props.ReplyTo = this.configuration.ReplyQueueName;
                 props.CorrelationId = correlationId;
