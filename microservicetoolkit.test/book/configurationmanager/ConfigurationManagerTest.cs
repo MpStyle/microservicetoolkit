@@ -1,60 +1,60 @@
-using System.IO;
 using Microsoft.Extensions.Configuration;
 
 using mpstyle.microservice.toolkit.book.configurationmanager;
 
-using System;
+using NUnit.Framework;
 
-using Xunit;
+using System.IO;
 
 namespace mpstyle.microservice.toolkit.test.book.configurationmanager
 {
-    public class ConfigurationManagerTest : IDisposable
+    public class ConfigurationManagerTest
     {
-        private readonly ConfigurationManager configurationManager;
+        private ConfigurationManager configurationManager;
 
-        [Fact]
+        [Test]
         public void GetString()
         {
             var stringValue = this.configurationManager.GetString("stringValue");
-            Assert.Equal("Hello World!", stringValue);
+            Assert.AreEqual("Hello World!", stringValue);
         }
 
-        [Fact]
+        [Test]
         public void GetInt()
         {
             var intValue = this.configurationManager.GetInt("intValue");
-            Assert.Equal(666, intValue);
+            Assert.AreEqual(666, intValue);
         }
 
-        [Fact]
+        [Test]
         public void GetBool()
         {
             var boolValue = this.configurationManager.GetBool("boolValue");
-            Assert.True(boolValue);
+            Assert.IsTrue(boolValue);
         }
 
-        [Fact]
+        [Test]
         public void GetStringArray()
         {
             var stringArrayValue = this.configurationManager.GetStringArray("stringArrayValue");
-            Assert.Equal("Hello", stringArrayValue[0]);
-            Assert.Equal("World", stringArrayValue[1]);
-            Assert.Equal("!", stringArrayValue[2]);
+            Assert.AreEqual("Hello", stringArrayValue[0]);
+            Assert.AreEqual("World", stringArrayValue[1]);
+            Assert.AreEqual("!", stringArrayValue[2]);
         }
 
-        [Fact]
+        [Test]
         public void GetIntArray()
         {
             var intArrayValue = this.configurationManager.GetIntArray("intArrayValue");
-            Assert.Equal(1,intArrayValue[0]);
-            Assert.Equal(2,intArrayValue[1]);
-            Assert.Equal(3,intArrayValue[2]);
-            Assert.Equal(4,intArrayValue[3]);
+            Assert.AreEqual(1, intArrayValue[0]);
+            Assert.AreEqual(2, intArrayValue[1]);
+            Assert.AreEqual(3, intArrayValue[2]);
+            Assert.AreEqual(4, intArrayValue[3]);
         }
 
         #region SetUp & TearDown
-        public ConfigurationManagerTest()
+        [SetUp]
+        public void SetUp()
         {
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine("data", "ConfigurationManagerTest.json"))
@@ -62,7 +62,8 @@ namespace mpstyle.microservice.toolkit.test.book.configurationmanager
             this.configurationManager = new ConfigurationManager(configuration, new DoNothingLogger<ConfigurationManager>());
         }
 
-        public void Dispose()
+        [TearDown]
+        public void TearDown()
         {
         }
         #endregion

@@ -2,80 +2,80 @@
 using mpstyle.microservice.toolkit.book.cachemanager;
 using mpstyle.microservice.toolkit.book.connectionmanager;
 
+using NUnit.Framework;
+
 using System;
 using System.Data.Common;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-using Xunit;
-
 namespace mpstyle.microservice.toolkit.test.book.cachemanager
 {
-    public class SQLiteCacheManagerTest : IAsyncLifetime
+    public class SQLiteCacheManagerTest
     {
         private SQLiteCacheManager manager;
 
-        [Fact]
+        [Test]
         public async Task SetAndRetrieve_KeyValue()
         {
             var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds());
 
-            Assert.True(setResponse);
+            Assert.IsTrue(setResponse);
 
             var getResponse = await this.manager.Get("my_key");
 
-            Assert.Equal("my_value", getResponse);
+            Assert.AreEqual("my_value", getResponse);
         }
 
-        [Fact]
+        [Test]
         public async Task SetAndRetrieve_KeyValueWithoutExpiration()
         {
             var setResponse = await this.manager.Set("my_key", "my_value");
 
-            Assert.True(setResponse);
+            Assert.IsTrue(setResponse);
 
             var getResponse = await this.manager.Get("my_key");
 
-            Assert.Equal("my_value", getResponse);
+            Assert.AreEqual("my_value", getResponse);
         }
 
-        [Fact]
+        [Test]
         public async Task SetAndRetrieve_ExpiredKeyValue()
         {
             var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
 
-            Assert.True(setResponse);
+            Assert.IsTrue(setResponse);
 
             await Task.Delay(5000);
 
             var getResponse = await this.manager.Get("my_key");
 
-            Assert.Null(getResponse);
+            Assert.IsNull(getResponse);
         }
 
-        [Fact]
+        [Test]
         public async Task SetAndRetrieve_UpdateWithNegativeIssuedAt()
         {
             var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
 
-            Assert.True(setResponse);
+            Assert.IsTrue(setResponse);
 
             var getResponse = await this.manager.Get("my_key");
 
-            Assert.Equal("my_value", getResponse);
+            Assert.AreEqual("my_value", getResponse);
 
             setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds());
 
-            Assert.False(setResponse);
+            Assert.IsFalse(setResponse);
 
             getResponse = await this.manager.Get("my_key");
 
-            Assert.Null(getResponse);
+            Assert.IsNull(getResponse);
         }
 
-        [Fact]
-        public async void Delete()
+        [Test]
+        public async Task Delete()
         {
             var setResponse = await this.manager.Set("my_key", "my_value");
 
@@ -83,7 +83,7 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
 
             var getResponse = await this.manager.Get("my_key");
 
-            Assert.Equal("my_value", getResponse);
+            Assert.AreEqual("my_value", getResponse);
 
             var deleteResponse = await this.manager.Delete("my_key");
 
@@ -91,11 +91,12 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
 
             getResponse = await this.manager.Get("my_key");
 
-            Assert.Null(getResponse);
+            Assert.IsNull(getResponse);
         }
 
         #region SetUp & TearDown
-        public async Task InitializeAsync()
+        [SetUp]
+        public async Task SetUp()
         {
             try
             {
@@ -118,11 +119,11 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
             catch (Exception ex)
             {
                 Debug.Write(ex.ToString());
-                await this.DisposeAsync();
             }
         }
 
-        public Task DisposeAsync()
+        [TearDown]
+        public Task TearDown()
         {
             File.Delete("hello.db");
             return Task.CompletedTask;
