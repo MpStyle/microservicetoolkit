@@ -17,7 +17,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
     {
         private readonly IModel channel;
         private readonly IConnection connection;
-        private readonly ConcurrentDictionary<string, TaskCompletionSource<string>> pendingMessages = new ConcurrentDictionary<string, TaskCompletionSource<string>>();
+        private readonly ConcurrentDictionary<string, TaskCompletionSource<ServiceResponse<object>>> pendingMessages = new ConcurrentDictionary<string, TaskCompletionSource<ServiceResponse<object>>>();
         private readonly ServiceFactory serviceFactory;
         private readonly ILogger<IMessageMediator> logger;
         private readonly RpcMessageMediatorConfiguration configuration;
@@ -67,9 +67,8 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                 props.ReplyTo = this.configuration.ReplyQueueName;
                 props.CorrelationId = correlationId;
 
-                var tcs = new TaskCompletionSource<string>(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-
-                this.pendingMessages[correlationId] = tcs;
+                var tcs = new TaskCompletionSource<ServiceResponse<object>>(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
+                this.pendingMessages.TryAdd(correlationId, tcs);
 
                 var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new RpcMessage
                 {
@@ -83,7 +82,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                     body: messageBytes);
 
                 var response = await tcs.Task;
-                return JsonSerializer.Deserialize<ServiceResponse<object>>(response);
+                return response;
             }
             catch (Exception ex)
             {
@@ -99,35 +98,34 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         {
             var correlationId = ea.BasicProperties.CorrelationId;
 
-            // It is not the producer who sent the message
+            // Check if it is the producer which sent the request
             if (this.pendingMessages.TryRemove(correlationId, out var tcs))
             {
                 var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
 
-                tcs.SetResult(message);
+                tcs.SetResult(JsonSerializer.Deserialize<ServiceResponse<object>>(Encoding.UTF8.GetString(body)));
             }
         }
 
         private async void OnConsumerReceivesRequest(object sender, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
-            var props = ea.BasicProperties;
-            var replyProps = channel.CreateBasicProperties();
-            replyProps.CorrelationId = props.CorrelationId;
-
-            var requestMessage = Encoding.UTF8.GetString(body);
-            var rpcMessage = JsonSerializer.Deserialize<RpcMessage>(requestMessage);
+            var rpcMessage = JsonSerializer.Deserialize<RpcMessage>(Encoding.UTF8.GetString(body));
 
             var service = this.serviceFactory(rpcMessage.Pattern);
             var response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
 
             if (service != null)
             {
-                response = await service.Run(JsonSerializer.Serialize(rpcMessage.Payload));
+                response = await service.Run(rpcMessage.Payload);
             }
 
+            var props = ea.BasicProperties;
+            var replyProps = channel.CreateBasicProperties();
+            replyProps.CorrelationId = props.CorrelationId;
+
             var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
+
             channel.BasicPublish(exchange: string.Empty, routingKey: props.ReplyTo, basicProperties: replyProps, body: responseBytes);
             channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
         }
