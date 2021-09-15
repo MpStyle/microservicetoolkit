@@ -1,5 +1,4 @@
-using Microsoft.Azure.ServiceBus;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
 
 using mpstyle.microservice.toolkit.entity;
@@ -15,52 +14,55 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
     public class ServiceBusMessageMediator : IMessageMediator
     {
         private readonly QueueClient requestClient;
-        private readonly SessionClient replySessionClient;
-        private readonly RequestReplyHandler requestReplyHandler;
-        private readonly CancellationToken handlerCancellationToken = new CancellationToken();
+        private readonly SessionClient responseSessionClient;
 
-        public ServiceFactory ServiceFactory { get; init; }
-        public ILogger<IMessageMediator> Logger { get; init; }
+        private readonly IQueueClient responseClient;
+
+        private readonly ServiceMessageMediatorConfiguration configuration;
+        private readonly ServiceFactory serviceFactory;
 
         public ServiceBusMessageMediator(ServiceMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
         {
-            this.ServiceFactory = serviceFactory;
-            this.Logger = logger;
+            this.serviceFactory = serviceFactory;
+            this.configuration = configuration;
 
             var connectionStringBuilder = new ServiceBusConnectionStringBuilder(configuration.ConnectionString);
             var connection = connectionStringBuilder.GetNamespaceConnectionString();
-            var requestQueueName = configuration.QueueName;
-            var replyQueueName = configuration.ReplayQueueName;
-            var consumersPerQueue = configuration.ConsumersPerQueue;
 
-            this.requestClient = new QueueClient(connection, requestQueueName, ReceiveMode.PeekLock);
-            this.replySessionClient = new SessionClient(connection, replyQueueName, ReceiveMode.PeekLock);
-            this.requestReplyHandler = new RequestReplyHandler(
-                this.Logger,
-                this.requestClient,
-                new QueueClient(connection, replyQueueName, ReceiveMode.PeekLock),
-                pattern => this.ServiceFactory(pattern),
-                consumersPerQueue);
+            this.requestClient = new QueueClient(connection, configuration.QueueName, ReceiveMode.PeekLock);
+            this.requestClient.RegisterMessageHandler(this.ConsumerMessageHandler, new MessageHandlerOptions(args =>
+            {
+                logger.LogError(args.Exception.Message);
+                return Task.CompletedTask;
+            })
+            {
+                AutoComplete = false,
+                MaxConcurrentCalls = (int)this.configuration.ConsumersPerQueue
+            });
+
+            this.responseSessionClient = new SessionClient(connection, configuration.ReplayQueueName, ReceiveMode.PeekLock);
+
+            this.responseClient = new QueueClient(connection, configuration.ReplayQueueName, ReceiveMode.PeekLock);
         }
 
         public async void Dispose()
         {
-            await this.requestReplyHandler.StopAsync(this.handlerCancellationToken);
-            await requestClient.CloseAsync();
-            await replySessionClient.CloseAsync();
+            await this.responseClient.CloseAsync();
+            await this.responseSessionClient.CloseAsync();
+            await this.requestClient.CloseAsync();
         }
 
         public async Task<ServiceResponse<object>> Send(string pattern, object request)
         {
-            var replySessionId = Guid.NewGuid().ToString();
-            var session = await this.replySessionClient.AcceptMessageSessionAsync(replySessionId);
+            var replySessionId = $"{Guid.NewGuid()}-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+            var session = await this.responseSessionClient.AcceptMessageSessionAsync(replySessionId);
 
             try
             {
                 var rawMessage = JsonSerializer.Serialize(new ServiceBusMessage
                 {
                     Pattern = pattern,
-                    Payload = JsonSerializer.Serialize(request)
+                    Payload = request
                 });
                 var message = new Message
                 {
@@ -68,12 +70,10 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                     ReplyToSessionId = replySessionId
                 };
 
-                this.Logger.LogInformation($"------ Message ID: {message.MessageId}; Session ID: {message.ReplyToSessionId}; Instance ID: {Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")}");
-
                 await this.requestClient.SendAsync(message);
 
-                // Receive reply
-                var reply = await session.ReceiveAsync(TimeSpan.FromSeconds(10)); // 10s timeout
+                // Receive response
+                var reply = await session.ReceiveAsync(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
                 var response = new ServiceResponse<object> { Error = ErrorCode.INVALID_SERVICE };
 
                 if (reply != null)
@@ -91,73 +91,33 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
             }
         }
 
+        private async Task ConsumerMessageHandler(Message request, CancellationToken cancellationToken)
+        {
+            var requestMessage = Encoding.UTF8.GetString(request.Body);
+            var rpcMessage = JsonSerializer.Deserialize<ServiceBusMessage>(requestMessage);
+            var service = this.serviceFactory.Invoke(rpcMessage.Pattern);
+            var response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
+
+            if (service != null)
+            {
+                response = await service.Run(rpcMessage.Payload);
+            }
+
+            var replyMessage = new Message
+            {
+                Body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response)),
+                SessionId = request.ReplyToSessionId,
+                CorrelationId = request.MessageId
+            };
+
+            await this.responseClient.SendAsync(replyMessage);
+            await this.requestClient.CompleteAsync(request.SystemProperties.LockToken);
+        }
+
         class ServiceBusMessage
         {
             public string Pattern { get; set; }
-            public string Payload { get; set; }
-        }
-
-        class RequestReplyHandler : BackgroundService, IAsyncDisposable
-        {
-            private readonly ILogger<IMessageMediator> logger;
-            private readonly IQueueClient incomingQueueClient;
-            private readonly IQueueClient outgoingQueueClient;
-            private readonly Func<string, IService> serviceBuilder;
-            private readonly uint maxConsumer;
-
-            public RequestReplyHandler(ILogger<IMessageMediator> logger, IQueueClient incomingQueueClient, IQueueClient outgoingQueueClient, Func<string, IService> serviceBuilder, uint maxConsumer)
-            {
-                this.logger = logger;
-                this.incomingQueueClient = incomingQueueClient;
-                this.outgoingQueueClient = outgoingQueueClient;
-                this.serviceBuilder = serviceBuilder;
-                this.maxConsumer = maxConsumer;
-            }
-
-            protected override Task ExecuteAsync(CancellationToken stoppingToken)
-            {
-                incomingQueueClient.RegisterMessageHandler(async (request, cancellationToken) =>
-                {
-
-                    this.logger.LogInformation($"------ Message ID: {request.MessageId}; Session ID: {request.ReplyToSessionId}; Instance ID: {Environment.GetEnvironmentVariable("WEBSITE_INSTANCE_ID")}");
-
-                    var requestMessage = Encoding.UTF8.GetString(request.Body);
-                    var rpcMessage = JsonSerializer.Deserialize<ServiceBusMessage>(requestMessage);
-                    var service = this.serviceBuilder.Invoke(rpcMessage.Pattern);
-                    var response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
-
-                    if (service != null)
-                    {
-                        response = await service.Run(JsonSerializer.Serialize(rpcMessage.Payload));
-                    }
-
-                    var replyMessage = new Message
-                    {
-                        Body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response)),
-                        SessionId = request.ReplyToSessionId,
-                        CorrelationId = request.MessageId
-                    };
-
-                    await outgoingQueueClient.SendAsync(replyMessage);
-                    await incomingQueueClient.CompleteAsync(request.SystemProperties.LockToken);
-                }, new MessageHandlerOptions(args =>
-                {
-                    logger.LogError(args.Exception.Message);
-                    return Task.CompletedTask;
-                })
-                {
-                    AutoComplete = false,
-                    MaxConcurrentCalls = (int)this.maxConsumer
-                });
-
-                return Task.CompletedTask;
-            }
-
-            public async ValueTask DisposeAsync()
-            {
-                await incomingQueueClient.CloseAsync();
-                await outgoingQueueClient.CloseAsync();
-            }
+            public object Payload { get; set; }
         }
     }
 
@@ -167,5 +127,10 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         public string ReplayQueueName { get; set; }
         public string ConnectionString { get; set; }
         public uint ConsumersPerQueue { get; set; }
+
+        /// <summary>
+        /// Milliseconds
+        /// </summary>
+        public uint ResponseTimeout { get; set; } = 10000;
     }
 }
