@@ -79,7 +79,7 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
         {
             var setResponse = await this.manager.Set("my_key", "my_value");
 
-            Assert.True(setResponse);
+            Assert.IsTrue(setResponse);
 
             var getResponse = await this.manager.Get("my_key");
 
@@ -87,7 +87,7 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
 
             var deleteResponse = await this.manager.Delete("my_key");
 
-            Assert.True(deleteResponse);
+            Assert.IsTrue(deleteResponse);
 
             getResponse = await this.manager.Get("my_key");
 
