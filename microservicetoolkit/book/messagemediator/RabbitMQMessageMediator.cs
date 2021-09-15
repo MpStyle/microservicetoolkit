@@ -67,14 +67,14 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
                 props.ReplyTo = this.configuration.ReplyQueueName;
                 props.CorrelationId = correlationId;
 
-                var tcs = new TaskCompletionSource<string>();
+                var tcs = new TaskCompletionSource<string>(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
 
                 this.pendingMessages[correlationId] = tcs;
 
                 var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new RpcMessage
                 {
                     Pattern = pattern,
-                    Payload = JsonSerializer.Serialize(message)
+                    Payload = message
                 }));
                 channel.BasicPublish(
                     exchange: string.Empty,
@@ -141,7 +141,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         class RpcMessage
         {
             public string Pattern { get; set; }
-            public string Payload { get; set; }
+            public object Payload { get; set; }
         }
     }
 
@@ -152,5 +152,10 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         public string ReplyQueueName { get; set; }
         public string ConnectionString { get; set; }
         public uint ConsumersPerQueue { get; set; }
+
+        /// <summary>
+        /// Milliseconds
+        /// </summary>
+        public uint ResponseTimeout { get; set; } = 10000;
     }
 }
