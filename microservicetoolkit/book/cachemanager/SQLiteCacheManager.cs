@@ -53,7 +53,7 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
                         var value = reader.GetString(0);
                         var issuedAt = reader.GetInt64(1);
 
-                        if (issuedAt == 0 || issuedAt >= DateTime.UtcNow.ToEpoch())
+                        if (issuedAt == 0 || issuedAt >= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                         {
                             return value;
                         }
@@ -75,7 +75,7 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
         /// <returns></returns>
         public async Task<bool> Set(string key, string value, long issuedAt)
         {
-            if (issuedAt != 0 && issuedAt < DateTime.UtcNow.ToEpoch())
+            if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 await this.Delete(key);
                 return false;
