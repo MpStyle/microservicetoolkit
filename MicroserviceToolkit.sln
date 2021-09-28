@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\build.yml = .github\workflows\build.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mpstyle.microservice.toolkit.test", "microservicetoolkit.test\mpstyle.microservice.toolkit.test.csproj", "{43E87FE8-6751-4A7F-8DCD-6B7E2E9B1CD2}"
