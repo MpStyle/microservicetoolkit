@@ -4,10 +4,12 @@ using mpstyle.microservice.toolkit.book.configurationmanager;
 
 using NUnit.Framework;
 
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace mpstyle.microservice.toolkit.test.book.configurationmanager
 {
+    [ExcludeFromCodeCoverage]
     public class ConfigurationManagerTest
     {
         private ConfigurationManager configurationManager;
