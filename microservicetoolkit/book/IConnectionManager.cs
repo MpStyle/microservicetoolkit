@@ -14,7 +14,7 @@ namespace mpstyle.microservice.toolkit.book
         T Execute<T>(Func<DbCommand, T> lambda);
         Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
 
-        Task<int> ExecuteNonQueryAsync<T>(string query, Dictionary<string, object> parameters);
+        Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters);
 
         DbCommand GetCommand();
         DbCommand GetCommand(DbConnection dbConnection);
@@ -155,11 +155,6 @@ namespace mpstyle.microservice.toolkit.book
         }
 
         public abstract DbCommand GetCommand();
-
-        public Task<int> ExecuteNonQueryAsync<T>(string query, Dictionary<string, object> parameters)
-        {
-            throw new NotImplementedException();
-        }
 
         public abstract DbCommand GetCommand(DbConnection dbConnection);
     }
