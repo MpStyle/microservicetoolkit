@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book.connectionmanager
 {
-    public class SQLiteConnectionManager : IConnectionManager
+    public class SQLiteConnectionManager : ConnectionManager
     {
-        private readonly string connectionString;
-
         /// <summary>
         /// Example of supported connection strings:
         /// - Local file: Data Source=hello.db
@@ -21,22 +19,27 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
         /// <param name="connectionString"></param>
         public SQLiteConnectionManager(string connectionString)
         {
-            this.connectionString = connectionString;
+            this.Connection = new SqliteConnection(connectionString);
         }
 
-        public T Execute<T>(Func<DbCommand, T> lambda)
+        public override T Execute<T>(Func<DbCommand, T> lambda)
         {
-            using (var connection = new SqliteConnection(this.connectionString))
+            this.Open();
+            using (var cmd = this.GetCommand(this.Connection))
             {
-                connection.Open();
-                using (var cmd = this.GetCommand(connection))
-                {
-                    return lambda(cmd);
-                }
+                return lambda(cmd);
             }
         }
 
-        private DbCommand GetCommand(DbConnection connection)
+        public override DbCommand GetCommand()
+        {
+            return new SqliteCommand
+            {
+                Connection = (SqliteConnection)this.Connection
+            };
+        }
+
+        public override DbCommand GetCommand(DbConnection connection)
         {
             return new SqliteCommand
             {
@@ -44,7 +47,7 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
             };
         }
 
-        public DbParameter GetParameter<T>(string name, T value)
+        public override DbParameter GetParameter<T>(string name, T value)
         {
             if (value == null)
             {
@@ -62,15 +65,12 @@ namespace mpstyle.microservice.toolkit.book.connectionmanager
             };
         }
 
-        public async Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda)
+        public override async Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda)
         {
-            using (var connection = new SqliteConnection(this.connectionString))
+            await this.OpenAsync();
+            using (var cmd = this.GetCommand(this.Connection))
             {
-                await connection.OpenAsync();
-                using (var cmd = this.GetCommand(connection))
-                {
-                    return await lambda(cmd);
-                }
+                return await lambda(cmd);
             }
         }
     }

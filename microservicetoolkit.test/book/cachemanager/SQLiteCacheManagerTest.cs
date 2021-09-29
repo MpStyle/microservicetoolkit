@@ -1,5 +1,4 @@
-﻿
-using mpstyle.microservice.toolkit.book.cachemanager;
+﻿using mpstyle.microservice.toolkit.book.cachemanager;
 using mpstyle.microservice.toolkit.book.connectionmanager;
 
 using NUnit.Framework;
@@ -7,13 +6,15 @@ using NUnit.Framework;
 using System;
 using System.Data.Common;
 using System.Diagnostics;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.test.book.cachemanager
 {
+    [ExcludeFromCodeCoverage]
     public class SQLiteCacheManagerTest
     {
+        private SQLiteConnectionManager connectionManager;
         private SQLiteCacheManager manager;
 
         [Test]
@@ -100,7 +101,7 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
         {
             try
             {
-                var connectionManager = new SQLiteConnectionManager("Data Source=hello.db");
+                this.connectionManager = new SQLiteConnectionManager("Data Source=CacheTest;Mode=Memory;Cache=Shared");
                 var query = @"
                 CREATE TABLE cache(
                     id TEXT PRIMARY KEY,
@@ -114,7 +115,7 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
                     return await cmd.ExecuteNonQueryAsync();
                 });
 
-                this.manager = new SQLiteCacheManager(connectionManager);
+                this.manager = new SQLiteCacheManager(this.connectionManager);
             }
             catch (Exception ex)
             {
@@ -123,10 +124,14 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
         }
 
         [TearDown]
-        public Task TearDown()
+        public async Task TearDown()
         {
-            File.Delete("hello.db");
-            return Task.CompletedTask;
+            var createTableQuery = "DROP TABLE IF EXISTS cache;";
+            var createTable = await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            {
+                cmd.CommandText = createTableQuery;
+                return await cmd.ExecuteNonQueryAsync();
+            });
         }
         #endregion
     }
