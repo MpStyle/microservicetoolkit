@@ -2,7 +2,9 @@
 
 using NUnit.Framework;
 
+using System;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -27,34 +29,36 @@ namespace mpstyle.microservice.toolkit.test.book.connectionmanager
                 return await cmd.ExecuteNonQueryAsync();
             });
 
+            Assert.AreEqual(-1, result);
+        }
+
+        [Test]
+        public async Task ExecuteNonQueryAsync()
+        {
+            await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            {
+                cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) CONSTRAINT firstkey PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+                return await cmd.ExecuteNonQueryAsync();
+            });
+
             Assert.AreEqual(1, await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('mycod', 'my_title');"));
         }
 
         [SetUp]
-        public async Task SetUp()
+        public void SetUp()
         {
-            this.connectionManager = new PostgreSQLConnectionManager("Server=127.0.0.1;Port=5432;User Id=postgres;Password=postgres;");
-
-            var existDatabase = await connectionManager.ExecuteAsync(async cmd =>
-              {
-                  cmd.CommandText = "SELECT 1 FROM pg_database WHERE datname = 'postgres'";
-                  var value = false;
-                  using (var reader = await cmd.ExecuteReaderAsync())
-                  {
-                      while (reader.Read())
-                      {
-                          value = true;
-                      }
-                  }
-                  return value;
-              });
-
-            if (!existDatabase)
-            {
-                await connectionManager.ExecuteNonQueryAsync("CREATE DATABASE postgresql_test;");
-            }
-
-            this.connectionManager = new PostgreSQLConnectionManager("Server=127.0.0.1;Port=5432;User Id=postgres;Password=postgres;Database=postgresql_test");
+            var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "127.0.0.1";
+            var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+            Console.WriteLine($"Host: {host}");
+            Console.WriteLine($"Port: {port}");
+            Debug.WriteLine($"Host: {host}");
+            Debug.WriteLine($"Port: {port}");
+            this.connectionManager = new PostgreSQLConnectionManager($"Server={host};Port={port};User Id=postgres;Password=postgres;Database=postgres");
         }
 
         [TearDown]
