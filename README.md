@@ -9,44 +9,26 @@ Everything you need for your entire micro services development life cycle.
 
 __Microservice Toolkit__ is the fastest and smartest way to produce industry-leading microservices that users love.
 
-## Introduction
-In Microservice Toolkit, a service is an object like this:
-```json
-{
-    "error": 12,
-    "payload": {
-        ...
-    }
-}
+## How to install
+
+### Package Manager
 ```
-- The "error" is valorized when an error occurs during service execution.
-- Payload is the output of the service.
-
-Only one of the fields can have a value: if "error" has a value, "payload" doesn't have it, and vice versa
-
-To implement a service, extends the abstract class "_Service<TRequest, TPayload>_", where:
-- "_TRequest_" is the input of the service
-- "_TPayload_" is the output of the service.
-
-Example code:
-
-```C#
-public class UserExists : Service<UserExistsRequest, UserExistsResponse>
-{
-    public async override Task<ServiceResponse<UserExistsResponse>> Run(UserExistsRequest request)
-    {
-        return this.SuccessfulResponse(new UserExistsResponse
-        {
-            Exists = "Alice" == request.Username
-        });
-    }
-}
+Install-Package mpstyle.microservice.toolkit -Version 0.2.2
 ```
 
+### .NET CLI
+```
+dotnet add package mpstyle.microservice.toolkit --version 0.2.2
+```
+
+### Package Reference
+```
+<PackageReference Include="mpstyle.microservice.toolkit" Version="0.2.2" />
+```
 
 ## Key Features :key:
 - [Micro-services mediator](microservicetoolkit/book/messagemediator/README.md)
-- Cache manager
+- [Cache manager](microservicetoolkit/book/cachemanager/README.md)
 - Configuration Manager
 - Database connection manager
 - Migration Manager
@@ -63,3 +45,7 @@ To release a new version of the package:
 ## License :bookmark_tabs:
 
 [MIT License](https://opensource.org/licenses/MIT)
+
+## How to contribute
+
+[Contributing](CONTRIBUTING.md)

@@ -2,6 +2,42 @@
 
 An interface to define how microservices interact each other.
 
+## Introduction
+The response of a microservice is an object like this:
+```json
+{
+    "error": 12,
+    "payload": {
+        ...
+    }
+}
+```
+- The "error" is valorized when an error occurs during service execution.
+- Payload is the output of the service.
+
+Only one of the fields can have a value: if "error" has a value, "payload" doesn't have it, and vice versa
+
+To implement a service, extends the abstract class "_Service<TRequest, TPayload>_", where:
+- "_TRequest_" is the input of the service
+- "_TPayload_" is the output of the service.
+
+Example code:
+
+```C#
+public class UserExists : Service<UserExistsRequest, UserExistsResponse>
+{
+    public async override Task<ServiceResponse<UserExistsResponse>> Run(UserExistsRequest request)
+    {
+        return this.SuccessfulResponse(new UserExistsResponse
+        {
+            Exists = "Alice" == request.Username
+        });
+    }
+}
+```
+
+## Implementations
+
 Microservice Toolkit provides some implementation of the message mediator interface:
 - [Local](#local)
 - [RabbitMQ](#rabbitmq)
