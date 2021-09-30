@@ -13,7 +13,7 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
     [ExcludeFromCodeCoverage]
     public class MysqlCacheManagerTest
     {
-        private const string databaseName = "microservice_framework_tests";
+        private MySQLConnectionManager connectionManager;
         private MysqlCacheManager manager;
 
         [Test]
@@ -98,18 +98,11 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
         [SetUp]
         public async Task SetUp()
         {
-            var connectionManager = new MySQLConnectionManager("Server=127.0.0.1;User ID=root;Password=root");
-            var createDatabaseQuery = @$"
-                    CREATE DATABASE IF NOT EXISTS {databaseName};
-                    USE {databaseName};
-                ";
-            var createDatabase = await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
-            {
-                cmd.CommandText = createDatabaseQuery;
-                return await cmd.ExecuteNonQueryAsync();
-            });
+            var host = Environment.GetEnvironmentVariable("MYSQL_HOST") ?? "127.0.0.1";
+            var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? string.Empty;
+            var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? string.Empty;
 
-            connectionManager = new MySQLConnectionManager($"Server=127.0.0.1;User ID=root;Password=root;database={databaseName};");
+            this.connectionManager = new MySQLConnectionManager($"Server={host};User ID=root;Password={rootPassword};database={database};");
             var createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS cache(
                         id VARCHAR(256) PRIMARY KEY,
@@ -129,7 +122,6 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
         [TearDown]
         public async Task TearDown()
         {
-            var connectionManager = new MySQLConnectionManager($"Server=127.0.0.1;User ID=root;Password=root;database={databaseName};");
             var createTableQuery = "DROP TABLE IF EXISTS cache;";
             var createTable = await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
             {

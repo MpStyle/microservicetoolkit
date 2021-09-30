@@ -11,11 +11,17 @@ jobs:
 
     runs-on: ubuntu-latest
     services:
-      # Label used to access the service container
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: microservice_framework_tests
+        ports:
+          - 3306
+        # Set health checks to wait until mysql has started
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=10
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
@@ -25,7 +31,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps tcp port 5432 on service container to the host
           - 5432:5432
 
     env:
@@ -51,7 +56,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
       env:
-          # The hostname used to communicate with the PostgreSQL service container
           POSTGRES_HOST: 127.0.0.1
-          # The default PostgreSQL port
           POSTGRES_PORT: 5432
+
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_DATABASE: microservice_framework_tests
