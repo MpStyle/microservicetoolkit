@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 using System;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -101,6 +102,9 @@ namespace mpstyle.microservice.toolkit.test.book.cachemanager
             var host = Environment.GetEnvironmentVariable("MYSQL_HOST") ?? "127.0.0.1";
             var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? string.Empty;
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? string.Empty;
+
+            Console.WriteLine($"Server={host};User ID=root;Password={rootPassword};database={database};");
+            Debug.WriteLine($"Server={host};User ID=root;Password={rootPassword};database={database};");
 
             this.connectionManager = new MySQLConnectionManager($"Server={host};User ID=root;Password={rootPassword};database={database};");
             var createTableQuery = @"
