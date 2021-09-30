@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 using System;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -54,10 +53,6 @@ namespace mpstyle.microservice.toolkit.test.book.connectionmanager
         {
             var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "127.0.0.1";
             var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
-            Console.WriteLine($"Host: {host}");
-            Console.WriteLine($"Port: {port}");
-            Debug.WriteLine($"Host: {host}");
-            Debug.WriteLine($"Port: {port}");
             this.connectionManager = new PostgreSQLConnectionManager($"Server={host};Port={port};User Id=postgres;Password=postgres;Database=postgres");
         }
 
