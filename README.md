@@ -29,7 +29,7 @@ dotnet add package mpstyle.microservice.toolkit --version 0.2.2
 ## Key Features :key:
 - [Micro-services mediator](microservicetoolkit/book/messagemediator/README.md)
 - [Cache manager](microservicetoolkit/book/cachemanager/README.md)
-- Configuration Manager
+- [Configuration Manager](microservicetoolkit/book/configurationmanager/README.md)
 - Database connection manager
 - Migration Manager
 
