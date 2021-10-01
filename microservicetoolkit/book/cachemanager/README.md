@@ -9,7 +9,11 @@ Common interface to manage cache using different providers.
 Task<bool> Set(string key, string value, long issuedAt);
 ```
 
-Adds an entry in the cache provider with an expiration time (Unix timestamp in milliseconds).
+Adds an entry in the cache provider with an expiration time (UTC Unix timestamp in milliseconds).
+```C#
+// 2 days until expiration time
+var issuedAt = DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds()
+```
 
 ### Set(string, string);
 ```C#
