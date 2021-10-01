@@ -21,6 +21,11 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         private readonly ServiceMessageMediatorConfiguration configuration;
         private readonly ServiceFactory serviceFactory;
 
+        public ServiceBusMessageMediator(ServiceMessageMediatorConfiguration configuration, ServiceFactory serviceFactory)
+            : this(configuration, serviceFactory, new DoNothingLogger<ServiceBusMessageMediator>())
+        {
+        }
+
         public ServiceBusMessageMediator(ServiceMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
         {
             this.serviceFactory = serviceFactory;

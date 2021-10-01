@@ -10,20 +10,25 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
 {
     public class LocalMessageMediator : IMessageMediator
     {
-        public ServiceFactory ServiceFactory { get; init; }
-        public ILogger<IMessageMediator> Logger { get; init; }
+        private readonly ServiceFactory serviceFactory;
+        private readonly ILogger<IMessageMediator> logger = new DoNothingLogger<IMessageMediator>();
 
-        public LocalMessageMediator(ILogger<LocalMessageMediator> logger, ServiceFactory serviceFactory)
+        public LocalMessageMediator(ServiceFactory serviceFactory)
         {
-            this.ServiceFactory = serviceFactory;
-            this.Logger = logger;
+            this.serviceFactory = serviceFactory;
+        }
+
+        public LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
+        {
+            this.serviceFactory = serviceFactory;
+            this.logger = logger;
         }
 
         public async Task<ServiceResponse<object>> Send(string pattern, object message)
         {
             try
             {
-                var service = this.ServiceFactory(pattern);
+                var service = this.serviceFactory(pattern);
 
                 if (service == null)
                 {
@@ -34,7 +39,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
             }
             catch (ServiceNotFoundException ex)
             {
-                this.Logger.LogDebug(ex.ToString());
+                this.logger.LogDebug(ex.ToString());
                 return new ServiceResponse<object>
                 {
                     Error = ErrorCode.SERVICE_NOT_FOUND
@@ -42,7 +47,7 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
             }
             catch (Exception ex)
             {
-                this.Logger.LogDebug(ex.ToString());
+                this.logger.LogDebug(ex.ToString());
                 return new ServiceResponse<object>
                 {
                     Error = ErrorCode.UNKNOWN

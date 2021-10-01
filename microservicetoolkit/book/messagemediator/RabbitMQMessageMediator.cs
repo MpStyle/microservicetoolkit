@@ -19,14 +19,18 @@ namespace mpstyle.microservice.toolkit.book.messagemediator
         private readonly IConnection connection;
         private readonly ConcurrentDictionary<string, TaskCompletionSource<ServiceResponse<object>>> pendingMessages = new ConcurrentDictionary<string, TaskCompletionSource<ServiceResponse<object>>>();
         private readonly ServiceFactory serviceFactory;
-        private readonly ILogger<IMessageMediator> logger;
         private readonly RpcMessageMediatorConfiguration configuration;
+        private readonly ILogger<RabbitMQMessageMediator> logger = new DoNothingLogger<RabbitMQMessageMediator>();
+
+        public RabbitMQMessageMediator(RpcMessageMediatorConfiguration configuration, ServiceFactory serviceFactory)
+            : this(configuration, serviceFactory, new DoNothingLogger<RabbitMQMessageMediator>())
+        { }
 
         public RabbitMQMessageMediator(RpcMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<RabbitMQMessageMediator> logger)
         {
-            this.logger = logger;
             this.serviceFactory = serviceFactory;
             this.configuration = configuration;
+            this.logger = logger;
 
             var factory = new ConnectionFactory()
             {
