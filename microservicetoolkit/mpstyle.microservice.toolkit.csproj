@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>mpstyle.microservice.toolkit</AssemblyName>
     <RootNamespace>mpstyle.microservice.toolkit</RootNamespace>
-    <Version>0.2.3</Version>
+    <Version>0.3.0</Version>
     <Authors>Michele Pagnin</Authors>
     <Product>Microservice Toolkit</Product>
     <Copyright>MIT License</Copyright>
