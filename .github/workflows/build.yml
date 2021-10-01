@@ -25,6 +25,13 @@ jobs:
         image: memcached:alpine
         ports:
           - 11211:11211
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          SA_PASSWORD: my_root_password123
+          ACCEPT_EULA: Y
+        ports:
+          - "1433:1433"
       mysql:
         image: mysql:5.7
         env:
@@ -76,3 +83,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_HOST: 127.0.0.1
           MYSQL_DATABASE: microservice_framework_tests
+
+          SQLSERVER_HOST: 127.0.0.1
+          SQLSERVER_PORT: 1433
+          SQLSERVER_ROOT_PASSWORD: my_root_password123
