@@ -1,6 +1,7 @@
 ﻿
 using Enyim.Caching.Memcached;
 
+using System;
 using System.Threading.Tasks;
 
 namespace mpstyle.microservice.toolkit.book.cachemanager
@@ -30,7 +31,15 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
 
         public Task<bool> Set(string key, string value, long issuedAt)
         {
-            return this.client.SetAsync(key, value, new Expiration((uint)issuedAt));
+            if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            {
+                this.Delete(key);
+                return Task.FromResult(false);
+            }
+
+            var duration = (uint)((issuedAt - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 1000);
+
+            return this.client.SetAsync(key, value, new Expiration(duration));
         }
 
         public Task<bool> Set(string key, string value)
