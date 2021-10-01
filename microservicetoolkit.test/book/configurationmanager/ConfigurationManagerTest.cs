@@ -61,7 +61,7 @@ namespace mpstyle.microservice.toolkit.test.book.configurationmanager
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine("data", "ConfigurationManagerTest.json"))
                 .Build();
-            this.configurationManager = new ConfigurationManager(configuration, new DoNothingLogger<ConfigurationManager>());
+            this.configurationManager = new ConfigurationManager(configuration);
         }
 
         [TearDown]

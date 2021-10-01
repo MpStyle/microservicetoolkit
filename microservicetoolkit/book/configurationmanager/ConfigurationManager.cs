@@ -8,12 +8,17 @@ namespace mpstyle.microservice.toolkit.book.configurationmanager
     public class ConfigurationManager : IConfigurationManager
     {
         private readonly IConfiguration configuration;
-        private readonly ILogger<ConfigurationManager> logger;
+        private readonly ILogger<ConfigurationManager> logger = new DoNothingLogger<ConfigurationManager>();
 
         public ConfigurationManager(IConfiguration configuration, ILogger<ConfigurationManager> logger)
         {
             this.configuration = configuration;
             this.logger = logger;
+        }
+
+        public ConfigurationManager(IConfiguration configuration)
+        {
+            this.configuration = configuration;
         }
 
         public bool GetBool(string key)
