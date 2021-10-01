@@ -30,7 +30,7 @@ dotnet add package mpstyle.microservice.toolkit --version 0.2.2
 - [Micro-services mediator](microservicetoolkit/book/messagemediator/README.md)
 - [Cache manager](microservicetoolkit/book/cachemanager/README.md)
 - [Configuration Manager](microservicetoolkit/book/configurationmanager/README.md)
-- Database connection manager
+- [Database connection manager](microservicetoolkit/book/connectionmanager/README.md)
 - Migration Manager
 
 ### Release Notes :page_with_curl:
