@@ -45,61 +45,66 @@ Removed the entry from the cache provider.
 ### SQLite cache manager
 
 <a name="sqlite"></a>
-Before user SQLite cache manager:
+To start using SQLite cache manager, first install the required package:
+```xml
+<PackageReference Include="Microsoft.Data.SQLite" Version="5.0.10" />
+```
 
-- Install the dependency:
-    ```
-    <PackageReference Include="Microsoft.Data.SQLite" Version="5.0.10" />
-    ```
+and create the table cache:
 
-- Create the table cache:
-    ```sql
-    CREATE TABLE cache(
-        id TEXT PRIMARY KEY,
-        value TEXT NOT NULL,
-        issuedAt INTEGER NOT NULL
-    );
-    ```
+```sql
+CREATE TABLE cache(
+    id TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    issuedAt INTEGER NOT NULL
+);
+```
 
 ### MySQL cache manager
 
 <a name="mysql"></a>
-Before user MySQL cache manager:
+To start using MySql cache manager, first install the required package:
+```xml
+<PackageReference Include="MySqlConnector" Version="1.3.12" />
+```
 
-- Install the dependency:
-    ```
-    <PackageReference Include="MySqlConnector" Version="1.3.12" />
-    ```
+and create the table cache:
 
-- Create the table cache:
-    ```sql
-    CREATE TABLE cache(
-        id VARCHAR(256) PRIMARY KEY,
-        value TEXT NOT NULL,
-        issuedAt BIGINT NOT NULL
-    );
-    ```
+```sql
+CREATE TABLE cache(
+    id VARCHAR(256) PRIMARY KEY,
+    value TEXT NOT NULL,
+    issuedAt BIGINT NOT NULL
+);
+```
 
 ### Memcached
 
 <a name="memcached"></a>
-- Install the dependency:
-    ```
-    <PackageReference Include="Enyim.Memcached2" Version="0.6.8" />
-    ```
-- Instantiate:
-    ```C#
-    var manager = new MemcachedCacheManager("localhost:11211");
-    ```
-    Or, if you are using a cluster:
-    ```C#
-    var manager = new MemcachedCacheManager("localhost:11211,localhost:11212");
-    ```
+To start using Memcached cache manager, first install the required package:
+```xml
+<PackageReference Include="Enyim.Memcached2" Version="0.6.8" />
+```
+
+How to use:
+```C#
+var manager = new MemcachedCacheManager("localhost:11211");
+```
+Or, if you are using a cluster:
+```C#
+var manager = new MemcachedCacheManager("localhost:11211,localhost:11212");
+```
 
 ### Redis
 
 <a name="redis"></a>
-- Install the dependency:
-    ```
-    <PackageReference Include="StackExchange.Redis" Version="2.2.62" />
-    ```
+To start using Redis cache manager, first install the required package:
+```xml
+<PackageReference Include="StackExchange.Redis" Version="2.2.62" />
+```
+
+How to use:
+
+```C#
+var manager = new RedisCacheManager("localhost:6379");
+```
