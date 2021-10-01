@@ -9,7 +9,7 @@ Common interface to manage cache using different providers.
 Task<bool> Set(string key, string value, long issuedAt);
 ```
 
-Adds an entry in the cache provider with an expiration time (Unix epoch in milliseconds).
+Adds an entry in the cache provider with an expiration time (Unix timestamp in milliseconds).
 
 ### Set(string, string);
 ```C#
@@ -23,7 +23,7 @@ Adds an entry in the cache provider without an expiration time.
 Task<string> Get(string key);
 ```
 
-Tries to retrieve the _value_ of the entry using the _key_. If the entry does not exist or is expired the method returns _null_._
+Tries to retrieve the _value_ of the entry using the _key_. If the entry does not exist or is expired the method returns _null_.
 
 ### Delete(string);
 ```C#
