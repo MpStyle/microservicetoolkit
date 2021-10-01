@@ -9,13 +9,18 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
 {
     public class RedisCacheManager : Disposable, ICacheManager
     {
-        private readonly ILogger<RedisCacheManager> logger;
+        private readonly ILogger<RedisCacheManager> logger = new DoNothingLogger<RedisCacheManager>();
         private readonly ConnectionMultiplexer connection;
 
         public RedisCacheManager(string connectionString, ILogger<RedisCacheManager> logger)
         {
             this.connection = ConnectionMultiplexer.Connect(connectionString);
             this.logger = logger;
+        }
+
+        public RedisCacheManager(string connectionString)
+        {
+            this.connection = ConnectionMultiplexer.Connect(connectionString);
         }
 
         public Task<bool> Delete(string key)
@@ -30,6 +35,11 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
             var db = this.connection.GetDatabase();
             var result = await db.StringGetWithExpiryAsync(key);
 
+            if (result.Expiry.HasValue == false && result.Value.HasValue)
+            {
+                return result.Value.ToString();
+            }
+
             if (result.Expiry.HasValue && result.Expiry.Value.TotalMilliseconds > 0 && result.Value.HasValue)
             {
                 return result.Value.ToString();
@@ -40,14 +50,15 @@ namespace mpstyle.microservice.toolkit.book.cachemanager
 
         public async Task<bool> Set(string key, string value, long issuedAt)
         {
+            if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+            {
+                await this.Delete(key);
+                return false;
+            }
+
             this.logger.LogDebug($"Calling RedisCacheManager#Set({key ?? string.Empty})...");
             var db = this.connection.GetDatabase();
-            var setResult = await db.StringSetAsync(key, value);
-
-            if (setResult)
-            {
-                return await db.KeyExpireAsync(key, DateTimeOffset.FromUnixTimeMilliseconds(issuedAt).DateTime);
-            }
+            var setResult = await db.StringSetAsync(key, value, DateTimeOffset.FromUnixTimeMilliseconds(issuedAt).Subtract(DateTime.UtcNow));
 
             return setResult;
         }
