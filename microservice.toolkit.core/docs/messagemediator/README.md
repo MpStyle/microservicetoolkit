@@ -2,6 +2,23 @@
 
 An interface to define how microservices interact each other.
 
+## How to install
+
+### Package Manager
+```
+Install-Package microservice.toolkit.messagemediator -Version 0.4.0
+```
+
+### .NET CLI
+```
+dotnet add package microservice.toolkit.messagemediator --version 0.4.0
+```
+
+### Package Reference
+```
+<PackageReference Include="microservice.toolkit.messagemediator" Version="0.4.0" />
+```
+
 ## Introduction
 The response of a microservice is an object like this:
 ```json

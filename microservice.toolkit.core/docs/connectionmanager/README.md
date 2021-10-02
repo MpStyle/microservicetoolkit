@@ -2,6 +2,23 @@
 
 Common interface to simplify the access to a SQL database.
 
+## How to install
+
+### Package Manager
+```
+Install-Package microservice.toolkit.connectionmanager -Version 0.4.0
+```
+
+### .NET CLI
+```
+dotnet add package microservice.toolkit.connectionmanager --version 0.4.0
+```
+
+### Package Reference
+```
+<PackageReference Include="microservice.toolkit.connectionmanager" Version="0.4.0" />
+```
+
 ## Available methods
 
 ### Execute<T>(Func<DbCommand, T>)

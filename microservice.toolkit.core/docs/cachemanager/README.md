@@ -2,6 +2,23 @@
 
 Common interface to manage cache using different providers.
 
+## How to install
+
+### Package Manager
+```
+Install-Package microservice.toolkit.cachemanager -Version 0.4.0
+```
+
+### .NET CLI
+```
+dotnet add package microservice.toolkit.cachemanager --version 0.4.0
+```
+
+### Package Reference
+```
+<PackageReference Include="microservice.toolkit.cachemanager" Version="0.4.0" />
+```
+
 ## Available methods
 
 ### Set(string, string, long);

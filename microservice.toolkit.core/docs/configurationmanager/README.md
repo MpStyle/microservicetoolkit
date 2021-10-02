@@ -2,6 +2,23 @@
 
 Common interface to access to configurations value.
 
+## How to install
+
+### Package Manager
+```
+Install-Package microservice.toolkit.configurationmanager -Version 0.4.0
+```
+
+### .NET CLI
+```
+dotnet add package microservice.toolkit.configurationmanager --version 0.4.0
+```
+
+### Package Reference
+```
+<PackageReference Include="microservice.toolkit.configurationmanager" Version="0.4.0" />
+```
+
 ## Available methods
 
 ### GetBool(string)
