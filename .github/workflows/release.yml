@@ -20,7 +20,33 @@ jobs:
         run: dotnet clean ./MicroserviceToolkit.sln
       - name: Build
         run: dotnet build --no-restore -c Release
-      - name: Pack
-        run: dotnet pack ./microservicetoolkit/mpstyle.microservice.toolkit.csproj -c Release
-      - name: Release
-        run: dotnet nuget push ./microservicetoolkit/bin/Release/mpstyle.microservice.toolkit.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Core
+        run: dotnet pack ./microservice.toolkit.core/microservice.toolkit.core.csproj -c Release
+      - name: Release - Core
+        run: dotnet nuget push ./microservice.toolkit.core/bin/Release/microservice.toolkit.core.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Cache Manager
+        run: dotnet pack ./microservice.toolkit.cachemanager/microservice.toolkit.cachemanager.csproj -c Release
+      - name: Release - Cache Manager
+        run: dotnet nuget push ./microservice.toolkit.cachemanager/bin/Release/microservice.toolkit.cachemanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Configuration Manager
+        run: dotnet pack ./microservice.toolkit.configurationmanager/microservice.toolkit.configurationmanager.csproj -c Release
+      - name: Release - Configuration Manager
+        run: dotnet nuget push ./microservice.toolkit.configurationmanager/bin/Release/microservice.toolkit.configurationmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Connection Manager
+        run: dotnet pack ./microservice.toolkit.connectionmanager/microservice.toolkit.connectionmanager.csproj -c Release
+      - name: Release - Connection Manager
+        run: dotnet nuget push ./microservice.toolkit.connectionmanager/bin/Release/microservice.toolkit.connectionmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Message Mediator
+        run: dotnet pack ./microservice.toolkit.messagemediator/microservice.toolkit.messagemediator.csproj -c Release
+      - name: Release - Message Mediator
+        run: dotnet nuget push ./microservice.toolkit.messagemediator/bin/Release/microservice.toolkit.messagemediator.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Migration Manager
+        run: dotnet pack ./microservice.toolkit.migrationmanager/microservice.toolkit.migrationmanager.csproj -c Release
+      - name: Release - Migration Manager
+        run: dotnet nuget push ./microservice.toolkit.migrationmanager/bin/Release/microservice.toolkit.migrationmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json

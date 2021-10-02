@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>microservice.toolkit.messagemediator</AssemblyName>
+    <RootNamespace>microservice.toolkit.messagemediator</RootNamespace>
+    <Authors>Michele Pagnin</Authors>
+    <Product>Microservice Toolkit</Product>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.2">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="5.1.3">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+  </ItemGroup>
+</Project>
