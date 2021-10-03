@@ -10,7 +10,7 @@ If you want to contribute to the project and make it better, your help is very w
 - Create a new branch from master to work on.
 - Implement/fix your feature, comment and your code.
 - Follow the code style of the project, including indentation (see [editor config](.editorconfig) file).
-- __Run tests!__
+- [__Run tests!__](./microservice.toolkit.core/docs/Testing.md)
 - __Write or adapt tests as needed.__
 - Add or change the documentation as needed.
 - Squash your commits into a single commit with git's interactive rebase. Create a new branch if necessary.
