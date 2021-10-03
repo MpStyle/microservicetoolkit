@@ -27,10 +27,10 @@ dotnet add package microservice.toolkit.core --version 0.4.0
 ```
 
 ## Key Features :key:
-- [Message mediator](./microservice.toolkit.core/docs/MessageMediator.md)
-- [Cache manager](./microservice.toolkit.core/docs/CacheManager.md)
-- [Configuration Manager](./microservice.toolkit.core/docs/ConfigurationManager.md)
-- [Database connection manager](./microservice.toolkit.core/docs/ConnectionManager.md)
+- [Message mediator](./doc/MessageMediator.md)
+- [Cache manager](./doc/CacheManager.md)
+- [Configuration Manager](./doc/ConfigurationManager.md)
+- [Database connection manager](./doc/ConnectionManager.md)
 - Migration Manager
 
 ### Release Notes :page_with_curl:

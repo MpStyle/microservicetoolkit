@@ -7,11 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		.github\workflows\build.yml = .github\workflows\build.yml
 		Directory.Build.props = Directory.Build.props
-		README.md = README.md
-		.github\workflows\release.yml = .github\workflows\release.yml
-		CONTRIBUTING.md = CONTRIBUTING.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.core", "microservice.toolkit.core\microservice.toolkit.core.csproj", "{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}"
@@ -33,6 +29,26 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager.test", "microservice.toolkit.connectionmanager.test\microservice.toolkit.connectionmanager.test.csproj", "{B43B1166-BCE4-4BE1-9156-3170E596E842}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator.test", "microservice.toolkit.messagemediator.test\microservice.toolkit.messagemediator.test.csproj", "{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{41198E3E-B08B-4D9B-80CE-917C624F4E4B}"
+ProjectSection(SolutionItems) = preProject
+	doc\MigrationManager.md = doc\MigrationManager.md
+	doc\Testing.md = doc\Testing.md
+	doc\MessageMediator.md = doc\MessageMediator.md
+	doc\ConnectionManager.md = doc\ConnectionManager.md
+	doc\ConfigurationManager.md = doc\ConfigurationManager.md
+	doc\CacheManager.md = doc\CacheManager.md
+	doc\mediator_single_instance.png = doc\mediator_single_instance.png
+	doc\mediator_multi_instances.png = doc\mediator_multi_instances.png
+	README.md = README.md
+	CONTRIBUTING.md = CONTRIBUTING.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{21F4632F-39C1-4ECF-B71D-B49F87D98771}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\build.yml = .github\workflows\build.yml
+	.github\workflows\release.yml = .github\workflows\release.yml
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,5 +102,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69DA9E1E-9B41-485D-96CE-0C0518A74B31}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{41198E3E-B08B-4D9B-80CE-917C624F4E4B} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
+		{21F4632F-39C1-4ECF-B71D-B49F87D98771} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 	EndGlobalSection
 EndGlobal
