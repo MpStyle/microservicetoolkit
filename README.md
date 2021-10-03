@@ -39,7 +39,7 @@ dotnet add package microservice.toolkit.core --version 0.4.0
 ## How to release a new version :rocket:
 
 To release a new version of the package:
-1. Update the version in the `microservice.toolkit.core.csproj` file.
+1. Update version in `Directory.Build.props` file.
 3. Draft a release on [GitHub](https://github.com/MpStyle/microservicetoolkit/releases)
 
 ## License :bookmark_tabs:
