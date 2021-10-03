@@ -5,9 +5,13 @@
     <AssemblyName>microservice.toolkit.messagemediator</AssemblyName>
     <RootNamespace>microservice.toolkit.messagemediator</RootNamespace>
     <Authors>Michele Pagnin</Authors>
-    <Product>Microservice Toolkit</Product>
+    <Product>Microservice Toolkit - Message Mediator</Product>
     <Copyright>MIT License</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - Message Mediator</Title>
+    <PackageLicenseUrl>https://github.com/MpStyle/microservicetoolkit/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

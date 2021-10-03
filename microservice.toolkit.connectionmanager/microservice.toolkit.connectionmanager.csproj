@@ -5,9 +5,13 @@
     <AssemblyName>microservice.toolkit.connectionmanager</AssemblyName>
     <RootNamespace>microservice.toolkit.connectionmanager</RootNamespace>
     <Authors>Michele Pagnin</Authors>
-    <Product>Microservice Toolkit</Product>
+    <Product>Microservice Toolkit - Connection Manager</Product>
     <Copyright>MIT License</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - Connection Manager</Title>
+    <PackageLicenseUrl>https://github.com/MpStyle/microservicetoolkit/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
