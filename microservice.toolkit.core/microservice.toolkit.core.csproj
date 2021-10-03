@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>microservice.toolkit.core</AssemblyName>
+    <RootNamespace>microservice.toolkit.core</RootNamespace>
+    <Authors>Michele Pagnin</Authors>
+    <Product>Microservice Toolkit - Core</Product>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - Core</Title>
+    <PackageLicenseUrl>https://github.com/MpStyle/microservicetoolkit/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>

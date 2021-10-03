@@ -3,17 +3,52 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mpstyle.microservice.toolkit", "microservicetoolkit\mpstyle.microservice.toolkit.csproj", "{AAE5BC7E-7092-4353-A3FF-7C3B22DD1C08}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		.github\workflows\build.yml = .github\workflows\build.yml
-		.github\workflows\release.yml = .github\workflows\release.yml
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mpstyle.microservice.toolkit.test", "microservicetoolkit.test\mpstyle.microservice.toolkit.test.csproj", "{43E87FE8-6751-4A7F-8DCD-6B7E2E9B1CD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.core", "microservice.toolkit.core\microservice.toolkit.core.csproj", "{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachemanager", "microservice.toolkit.cachemanager\microservice.toolkit.cachemanager.csproj", "{9AEE48B8-50C7-47AB-AE86-17FD0E3B983F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager", "microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj", "{C77DFC59-F674-43CC-90C7-FDB12278496E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configurationmanager", "microservice.toolkit.configurationmanager\microservice.toolkit.configurationmanager.csproj", "{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator", "microservice.toolkit.messagemediator\microservice.toolkit.messagemediator.csproj", "{728DF23A-34AE-47DF-9380-6E7E7F630847}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.migrationmanager", "microservice.toolkit.migrationmanager\microservice.toolkit.migrationmanager.csproj", "{A0843292-2582-4743-ACB3-4237A330F793}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachemanager.test", "microservice.toolkit.cachemanager.test\microservice.toolkit.cachemanager.test.csproj", "{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configurationmanager.test", "microservice.toolkit.configurationmanager.test\microservice.toolkit.configurationmanager.test.csproj", "{D0D497D1-3738-4E79-A2C8-3C4E516614B6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager.test", "microservice.toolkit.connectionmanager.test\microservice.toolkit.connectionmanager.test.csproj", "{B43B1166-BCE4-4BE1-9156-3170E596E842}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator.test", "microservice.toolkit.messagemediator.test\microservice.toolkit.messagemediator.test.csproj", "{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{41198E3E-B08B-4D9B-80CE-917C624F4E4B}"
+ProjectSection(SolutionItems) = preProject
+	doc\MigrationManager.md = doc\MigrationManager.md
+	doc\Testing.md = doc\Testing.md
+	doc\MessageMediator.md = doc\MessageMediator.md
+	doc\ConnectionManager.md = doc\ConnectionManager.md
+	doc\ConfigurationManager.md = doc\ConfigurationManager.md
+	doc\CacheManager.md = doc\CacheManager.md
+	doc\mediator_single_instance.png = doc\mediator_single_instance.png
+	doc\mediator_multi_instances.png = doc\mediator_multi_instances.png
+	README.md = README.md
+	CONTRIBUTING.md = CONTRIBUTING.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{21F4632F-39C1-4ECF-B71D-B49F87D98771}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\build.yml = .github\workflows\build.yml
+	.github\workflows\release.yml = .github\workflows\release.yml
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,19 +56,55 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AAE5BC7E-7092-4353-A3FF-7C3B22DD1C08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAE5BC7E-7092-4353-A3FF-7C3B22DD1C08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAE5BC7E-7092-4353-A3FF-7C3B22DD1C08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAE5BC7E-7092-4353-A3FF-7C3B22DD1C08}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43E87FE8-6751-4A7F-8DCD-6B7E2E9B1CD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43E87FE8-6751-4A7F-8DCD-6B7E2E9B1CD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43E87FE8-6751-4A7F-8DCD-6B7E2E9B1CD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43E87FE8-6751-4A7F-8DCD-6B7E2E9B1CD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AEE48B8-50C7-47AB-AE86-17FD0E3B983F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AEE48B8-50C7-47AB-AE86-17FD0E3B983F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AEE48B8-50C7-47AB-AE86-17FD0E3B983F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AEE48B8-50C7-47AB-AE86-17FD0E3B983F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C77DFC59-F674-43CC-90C7-FDB12278496E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C77DFC59-F674-43CC-90C7-FDB12278496E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C77DFC59-F674-43CC-90C7-FDB12278496E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C77DFC59-F674-43CC-90C7-FDB12278496E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}.Release|Any CPU.Build.0 = Release|Any CPU
+		{728DF23A-34AE-47DF-9380-6E7E7F630847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{728DF23A-34AE-47DF-9380-6E7E7F630847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{728DF23A-34AE-47DF-9380-6E7E7F630847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{728DF23A-34AE-47DF-9380-6E7E7F630847}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0843292-2582-4743-ACB3-4237A330F793}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0843292-2582-4743-ACB3-4237A330F793}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0843292-2582-4743-ACB3-4237A330F793}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0843292-2582-4743-ACB3-4237A330F793}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0D497D1-3738-4E79-A2C8-3C4E516614B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0D497D1-3738-4E79-A2C8-3C4E516614B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0D497D1-3738-4E79-A2C8-3C4E516614B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0D497D1-3738-4E79-A2C8-3C4E516614B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B43B1166-BCE4-4BE1-9156-3170E596E842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B43B1166-BCE4-4BE1-9156-3170E596E842}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B43B1166-BCE4-4BE1-9156-3170E596E842}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B43B1166-BCE4-4BE1-9156-3170E596E842}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69DA9E1E-9B41-485D-96CE-0C0518A74B31}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{41198E3E-B08B-4D9B-80CE-917C624F4E4B} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
+		{21F4632F-39C1-4ECF-B71D-B49F87D98771} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 	EndGlobalSection
 EndGlobal

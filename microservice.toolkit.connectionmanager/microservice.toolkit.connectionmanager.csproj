@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>microservice.toolkit.connectionmanager</AssemblyName>
+    <RootNamespace>microservice.toolkit.connectionmanager</RootNamespace>
+    <Authors>Michele Pagnin</Authors>
+    <Product>Microservice Toolkit - Connection Manager</Product>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - Connection Manager</Title>
+    <PackageLicenseUrl>https://github.com/MpStyle/microservicetoolkit/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Data.SQLite" Version="5.0.10">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="MySqlConnector" Version="1.3.12">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

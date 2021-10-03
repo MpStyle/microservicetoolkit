@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.4.0</Version>
+    <Product>Microservice Toolkit</Product>    
+    <Authors>Michele Pagnin</Authors>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>

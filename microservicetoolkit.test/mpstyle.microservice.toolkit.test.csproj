@@ -30,13 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\microservicetoolkit\mpstyle.microservice.toolkit.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="data\ConfigurationManagerTest.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\microservicetoolkit\microservice.toolkit.csproj" />
   </ItemGroup>
 
 </Project>

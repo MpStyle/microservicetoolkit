@@ -13,33 +13,33 @@ __Microservice Toolkit__ is the fastest and smartest way to produce industry-lea
 
 ### Package Manager
 ```
-Install-Package mpstyle.microservice.toolkit -Version 0.2.2
+Install-Package microservice.toolkit.core -Version 0.4.0
 ```
 
 ### .NET CLI
 ```
-dotnet add package mpstyle.microservice.toolkit --version 0.2.2
+dotnet add package microservice.toolkit.core --version 0.4.0
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="mpstyle.microservice.toolkit" Version="0.2.2" />
+<PackageReference Include="microservice.toolkit.core" Version="0.4.0" />
 ```
 
 ## Key Features :key:
-- [Micro-services mediator](microservicetoolkit/book/messagemediator/README.md)
-- [Cache manager](microservicetoolkit/book/cachemanager/README.md)
-- [Configuration Manager](microservicetoolkit/book/configurationmanager/README.md)
-- [Database connection manager](microservicetoolkit/book/connectionmanager/README.md)
+- [Message mediator](./doc/MessageMediator.md)
+- [Cache manager](./doc/CacheManager.md)
+- [Configuration Manager](./doc/ConfigurationManager.md)
+- [Database connection manager](./doc/ConnectionManager.md)
 - Migration Manager
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
 
-## How to release a new versione :rocket:
+## How to release a new version :rocket:
 
 To release a new version of the package:
-1. Update the version in the `mpstyle.microservice.toolkit.csproj` file.
+1. Update version in `Directory.Build.props` file.
 3. Draft a release on [GitHub](https://github.com/MpStyle/microservicetoolkit/releases)
 
 ## License :bookmark_tabs:
