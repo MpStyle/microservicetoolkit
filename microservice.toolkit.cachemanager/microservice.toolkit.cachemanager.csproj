@@ -10,7 +10,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Title>Microservice Toolkit - Cache Manager</Title>
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/MpStyle/microservicetoolkit/blob/main/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
   </PropertyGroup>
 
