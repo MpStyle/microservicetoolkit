@@ -32,14 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messag
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{41198E3E-B08B-4D9B-80CE-917C624F4E4B}"
 ProjectSection(SolutionItems) = preProject
-	doc\MigrationManager.md = doc\MigrationManager.md
 	doc\Testing.md = doc\Testing.md
-	doc\MessageMediator.md = doc\MessageMediator.md
-	doc\ConnectionManager.md = doc\ConnectionManager.md
-	doc\ConfigurationManager.md = doc\ConfigurationManager.md
-	doc\CacheManager.md = doc\CacheManager.md
-	doc\mediator_single_instance.png = doc\mediator_single_instance.png
-	doc\mediator_multi_instances.png = doc\mediator_multi_instances.png
 	README.md = README.md
 	CONTRIBUTING.md = CONTRIBUTING.md
 EndProjectSection

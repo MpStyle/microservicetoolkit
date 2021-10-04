@@ -12,6 +12,7 @@
     <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
