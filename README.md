@@ -27,11 +27,11 @@ dotnet add package microservice.toolkit.core --version 0.4.0
 ```
 
 ## Key Features :key:
-- [Message mediator](./microservice.toolkit.messagemediator/README.md)
-- [Cache manager](./microservice.toolkit.cachemanager/README.md)
-- [Configuration Manager](./microservice.toolkit.configurationmanager/README.md)
-- [Database connection manager](./microservice.toolkit.connectionmanager/README.md)
-- [Migration Manager](./microservice.toolkit.migrationmanager/README.md)
+- [Message mediator](./microservice.toolkit.messagemediator/README.md): microservices connection on desktop and cloud application
+- [Cache manager](./microservice.toolkit.cachemanager/README.md): warehouse for frequently requested data
+- [Configuration Manager](./microservice.toolkit.configurationmanager/README.md): strongly typed configuration reader
+- [Database connection manager](./microservice.toolkit.connectionmanager/README.md): link to SQL databases
+- [Migration Manager](./microservice.toolkit.migrationmanager/README.md): version control for databases
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)

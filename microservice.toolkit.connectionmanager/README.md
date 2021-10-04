@@ -35,34 +35,49 @@ Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
 ```C#
 Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters);
 ```
+Executes the _query_ using _parameters_
+
 ### GetCommand()
 ```C#
 DbCommand GetCommand();
 ```
+Creates a _DbCommand_ for the current connection. 
+
 ### GetCommand(DbConnection)
 ```C#
 DbCommand GetCommand(DbConnection dbConnection);
 ```
+Creates a _DbCommand_ for _connection_.
+
 ### GetParameter<T>(string, T)
 ```C#
 DbParameter GetParameter<T>(string name, T value);
 ```
+Creates a _DbParameter_. If value is null will be used _DBNull.Value_.
+
 ### Open()
 ```C#
 void Open();
 ```
+Opens a connection to the database if it is not already opened.
+
 ### OpenAsync()
 ```C#
 Task OpenAsync();
 ```
+Opens a connection to the database if it is not already opened.
+
 ### Close()
 ```C#
 void Close();
 ```
+Closes a connection to the database if it is not already closed.
+
 ### CloseAsync()
 ```C#
 Task CloseAsync();
 ```
+Closes a connection to the database if it is not already closed.
 
 ## Implementations
 - [SqLite](#sqlite)
