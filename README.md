@@ -31,7 +31,7 @@ dotnet add package microservice.toolkit.core --version 0.4.0
 - [Cache manager](./microservice.toolkit.cachemanager/README.md)
 - [Configuration Manager](./microservice.toolkit.configurationmanager/README.md)
 - [Database connection manager](./microservice.toolkit.connectionmanager/README.md)
-- Migration Manager
+- [Migration Manager](./microservice.toolkit.migrationmanager/README.md)
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
