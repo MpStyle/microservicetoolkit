@@ -1,13 +1,12 @@
 ﻿using microservice.toolkit.core;
 using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator;
 
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.test.book.messagemediator
+namespace microservice.toolkit.messagemediator.test
 {
     [ExcludeFromCodeCoverage]
     public class LocalMessageMediatorTest
