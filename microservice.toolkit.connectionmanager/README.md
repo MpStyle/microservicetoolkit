@@ -27,10 +27,32 @@ dotnet add package microservice.toolkit.connectionmanager --version 0.4.0
 ```C#
 T Execute<T>(Func<DbCommand, T> lambda);
 ```
+
+### Execute<T>(string, Func<DbDataReader, T>, Dictionary<string, object>)
+```C#
+List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
+```
+
+### ExecuteFirst<T>(string, Func<DbDataReader, T>, Dictionary<string, object>)
+```C#
+T ExecuteFirst<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
+```
+
 ### ExecuteAsync<T>(Func<DbCommand, Task<T>>)
 ```C#
 Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
 ```
+
+### ExecuteAsync<T>(string, Func<DbDataReader, T>, Dictionary<string, object>)
+```C#
+Task<List<T>> ExecuteAsync<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
+```
+
+### ExecuteFirstAsync<T>(string, Func<DbDataReader, T>, Dictionary<string, object>);
+```C#
+Task<T> ExecuteFirstAsync<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
+```
+
 ### ExecuteNonQueryAsync(string, Dictionary<string, object>)
 ```C#
 Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters);
