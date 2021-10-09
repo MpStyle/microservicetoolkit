@@ -5,7 +5,6 @@ using MySqlConnector;
 
 using System;
 using System.Data.Common;
-using System.Threading.Tasks;
 
 namespace microservice.toolkit.connectionmanager
 {
@@ -15,16 +14,7 @@ namespace microservice.toolkit.connectionmanager
         {
             this.Connection = new MySqlConnection(connectionString);
         }
-
-        public override T Execute<T>(Func<DbCommand, T> lambda)
-        {
-            this.Open();
-            using (var cmd = this.GetCommand())
-            {
-                return lambda(cmd);
-            }
-        }
-
+        
         public override DbCommand GetCommand()
         {
             return new MySqlCommand
@@ -57,15 +47,6 @@ namespace microservice.toolkit.connectionmanager
                 ParameterName = name,
                 Value = value
             };
-        }
-
-        public override async Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda)
-        {
-            await this.OpenAsync();
-            using (var cmd = this.GetCommand())
-            {
-                return await lambda(cmd);
-            }
         }
     }
 }

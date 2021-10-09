@@ -4,7 +4,6 @@ using microservice.toolkit.core;
 using System;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 
 namespace microservice.toolkit.connectionmanager
 {
@@ -13,15 +12,6 @@ namespace microservice.toolkit.connectionmanager
         public SQLServerConnectionManager(string connectionString)
         {
             this.Connection = new SqlConnection(connectionString);
-        }
-
-        public override T Execute<T>(Func<DbCommand, T> lambda)
-        {
-            this.Open();
-            using (var cmd = this.GetCommand(this.Connection))
-            {
-                return lambda(cmd);
-            }
         }
 
         public override DbCommand GetCommand()
@@ -56,15 +46,6 @@ namespace microservice.toolkit.connectionmanager
                 ParameterName = name,
                 Value = value
             };
-        }
-
-        public override async Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda)
-        {
-            await this.OpenAsync();
-            using (var cmd = this.GetCommand(this.Connection))
-            {
-                return await lambda(cmd);
-            }
         }
     }
 }

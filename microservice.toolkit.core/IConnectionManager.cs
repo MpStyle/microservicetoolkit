@@ -1,6 +1,9 @@
-﻿using System;
+﻿using microservice.toolkit.core.extension;
+
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.core
@@ -12,7 +15,14 @@ namespace microservice.toolkit.core
     public interface IConnectionManager
     {
         T Execute<T>(Func<DbCommand, T> lambda);
+        List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
+        T ExecuteFirst<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
+        
         Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
+        Task<List<T>> ExecuteAsync<T>(string sql, Func<DbDataReader, T> lambda,
+            Dictionary<string, object> parameters = null);
+        Task<T> ExecuteFirstAsync<T>(string sql, Func<DbDataReader, T> lambda,
+            Dictionary<string, object> parameters = null);
 
         Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters);
 
@@ -53,8 +63,93 @@ namespace microservice.toolkit.core
     {
         protected DbConnection Connection { get; set; }
 
-        public abstract T Execute<T>(Func<DbCommand, T> lambda);
-        public abstract Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
+        public T Execute<T>(Func<DbCommand, T> lambda)
+        {
+            this.Open();
+            using (var cmd = this.GetCommand())
+            {
+                return lambda(cmd);
+            }
+        }
+        
+        public List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters=null)
+        {
+            return this.Execute(command=>
+            {
+                command.CommandText = sql;
+
+                if (parameters != null)
+                {
+                    foreach (var (key, value) in parameters)
+                    {
+                        command.Parameters.Add(this.GetParameter(key, value));
+                    }
+                }
+
+                var objects = new List<T>();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        objects.Add(lambda(reader));
+                    }
+
+                    return objects;
+                }
+            });
+        }
+
+        public T ExecuteFirst<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null)
+        {
+            var result = this.Execute(sql, lambda, parameters);
+
+            return result.IsNullOrEmpty() ? default : result.First();
+        }
+        
+        public async Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda)
+        {
+            await this.OpenAsync();
+            using (var cmd = this.GetCommand())
+            {
+                return await lambda(cmd);
+            }
+        }
+
+        public async Task<List<T>> ExecuteAsync<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters=null)
+        {
+            return await this.ExecuteAsync(async command=>
+            {
+                command.CommandText = sql;
+
+                if (parameters != null)
+                {
+                    foreach (var (key, value) in parameters)
+                    {
+                        command.Parameters.Add(this.GetParameter(key, value));
+                    }
+                }
+
+                var objects = new List<T>();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        objects.Add(lambda(reader));
+                    }
+
+                    return objects;
+                }
+            });
+        }
+        
+        public async Task<T> ExecuteFirstAsync<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null)
+        {
+            var result = await this.ExecuteAsync(sql, lambda, parameters);
+
+            return result.IsNullOrEmpty() ? default : result.First();
+        }
 
         public async Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters = null)
         {
