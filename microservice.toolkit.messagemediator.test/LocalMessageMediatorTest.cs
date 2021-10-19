@@ -12,22 +12,6 @@ namespace microservice.toolkit.messagemediator.test
     public class LocalMessageMediatorTest
     {
         [Test]
-        public async Task Run_Object_Object()
-        {
-            IMessageMediator mediator = new LocalMessageMediator(name =>
-            {
-                if (nameof(SquarePow).Equals(name))
-                {
-                    return new SquarePow();
-                }
-
-                return null;
-            });
-
-            Assert.AreEqual(4, (await mediator.Send<int>(nameof(SquarePow), 2)).Payload);
-        }
-
-        [Test]
         public async Task Run_Object_Int()
         {
             IMessageMediator mediator = new LocalMessageMediator(name =>
@@ -60,7 +44,7 @@ namespace microservice.toolkit.messagemediator.test
         }
 
         [Test]
-        public async Task Run_Object_Object_WithError()
+        public async Task Run_Object_Int_WithError()
         {
             IMessageMediator mediator = new LocalMessageMediator(name =>
             {

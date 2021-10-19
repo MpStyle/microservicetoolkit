@@ -60,6 +60,11 @@ namespace microservice.toolkit.messagemediator
                 };
             }
         }
+
+        public Task Shutdown()
+        {
+            return Task.CompletedTask;
+        }
     }
 
     [Serializable]
