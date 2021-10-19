@@ -18,10 +18,11 @@ namespace microservice.toolkit.messagemediator
     {
         private readonly ILogger logger;
         private readonly RabbitMQMessageMediatorConfiguration configuration;
+        private readonly ServiceFactory serviceFactory;
+        
         private readonly IConnection connection;
         private readonly IModel consumerChannel;
         private readonly IModel producerChannel;
-        private readonly ServiceFactory serviceFactory;
 
         private readonly ConcurrentDictionary<string, TaskCompletionSource<byte[]>> pendingMessages = new();
 
@@ -37,11 +38,10 @@ namespace microservice.toolkit.messagemediator
 
             // Consumer
             this.consumerChannel = connection.CreateModel();
-            this.consumerChannel.QueueDeclare(queue: this.configuration.QueueName, durable: false, exclusive: false,
-                autoDelete: false, arguments: null);
+            this.consumerChannel.QueueDeclare(this.configuration.QueueName, false, false, false, null);
             this.consumerChannel.BasicQos(0, 1, false);
             var consumer = new EventingBasicConsumer(this.consumerChannel);
-            this.consumerChannel.BasicConsume(queue: this.configuration.QueueName, autoAck: false, consumer: consumer);
+            this.consumerChannel.BasicConsume(this.configuration.QueueName, false, consumer);
             consumer.Received += this.OnConsumerReceivesRequest;
 
             // Producer
@@ -111,9 +111,8 @@ namespace microservice.toolkit.messagemediator
             finally
             {
                 var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
-                this.consumerChannel.BasicPublish(exchange: "", routingKey: props.ReplyTo, basicProperties: replyProps,
-                    body: responseBytes);
-                this.consumerChannel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                this.consumerChannel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);
+                this.consumerChannel.BasicAck(ea.DeliveryTag, false);
             }
         }
 
