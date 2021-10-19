@@ -24,7 +24,7 @@ namespace microservice.toolkit.messagemediator.test
                 return null;
             });
 
-            Assert.AreEqual(4, (await mediator.Send(nameof(SquarePow), 2)).Payload);
+            Assert.AreEqual(4, (await mediator.Send<int>(nameof(SquarePow), 2)).Payload);
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace microservice.toolkit.messagemediator.test
                 return null;
             });
 
-            Assert.AreEqual(-1, (await mediator.Send(nameof(SquarePowError), 2)).Error);
+            Assert.AreEqual(-1, (await mediator.Send<int>(nameof(SquarePowError), 2)).Error);
         }
 
         class SquarePow : Service<int, int>

@@ -12,18 +12,18 @@ namespace microservice.toolkit.messagemediator
     {
         public abstract Task<ServiceResponse<TPayload>> Run(TRequest request);
 
-        public async Task<ServiceResponse<object>> Run(object request)
+        public async Task<ServiceResponse<dynamic>> Run(object request)
         {
             try
             {
                 var response = await this.Run((TRequest)request);
 
-                return new ServiceResponse<object> { Error = response.Error, Payload = response.Payload };
+                return new ServiceResponse<dynamic> { Error = response.Error, Payload = response.Payload };
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                return new ServiceResponse<object> { Error = ErrorCode.INVALID_SERVICE_EXECUTION };
+                return new ServiceResponse<dynamic> { Error = ErrorCode.INVALID_SERVICE_EXECUTION };
             }
         }
 
@@ -55,6 +55,6 @@ namespace microservice.toolkit.messagemediator
 
     public interface IService
     {
-        Task<ServiceResponse<object>> Run(object request);
+        Task<ServiceResponse<dynamic>> Run(object request);
     }
 }

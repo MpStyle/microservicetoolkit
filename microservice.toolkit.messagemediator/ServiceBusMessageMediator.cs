@@ -58,7 +58,7 @@ namespace microservice.toolkit.messagemediator
             await this.requestClient.CloseAsync();
         }
 
-        public async Task<ServiceResponse<object>> Send(string pattern, object request)
+        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object request)
         {
             var replySessionId = $"{Guid.NewGuid()}-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
             var session = await this.responseSessionClient.AcceptMessageSessionAsync(replySessionId);
@@ -80,20 +80,24 @@ namespace microservice.toolkit.messagemediator
 
                 // Receive response
                 var reply = await session.ReceiveAsync(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-                var response = new ServiceResponse<object> { Error = ErrorCode.INVALID_SERVICE };
+                var response = new ServiceResponse<TPayload> { Error = ErrorCode.INVALID_SERVICE };
 
                 if (reply != null)
                 {
-                    response = JsonSerializer.Deserialize<ServiceResponse<object>>(Encoding.UTF8.GetString(reply.Body));
+                    response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(reply.Body));
                     await session.CompleteAsync(reply.SystemProperties.LockToken);
                 }
 
-                return response;
+                return new ServiceResponse<TPayload>
+                {
+                    Error = response.Error,
+                    Payload = (TPayload)response.Payload
+                };
 
             }
             finally
             {
-                await session.CloseAsync(); // release exlusive lock
+                await session.CloseAsync(); // release exclusive lock
             }
         }
 

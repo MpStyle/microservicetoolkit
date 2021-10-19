@@ -63,7 +63,7 @@ namespace microservice.toolkit.messagemediator
             }
         }
 
-        public async Task<ServiceResponse<object>> Send(string pattern, object message)
+        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
             try
             {
@@ -87,12 +87,16 @@ namespace microservice.toolkit.messagemediator
                     body: messageBytes);
 
                 var response = await tcs.Task;
-                return response;
+                return new ServiceResponse<TPayload>
+                {
+                    Error = response.Error,
+                    Payload = (TPayload)response.Payload
+                };
             }
             catch (Exception ex)
             {
                 this.logger.LogDebug(ex.ToString());
-                return new ServiceResponse<object>
+                return new ServiceResponse<TPayload>
                 {
                     Error = ErrorCode.UNKNOWN
                 };
