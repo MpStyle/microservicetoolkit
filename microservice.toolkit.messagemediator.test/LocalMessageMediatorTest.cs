@@ -61,17 +61,17 @@ namespace microservice.toolkit.messagemediator.test
 
         class SquarePow : Service<int, int>
         {
-            public async override Task<ServiceResponse<int>> Run(int request)
+            public override Task<ServiceResponse<int>> Run(int request)
             {
-                return this.SuccessfulResponse(request * request);
+                return Task.FromResult(this.SuccessfulResponse(request * request));
             }
         }
 
         class SquarePowError : Service<int, int>
         {
-            public async override Task<ServiceResponse<int>> Run(int request)
+            public override Task<ServiceResponse<int>> Run(int request)
             {
-                return this.UnsuccessfulResponse(-1);
+                return Task.FromResult(this.UnsuccessfulResponse(-1));
             }
         }
     }

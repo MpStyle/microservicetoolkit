@@ -12,12 +12,11 @@ namespace microservice.toolkit.messagemediator.test
     [ExcludeFromCodeCoverage]
     public class RabbitMQMessageMediatorTest
     {
-        private readonly RpcMessageMediatorConfiguration configuration = new RpcMessageMediatorConfiguration
+        private readonly RabbitMQMessageMediatorConfiguration configuration = new RabbitMQMessageMediatorConfiguration
         {
             ConnectionString = "localhost",
             QueueName = "test_queue",
-            ReplyQueueName = "test_reply_queue",
-            ConsumersPerQueue = 3
+            ReplyQueueName = "test_reply_queue"
         };
 
         private IMessageMediator mediator;
@@ -86,17 +85,17 @@ namespace microservice.toolkit.messagemediator.test
 
         class SquarePow : Service<int, int>
         {
-            public async override Task<ServiceResponse<int>> Run(int request)
+            public override Task<ServiceResponse<int>> Run(int request)
             {
-                return this.SuccessfulResponse(request * request);
+                return Task.FromResult(this.SuccessfulResponse(request * request));
             }
         }
 
         class SquarePowError : Service<int, int>
         {
-            public async override Task<ServiceResponse<int>> Run(int request)
+            public override Task<ServiceResponse<int>> Run(int request)
             {
-                return this.UnsuccessfulResponse(-1);
+                return Task.FromResult(this.UnsuccessfulResponse(-1));
             }
         }
     }
