@@ -18,10 +18,10 @@ namespace microservice.toolkit.messagemediator
     {
         private readonly IModel channel;
         private readonly IConnection connection;
-        private readonly ConcurrentDictionary<string, TaskCompletionSource<ServiceResponse<object>>> pendingMessages = new ConcurrentDictionary<string, TaskCompletionSource<ServiceResponse<object>>>();
+        private readonly ConcurrentDictionary<string, TaskCompletionSource<byte[]>> pendingMessages = new ConcurrentDictionary<string, TaskCompletionSource<byte[]>>();
         private readonly ServiceFactory serviceFactory;
         private readonly RpcMessageMediatorConfiguration configuration;
-        private readonly ILogger<RabbitMQMessageMediator> logger = new DoNothingLogger<RabbitMQMessageMediator>();
+        private readonly ILogger<RabbitMQMessageMediator> logger;
 
         public RabbitMQMessageMediator(RpcMessageMediatorConfiguration configuration, ServiceFactory serviceFactory)
             : this(configuration, serviceFactory, new DoNothingLogger<RabbitMQMessageMediator>())
@@ -35,7 +35,7 @@ namespace microservice.toolkit.messagemediator
 
             var factory = new ConnectionFactory()
             {
-                Uri = new Uri(configuration.ConnectionString)
+                HostName = configuration.ConnectionString,
             };
 
             this.connection = factory.CreateConnection(configuration.ConnectionName);
@@ -63,7 +63,7 @@ namespace microservice.toolkit.messagemediator
             }
         }
 
-        public async Task<ServiceResponse<object>> Send(string pattern, object message)
+        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
             try
             {
@@ -72,13 +72,14 @@ namespace microservice.toolkit.messagemediator
                 props.ReplyTo = this.configuration.ReplyQueueName;
                 props.CorrelationId = correlationId;
 
-                var tcs = new TaskCompletionSource<ServiceResponse<object>>(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
+                var tcs = new TaskCompletionSource<byte[]>(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
                 this.pendingMessages.TryAdd(correlationId, tcs);
 
                 var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new RpcMessage
                 {
                     Pattern = pattern,
-                    Payload = message
+                    Payload = message,
+                    RequestType = message.GetType().FullName
                 }));
                 channel.BasicPublish(
                     exchange: string.Empty,
@@ -86,13 +87,15 @@ namespace microservice.toolkit.messagemediator
                     basicProperties: props,
                     body: messageBytes);
 
-                var response = await tcs.Task;
+                var rawResponse = await tcs.Task;
+                var response=JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
+                
                 return response;
             }
             catch (Exception ex)
             {
                 this.logger.LogDebug(ex.ToString());
-                return new ServiceResponse<object>
+                return new ServiceResponse<TPayload>
                 {
                     Error = ErrorCode.UNKNOWN
                 };
@@ -106,9 +109,7 @@ namespace microservice.toolkit.messagemediator
             // Check if it is the producer which sent the request
             if (this.pendingMessages.TryRemove(correlationId, out var tcs))
             {
-                var body = ea.Body.ToArray();
-
-                tcs.SetResult(JsonSerializer.Deserialize<ServiceResponse<object>>(Encoding.UTF8.GetString(body)));
+                tcs.SetResult( ea.Body.ToArray());
             }
         }
 
@@ -120,9 +121,11 @@ namespace microservice.toolkit.messagemediator
             var service = this.serviceFactory(rpcMessage.Pattern);
             var response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
 
-            if (service != null)
+            if (service != null && rpcMessage.Payload is JsonElement element)
             {
-                response = await service.Run(rpcMessage.Payload);
+                var json=element.GetRawText();
+                var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
+                response = await service.Run(request);
             }
 
             var props = ea.BasicProperties;
@@ -140,21 +143,28 @@ namespace microservice.toolkit.messagemediator
             connection.Close();
             base.DisposeUnmanage();
         }
+        
+        public Task Shutdown()
+        {
+            this.DisposeUnmanage();
+            return Task.CompletedTask;
+        }
 
         class RpcMessage
         {
-            public string Pattern { get; set; }
-            public object Payload { get; set; }
+            public string Pattern { get; init; }
+            public object Payload { get; init; }
+            public string RequestType { get; init; }
         }
     }
 
     public class RpcMessageMediatorConfiguration
     {
-        public string ConnectionName { get; set; }
-        public string QueueName { get; set; }
-        public string ReplyQueueName { get; set; }
-        public string ConnectionString { get; set; }
-        public uint ConsumersPerQueue { get; set; }
+        public string ConnectionName { get; init; }
+        public string QueueName { get; init; }
+        public string ReplyQueueName { get; init; }
+        public string ConnectionString { get; init; }
+        public uint ConsumersPerQueue { get; init; }
 
         /// <summary>
         /// Milliseconds

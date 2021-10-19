@@ -25,7 +25,7 @@ namespace microservice.toolkit.messagemediator
             this.logger = logger;
         }
 
-        public async Task<ServiceResponse<object>> Send(string pattern, object message)
+        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
             try
             {
@@ -36,12 +36,17 @@ namespace microservice.toolkit.messagemediator
                     throw new ServiceNotFoundException(pattern);
                 }
 
-                return await service.Run(message);
+                var response = await service.Run(message);
+                return new ServiceResponse<TPayload>
+                {
+                    Error = response.Error,
+                    Payload = (TPayload)response.Payload
+                };
             }
             catch (ServiceNotFoundException ex)
             {
                 this.logger.LogDebug(ex.ToString());
-                return new ServiceResponse<object>
+                return new ServiceResponse<TPayload>
                 {
                     Error = ErrorCode.SERVICE_NOT_FOUND
                 };
@@ -49,11 +54,16 @@ namespace microservice.toolkit.messagemediator
             catch (Exception ex)
             {
                 this.logger.LogDebug(ex.ToString());
-                return new ServiceResponse<object>
+                return new ServiceResponse<TPayload>
                 {
                     Error = ErrorCode.UNKNOWN
                 };
             }
+        }
+
+        public Task Shutdown()
+        {
+            return Task.CompletedTask;
         }
     }
 
