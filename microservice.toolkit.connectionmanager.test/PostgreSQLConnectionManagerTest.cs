@@ -1,4 +1,5 @@
-﻿
+﻿using Npgsql;
+
 using NUnit.Framework;
 
 using System;
@@ -11,7 +12,7 @@ namespace microservice.toolkit.connectionmanager.test
     [ExcludeFromCodeCoverage]
     public class PostgreSQLConnectionManagerTest
     {
-        private PostgreSQLConnectionManager connectionManager;
+        private NpgsqlConnection connectionManager;
 
         [Test]
         public async Task ExecuteAsync()
@@ -44,7 +45,8 @@ namespace microservice.toolkit.connectionmanager.test
                 return await cmd.ExecuteNonQueryAsync();
             });
 
-            Assert.AreEqual(1, await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('mycod', 'my_title');"));
+            Assert.AreEqual(1,
+                await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('mycod', 'my_title');"));
         }
 
         [SetUp]
@@ -52,7 +54,8 @@ namespace microservice.toolkit.connectionmanager.test
         {
             var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "127.0.0.1";
             var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
-            this.connectionManager = new PostgreSQLConnectionManager($"Server={host};Port={port};User Id=postgres;Password=postgres;Database=postgres");
+            this.connectionManager =
+                new NpgsqlConnection($"Server={host};Port={port};User Id=postgres;Password=postgres;Database=postgres");
         }
 
         [TearDown]

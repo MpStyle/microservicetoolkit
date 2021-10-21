@@ -21,7 +21,7 @@ dotnet add package microservice.toolkit.connectionmanager --version 0.4.0
 <PackageReference Include="microservice.toolkit.connectionmanager" Version="0.4.0" />
 ```
 
-## Available methods
+## Available extensions methods
 
 ### Execute<T>(Func<DbCommand, T>)
 ```C#
@@ -100,38 +100,3 @@ Closes a connection to the database if it is not already closed.
 Task CloseAsync();
 ```
 Closes a connection to the database if it is not already closed.
-
-## Implementations
-- [SqLite](#sqlite)
-- [MySql](#mysql)
-- [PostgreSQL](#postgresql)
-- [MS Sql Server](#mssqlserver)
-
-### SQLite connection manager
-
-<a name="sqlite"></a>
-To start using SQLite cache manager, first install the required package:
-```xml
-<PackageReference Include="Microsoft.Data.SQLite" Version="5.0.10" />
-```
-### MySQL connection manager
-
-<a name="mysql"></a>
-To start using MySql cache manager, first install the required package:
-```xml
-<PackageReference Include="MySqlConnector" Version="1.3.12" />
-```
-### PostgreSQL connection manager
-
-<a name="postgresql"></a>
-To start using PostgreSQL cache manager, first install the required package:
-```xml
-<PackageReference Include="Npgsql" Version="5.0.10" />
-```
-### MS SQL Server connection manager
-
-<a name="mssqlserver"></a>
-To start using MS SQL Server cache manager, first install the required package:
-```xml
-<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-```

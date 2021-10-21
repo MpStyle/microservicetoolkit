@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.core
@@ -17,17 +18,16 @@ namespace microservice.toolkit.core
         T Execute<T>(Func<DbCommand, T> lambda);
         List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
         T ExecuteFirst<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
-        
+
         Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
+
         Task<List<T>> ExecuteAsync<T>(string sql, Func<DbDataReader, T> lambda,
             Dictionary<string, object> parameters = null);
+
         Task<T> ExecuteFirstAsync<T>(string sql, Func<DbDataReader, T> lambda,
             Dictionary<string, object> parameters = null);
 
         Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters);
-
-        DbCommand GetCommand();
-        DbCommand GetCommand(DbConnection dbConnection);
 
         DbParameter GetParameter<T>(string name, T value);
 
@@ -66,15 +66,16 @@ namespace microservice.toolkit.core
         public T Execute<T>(Func<DbCommand, T> lambda)
         {
             this.Open();
-            using (var cmd = this.GetCommand())
+            using (var cmd = this.Connection.CreateCommand())
             {
                 return lambda(cmd);
             }
         }
-        
-        public List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters=null)
+
+        public List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda,
+            Dictionary<string, object> parameters = null)
         {
-            return this.Execute(command=>
+            return this.Execute(command =>
             {
                 command.CommandText = sql;
 
@@ -106,19 +107,20 @@ namespace microservice.toolkit.core
 
             return result.IsNullOrEmpty() ? default : result.First();
         }
-        
+
         public async Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda)
         {
             await this.OpenAsync();
-            using (var cmd = this.GetCommand())
+            using (var cmd = this.Connection.CreateCommand())
             {
                 return await lambda(cmd);
             }
         }
 
-        public async Task<List<T>> ExecuteAsync<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters=null)
+        public async Task<List<T>> ExecuteAsync<T>(string sql, Func<DbDataReader, T> lambda,
+            Dictionary<string, object> parameters = null)
         {
-            return await this.ExecuteAsync(async command=>
+            return await this.ExecuteAsync(async command =>
             {
                 command.CommandText = sql;
 
@@ -143,8 +145,9 @@ namespace microservice.toolkit.core
                 }
             });
         }
-        
-        public async Task<T> ExecuteFirstAsync<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null)
+
+        public async Task<T> ExecuteFirstAsync<T>(string sql, Func<DbDataReader, T> lambda,
+            Dictionary<string, object> parameters = null)
         {
             var result = await this.ExecuteAsync(sql, lambda, parameters);
 
@@ -154,7 +157,7 @@ namespace microservice.toolkit.core
         public async Task<int> ExecuteNonQueryAsync(string query, Dictionary<string, object> parameters = null)
         {
             await this.OpenAsync();
-            using (var cmd = this.GetCommand())
+            using (var cmd = this.Connection.CreateCommand())
             {
                 cmd.CommandText = query;
 
@@ -248,9 +251,5 @@ namespace microservice.toolkit.core
 
             await this.Connection.CloseAsync();
         }
-
-        public abstract DbCommand GetCommand();
-
-        public abstract DbCommand GetCommand(DbConnection dbConnection);
     }
 }

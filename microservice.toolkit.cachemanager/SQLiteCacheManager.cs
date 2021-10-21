@@ -1,9 +1,10 @@
 ﻿using microservice.toolkit.connectionmanager;
 using microservice.toolkit.core;
 
+using Microsoft.Data.Sqlite;
+
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager
@@ -20,9 +21,9 @@ namespace microservice.toolkit.cachemanager
     /// </summary>
     public class SQLiteCacheManager : ICacheManager
     {
-        private readonly SQLiteConnectionManager connectionManager;
+        private readonly SqliteConnection connectionManager;
 
-        public SQLiteCacheManager(SQLiteConnectionManager connectionManager)
+        public SQLiteCacheManager(SqliteConnection connectionManager)
         {
             this.connectionManager = connectionManager;
         }
@@ -30,41 +31,17 @@ namespace microservice.toolkit.cachemanager
         public async Task<string> Get(string key)
         {
             var parameters = new Dictionary<string, object>(){
-                {"@CacheId", key}
+                {"@CacheId", key},
+                {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }
             };
 
             var query = @"
                 SELECT value, issuedAt
                 FROM cache 
-                WHERE id = @CacheId;
+                WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
             ";
 
-            return await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
-            {
-                cmd.CommandText = query;
-                foreach (var parameter in parameters)
-                {
-                    cmd.Parameters.Add(this.connectionManager.GetParameter(parameter.Key, parameter.Value));
-                }
-
-                using (var reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (reader.Read())
-                    {
-                        var value = reader.GetString(0);
-                        var issuedAt = reader.GetInt64(1);
-
-                        if (issuedAt == 0 || issuedAt >= DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
-                        {
-                            return value;
-                        }
-                    }
-
-                    return default;
-                }
-            });
-
-
+            return await this.connectionManager.ExecuteFirstAsync(query, reader => reader.GetString(0), parameters);
         }
 
         /// <summary>
@@ -103,16 +80,7 @@ namespace microservice.toolkit.cachemanager
                 {"@issuedAt", issuedAt}
             };
 
-            return await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
-            {
-                cmd.CommandText = query;
-                foreach (var parameter in parameters)
-                {
-                    cmd.Parameters.Add(this.connectionManager.GetParameter(parameter.Key, parameter.Value));
-                }
-
-                return await cmd.ExecuteNonQueryAsync() != 0;
-            });
+            return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
         }
 
         public Task<bool> Set(string key, string value)
@@ -131,16 +99,7 @@ namespace microservice.toolkit.cachemanager
                 {"@id", key},
             };
 
-            return await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
-            {
-                cmd.CommandText = query;
-                foreach (var parameter in parameters)
-                {
-                    cmd.Parameters.Add(this.connectionManager.GetParameter(parameter.Key, parameter.Value));
-                }
-
-                return await cmd.ExecuteNonQueryAsync() != 0;
-            });
+            return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
         }
     }
 }

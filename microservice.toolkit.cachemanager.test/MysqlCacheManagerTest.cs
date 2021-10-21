@@ -1,5 +1,7 @@
 ﻿using microservice.toolkit.connectionmanager;
 
+using MySqlConnector;
+
 using NUnit.Framework;
 
 using System;
@@ -12,7 +14,7 @@ namespace microservice.toolkit.cachemanager.test
     [ExcludeFromCodeCoverage]
     public class MysqlCacheManagerTest
     {
-        private MySQLConnectionManager connectionManager;
+        private MySqlConnection connectionManager;
         private MysqlCacheManager manager;
 
         [Test]
@@ -101,7 +103,7 @@ namespace microservice.toolkit.cachemanager.test
             var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? "root";
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
-            this.connectionManager = new MySQLConnectionManager($"Server={host};User ID=root;Password={rootPassword};database={database};");
+            this.connectionManager = new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
             var createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS cache(
                         id VARCHAR(256) PRIMARY KEY,

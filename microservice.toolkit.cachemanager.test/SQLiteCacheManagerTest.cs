@@ -1,5 +1,7 @@
 ﻿using microservice.toolkit.connectionmanager;
 
+using Microsoft.Data.Sqlite;
+
 using NUnit.Framework;
 
 using System;
@@ -13,7 +15,7 @@ namespace microservice.toolkit.cachemanager.test
     [ExcludeFromCodeCoverage]
     public class SQLiteCacheManagerTest
     {
-        private SQLiteConnectionManager connectionManager;
+        private SqliteConnection connectionManager;
         private SQLiteCacheManager manager;
 
         [Test]
@@ -100,7 +102,7 @@ namespace microservice.toolkit.cachemanager.test
         {
             try
             {
-                this.connectionManager = new SQLiteConnectionManager("Data Source=CacheTest;Mode=Memory;Cache=Shared");
+                this.connectionManager = new SqliteConnection("Data Source=CacheTest;Mode=Memory;Cache=Shared");
                 var query = @"
                 CREATE TABLE cache(
                     id TEXT PRIMARY KEY,

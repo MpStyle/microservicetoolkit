@@ -1,10 +1,10 @@
-﻿using NUnit.Framework;
+﻿using MySqlConnector;
+
+using NUnit.Framework;
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.connectionmanager.test
@@ -12,8 +12,13 @@ namespace microservice.toolkit.connectionmanager.test
     [ExcludeFromCodeCoverage]
     public class MySQLConnectionManagerTest
     {
-        private readonly struct Film { public int Code { get; init; } public string Title { get; init; } }
-        private MySQLConnectionManager connectionManager;
+        private readonly struct Film
+        {
+            public int Code { get; init; }
+            public string Title { get; init; }
+        }
+
+        private MySqlConnection connectionManager;
 
         [Test]
         public async Task ExecuteAsync()
@@ -28,7 +33,7 @@ namespace microservice.toolkit.connectionmanager.test
                 {
                     while (await reader.ReadAsync())
                     {
-                        objects.Add(new Film {Code = reader.GetInt16(0), Title = reader.GetString(1),});
+                        objects.Add(new Film { Code = reader.GetInt16(0), Title = reader.GetString(1), });
                     }
 
                     return objects;
@@ -39,8 +44,8 @@ namespace microservice.toolkit.connectionmanager.test
 
             for (var i = 0; i < result.Count; i++)
             {
-                Assert.AreEqual(i+1,result[i].Code);
-                Assert.AreEqual($"my_title {i+1}",result[i].Title);
+                Assert.AreEqual(i + 1, result[i].Code);
+                Assert.AreEqual($"my_title {i + 1}", result[i].Title);
             }
         }
 
@@ -49,28 +54,28 @@ namespace microservice.toolkit.connectionmanager.test
         {
             var result = await this.connectionManager.ExecuteAsync(
                 "SELECT * FROM films WHERE code < @code",
-                reader => new {Code = reader.GetInt16(0), Title = reader.GetString(1),},
-                new Dictionary<string, object>{{"@code", 3}});
+                reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(2, result.Count);
-            
+
             for (var i = 0; i < result.Count; i++)
             {
-                Assert.AreEqual(i+1,result[i].Code);
-                Assert.AreEqual($"my_title {i+1}",result[i].Title);
+                Assert.AreEqual(i + 1, result[i].Code);
+                Assert.AreEqual($"my_title {i + 1}", result[i].Title);
             }
         }
-        
+
         [Test]
         public async Task ExecuteFirstAsync_Query()
         {
             var result = await this.connectionManager.ExecuteFirstAsync(
                 "SELECT * FROM films WHERE code < @code",
-                reader => new {Code = reader.GetInt16(0), Title = reader.GetString(1),},
-                new Dictionary<string, object>{{"@code", 3}});
+                reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
+                new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(1,result.Code);
-            Assert.AreEqual("my_title 1",result.Title);
+            Assert.AreEqual(1, result.Code);
+            Assert.AreEqual("my_title 1", result.Title);
         }
 
         [Test]
@@ -88,7 +93,7 @@ namespace microservice.toolkit.connectionmanager.test
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
             this.connectionManager =
-                new MySQLConnectionManager($"Server={host};User ID=root;Password={rootPassword};database={database};");
+                new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
 
             // Creates table
             await this.connectionManager.ExecuteNonQueryAsync(

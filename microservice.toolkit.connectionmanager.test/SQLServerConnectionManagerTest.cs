@@ -1,7 +1,7 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 using System;
+using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -10,7 +10,7 @@ namespace microservice.toolkit.connectionmanager.test
     [ExcludeFromCodeCoverage]
     public class SQLServerConnectionManagerTest
     {
-        private SQLServerConnectionManager connectionManager;
+        private SqlConnection connectionManager;
 
         [Test]
         public async Task ExecuteAsync()
@@ -43,7 +43,8 @@ namespace microservice.toolkit.connectionmanager.test
                 return await cmd.ExecuteNonQueryAsync();
             });
 
-            Assert.AreEqual(1, await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('12345', 'my_title');"));
+            Assert.AreEqual(1,
+                await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('12345', 'my_title');"));
         }
 
         [SetUp]
@@ -52,7 +53,8 @@ namespace microservice.toolkit.connectionmanager.test
             var host = Environment.GetEnvironmentVariable("SQLSERVER_HOST") ?? "127.0.0.1";
             var port = Environment.GetEnvironmentVariable("SQLSERVER_PORT") ?? "1433";
             var rootPassword = Environment.GetEnvironmentVariable("SQLSERVER_ROOT_PASSWORD") ?? "my_root_password123";
-            this.connectionManager = new SQLServerConnectionManager($"Server={host},{port};Database=Master;User Id=SA;Password={rootPassword}");
+            this.connectionManager =
+                new SqlConnection($"Server={host},{port};Database=Master;User Id=SA;Password={rootPassword}");
         }
 
         [TearDown]

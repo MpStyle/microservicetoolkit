@@ -1,4 +1,5 @@
-﻿
+﻿using Microsoft.Data.Sqlite;
+
 using NUnit.Framework;
 
 using System.Data.Common;
@@ -10,7 +11,7 @@ namespace microservice.toolkit.connectionmanager.test
     [ExcludeFromCodeCoverage]
     public class SQLiteConnectionManagerTest
     {
-        private SQLiteConnectionManager connectionManager;
+        private SqliteConnection connectionManager;
 
         [Test]
         public async Task ExecuteAsync()
@@ -43,13 +44,14 @@ namespace microservice.toolkit.connectionmanager.test
                 return await cmd.ExecuteNonQueryAsync();
             });
 
-            Assert.AreEqual(1, await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (123, 'my_title');"));
+            Assert.AreEqual(1,
+                await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (123, 'my_title');"));
         }
 
         [SetUp]
         public void SetUp()
         {
-            this.connectionManager = new SQLiteConnectionManager("Data Source=CacheTest;Mode=Memory;Cache=Shared");
+            this.connectionManager = new SqliteConnection("Data Source=CacheTest;Mode=Memory;Cache=Shared");
         }
 
         [TearDown]
