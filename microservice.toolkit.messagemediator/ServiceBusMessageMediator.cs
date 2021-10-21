@@ -1,5 +1,6 @@
 ﻿using microservice.toolkit.core;
 using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -22,12 +23,14 @@ namespace microservice.toolkit.messagemediator
         private readonly ServiceBusMessageMediatorConfiguration configuration;
         private readonly ServiceFactory serviceFactory;
 
-        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration, ServiceFactory serviceFactory)
+        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration,
+            ServiceFactory serviceFactory)
             : this(configuration, serviceFactory, new DoNothingLogger<ServiceBusMessageMediator>())
         {
         }
 
-        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
+        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration,
+            ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
         {
             this.serviceFactory = serviceFactory;
             this.configuration = configuration;
@@ -40,11 +43,7 @@ namespace microservice.toolkit.messagemediator
             {
                 logger.LogError(args.Exception.Message);
                 return Task.CompletedTask;
-            })
-            {
-                AutoComplete = false,
-                MaxConcurrentCalls = (int)this.configuration.ConsumersPerQueue
-            });
+            }) { AutoComplete = false, MaxConcurrentCalls = (int)this.configuration.ConsumersPerQueue });
 
             this.responseSessionClient = new SessionClient(connection, configuration.ReplayQueueName);
 
@@ -60,12 +59,9 @@ namespace microservice.toolkit.messagemediator
 
         public async Task Emit<TEvent>(string pattern, TEvent e)
         {
-            await this.Send<TEvent>(new RpcMessage
+            await this.Send<TEvent>(new BrokeredMessage
             {
-                Pattern = pattern,
-                Payload = e,
-                RequestType = e.GetType().FullName,
-                WaitingResponse = false
+                Pattern = pattern, Payload = e, RequestType = e.GetType().FullName, WaitingResponse = false
             }).ConfigureAwait(false);
         }
 
@@ -76,7 +72,7 @@ namespace microservice.toolkit.messagemediator
 
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object request)
         {
-            return await this.Send<TPayload>(new RpcMessage
+            return await this.Send<TPayload>(new BrokeredMessage
             {
                 Pattern = pattern,
                 Payload = request,
@@ -85,7 +81,7 @@ namespace microservice.toolkit.messagemediator
             });
         }
 
-        private async Task<ServiceResponse<TPayload>> Send<TPayload>(RpcMessage rpcMessage)
+        private async Task<ServiceResponse<TPayload>> Send<TPayload>(BrokeredMessage rpcMessage)
         {
             var replySessionId = $"{Guid.NewGuid()}-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
             var session = await this.responseSessionClient.AcceptMessageSessionAsync(replySessionId);
@@ -95,30 +91,33 @@ namespace microservice.toolkit.messagemediator
                 var rawMessage = JsonSerializer.Serialize(rpcMessage);
                 var message = new Message
                 {
-                    Body = Encoding.UTF8.GetBytes(rawMessage),
-                    ReplyToSessionId = replySessionId
+                    Body = Encoding.UTF8.GetBytes(rawMessage), ReplyToSessionId = replySessionId
                 };
 
                 await this.requestClient.SendAsync(message);
 
-                if (rpcMessage.WaitingResponse)
+                // No waiting for a response (it an event)
+                if (!rpcMessage.WaitingResponse)
                 {
-                    // Receive response
-                    var reply = await session.ReceiveAsync(
-                        TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-                    var response = new ServiceResponse<TPayload> { Error = ErrorCode.InvalidService };
+                    return null;
+                }
 
-                    if (reply != null)
-                    {
-                        response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(
-                            Encoding.UTF8.GetString(reply.Body));
-                        await session.CompleteAsync(reply.SystemProperties.LockToken);
-                    }
+                // Receive response
+                var reply = await session.ReceiveAsync(
+                    TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
+                var response = new ServiceResponse<TPayload> { Error = ErrorCode.InvalidService };
 
+                // Timeout
+                if (reply == null)
+                {
                     return response;
                 }
 
-                return null;
+                response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(
+                    Encoding.UTF8.GetString(reply.Body));
+                await session.CompleteAsync(reply.SystemProperties.LockToken);
+
+                return response;
             }
             finally
             {
@@ -129,7 +128,7 @@ namespace microservice.toolkit.messagemediator
         private async Task ConsumerMessageHandler(Message message, CancellationToken cancellationToken)
         {
             var requestMessage = Encoding.UTF8.GetString(message.Body);
-            var rpcMessage = JsonSerializer.Deserialize<RpcMessage>(requestMessage);
+            var rpcMessage = JsonSerializer.Deserialize<BrokeredMessage>(requestMessage);
 
             if (rpcMessage == null)
             {
@@ -141,7 +140,7 @@ namespace microservice.toolkit.messagemediator
 
             if (service != null && rpcMessage.Payload is JsonElement element)
             {
-                var json=element.GetRawText();
+                var json = element.GetRawText();
                 var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
                 response = await service.Run(request);
             }
@@ -155,14 +154,6 @@ namespace microservice.toolkit.messagemediator
 
             await this.responseClient.SendAsync(replyMessage);
             await this.requestClient.CompleteAsync(message.SystemProperties.LockToken);
-        }
-
-        class RpcMessage
-        {
-            public string Pattern { get; init; }
-            public object Payload { get; init; }
-            public string RequestType { get; init; }
-            public bool WaitingResponse { get; init; }
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using microservice.toolkit.core;
 using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging;
 
@@ -57,7 +58,7 @@ namespace microservice.toolkit.messagemediator
 
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
-            return await this.Send<TPayload>(new RabbitMQMessage
+            return await this.Send<TPayload>(new BrokeredMessage
             {
                 Pattern = pattern, Payload = message, RequestType = message.GetType().FullName, WaitingResponse = true
             });
@@ -65,13 +66,13 @@ namespace microservice.toolkit.messagemediator
 
         public async Task Emit<TEvent>(string pattern, TEvent e)
         {
-            await this.Send<TEvent>(new RabbitMQMessage
+            await this.Send<TEvent>(new BrokeredMessage
             {
                 Pattern = pattern, Payload = e, RequestType = e.GetType().FullName, WaitingResponse = false
             }).ConfigureAwait(false);
         }
 
-        private async Task<ServiceResponse<TPayload>> Send<TPayload>(RabbitMQMessage message)
+        private async Task<ServiceResponse<TPayload>> Send<TPayload>(BrokeredMessage message)
         {
             var correlationId = Guid.NewGuid().ToString();
 
@@ -120,8 +121,9 @@ namespace microservice.toolkit.messagemediator
             var replyProps = this.consumerChannel.CreateBasicProperties();
             replyProps.CorrelationId = props.CorrelationId;
             
-            var rpcMessage = JsonSerializer.Deserialize<RabbitMQMessage>(Encoding.UTF8.GetString(body));
+            var rpcMessage = JsonSerializer.Deserialize<BrokeredMessage>(Encoding.UTF8.GetString(body));
 
+            // Invalid message from the queue
             if (rpcMessage == null)
             {
                 return;
@@ -159,14 +161,6 @@ namespace microservice.toolkit.messagemediator
         public void Dispose()
         {
             this.connection.Close();
-        }
-
-        class RabbitMQMessage
-        {
-            public string Pattern { get; init; }
-            public object Payload { get; init; }
-            public string RequestType { get; init; }
-            public bool WaitingResponse { get; init; }
         }
     }
 
