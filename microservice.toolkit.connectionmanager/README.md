@@ -65,38 +65,26 @@ DbCommand GetCommand();
 ```
 Creates a _DbCommand_ for the current connection. 
 
-### GetCommand(DbConnection)
+### SafeOpen()
 ```C#
-DbCommand GetCommand(DbConnection dbConnection);
-```
-Creates a _DbCommand_ for _connection_.
-
-### GetParameter<T>(string, T)
-```C#
-DbParameter GetParameter<T>(string name, T value);
-```
-Creates a _DbParameter_. If value is null will be used _DBNull.Value_.
-
-### Open()
-```C#
-void Open();
+void SafeOpen();
 ```
 Opens a connection to the database if it is not already opened.
 
-### OpenAsync()
+### SafeOpenAsync()
 ```C#
-Task OpenAsync();
+Task SafeOpenAsync();
 ```
 Opens a connection to the database if it is not already opened.
 
-### Close()
+### SafeClose()
 ```C#
-void Close();
+void SafeClose();
 ```
 Closes a connection to the database if it is not already closed.
 
-### CloseAsync()
+### SafeCloseAsync()
 ```C#
-Task CloseAsync();
+Task SafeCloseAsync();
 ```
 Closes a connection to the database if it is not already closed.
