@@ -20,12 +20,12 @@ namespace microservice.toolkit.cachemanager
 
         public async Task<string> Get(string key)
         {
-            var parameters = new Dictionary<string, object>(){
-                {"@CacheId", key},
-                {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }
+            var parameters = new Dictionary<string, object>()
+            {
+                { "@CacheId", key }, { "@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }
             };
 
-            var query = @"
+            const string query = @"
                 SELECT value, issuedAt
                 FROM cache 
                 WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
@@ -64,11 +64,8 @@ namespace microservice.toolkit.cachemanager
                     issuedAt = @issuedAt
             ";
 
-            var parameters = new Dictionary<string, object>(){
-                {"@id", key},
-                {"@value", value},
-                {"@issuedAt", issuedAt}
-            };
+            var parameters =
+                new Dictionary<string, object>() { { "@id", key }, { "@value", value }, { "@issuedAt", issuedAt } };
 
             return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
         }
@@ -80,14 +77,12 @@ namespace microservice.toolkit.cachemanager
 
         public async Task<bool> Delete(string key)
         {
-            var query = @"
+            const string query = @"
                 DELETE FROM `cache`
                 WHERE id = @id;
             ";
 
-            var parameters = new Dictionary<string, object>(){
-                {"@id", key},
-            };
+            var parameters = new Dictionary<string, object>() { { "@id", key }, };
 
             return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
         }

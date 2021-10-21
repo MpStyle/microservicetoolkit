@@ -86,7 +86,7 @@ namespace microservice.toolkit.messagemediator
 
                 // Receive response
                 var reply = await session.ReceiveAsync(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-                var response = new ServiceResponse<TPayload> { Error = ErrorCode.INVALID_SERVICE };
+                var response = new ServiceResponse<TPayload> { Error = ErrorCode.InvalidService };
 
                 if (reply != null)
                 {
@@ -107,7 +107,7 @@ namespace microservice.toolkit.messagemediator
             var requestMessage = Encoding.UTF8.GetString(message.Body);
             var rpcMessage = JsonSerializer.Deserialize<RpcMessage>(requestMessage);
             var service = this.serviceFactory.Invoke(rpcMessage.Pattern);
-            var response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
+            var response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
 
             if (service != null && rpcMessage.Payload is JsonElement element)
             {

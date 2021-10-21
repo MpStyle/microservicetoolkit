@@ -109,7 +109,7 @@ namespace microservice.toolkit.messagemediator
             catch (Exception e)
             {
                 this.logger.LogDebug(e.ToString());
-                response = new ServiceResponse<object> { Error = ErrorCode.SERVICE_NOT_FOUND };
+                response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
             }
             finally
             {

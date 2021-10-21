@@ -5,7 +5,6 @@ using Microsoft.Data.Sqlite;
 using NUnit.Framework;
 
 using System;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -103,14 +102,14 @@ namespace microservice.toolkit.cachemanager.test
             try
             {
                 this.connectionManager = new SqliteConnection("Data Source=CacheTest;Mode=Memory;Cache=Shared");
-                var query = @"
+                const string query = @"
                 CREATE TABLE cache(
                     id TEXT PRIMARY KEY,
                     value TEXT NOT NULL,
                     issuedAt INTEGER NOT NULL
                 );
             ";
-                var createTable = await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+                await this.connectionManager.ExecuteAsync(async cmd =>
                 {
                     cmd.CommandText = query;
                     return await cmd.ExecuteNonQueryAsync();
@@ -127,8 +126,8 @@ namespace microservice.toolkit.cachemanager.test
         [TearDown]
         public async Task TearDown()
         {
-            var createTableQuery = "DROP TABLE IF EXISTS cache;";
-            var createTable = await this.connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            const string createTableQuery = "DROP TABLE IF EXISTS cache;";
+            await this.connectionManager.ExecuteAsync(async cmd =>
             {
                 cmd.CommandText = createTableQuery;
                 return await cmd.ExecuteNonQueryAsync();

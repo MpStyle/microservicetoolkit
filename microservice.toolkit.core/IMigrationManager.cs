@@ -18,14 +18,14 @@ namespace microservice.toolkit.core
 
     public class ApplyResult
     {
-        public Exception Exception { get; set; }
-        public bool Success { get; set; }
+        public Exception Exception { get; init; }
+        public bool Success { get; init; }
     }
 
     public class MigrationManagerConfiguration
     {
-        public string Extension { get; set; }
-        public string Folder { get; set; }
-        public DbConnection DbConnection { get; set; }
+        public string Extension { get; init; }
+        public string Folder { get; init; }
+        public DbConnection DbConnection { get; init; }
     }
 }

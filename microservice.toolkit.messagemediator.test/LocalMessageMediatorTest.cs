@@ -14,15 +14,8 @@ namespace microservice.toolkit.messagemediator.test
         [Test]
         public async Task Run_Object_Int()
         {
-            IMessageMediator mediator = new LocalMessageMediator(name =>
-            {
-                if (nameof(SquarePow).Equals(name))
-                {
-                    return new SquarePow();
-                }
-
-                return null;
-            });
+            IMessageMediator mediator =
+                new LocalMessageMediator(name => nameof(SquarePow).Equals(name) ? new SquarePow() : null);
 
             Assert.AreEqual(4, (await mediator.Send<int>(nameof(SquarePow), 2)).Payload);
         }
@@ -30,15 +23,8 @@ namespace microservice.toolkit.messagemediator.test
         [Test]
         public async Task Run_Int_Int()
         {
-            IMessageMediator mediator = new LocalMessageMediator(name =>
-            {
-                if (nameof(SquarePow).Equals(name))
-                {
-                    return new SquarePow();
-                }
-
-                return null;
-            });
+            IMessageMediator mediator =
+                new LocalMessageMediator(name => nameof(SquarePow).Equals(name) ? new SquarePow() : null);
 
             Assert.AreEqual(4, (await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload);
         }
@@ -46,15 +32,8 @@ namespace microservice.toolkit.messagemediator.test
         [Test]
         public async Task Run_Object_Int_WithError()
         {
-            IMessageMediator mediator = new LocalMessageMediator(name =>
-            {
-                if (nameof(SquarePowError).Equals(name))
-                {
-                    return new SquarePowError();
-                }
-
-                return null;
-            });
+            IMessageMediator mediator =
+                new LocalMessageMediator(name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null);
 
             Assert.AreEqual(-1, (await mediator.Send<int>(nameof(SquarePowError), 2)).Error);
         }

@@ -2,7 +2,6 @@
 
 using NUnit.Framework;
 
-using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -16,7 +15,7 @@ namespace microservice.toolkit.connectionmanager.test
         [Test]
         public async Task ExecuteAsync()
         {
-            var result = await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            var result = await connectionManager.ExecuteAsync(async cmd =>
             {
                 cmd.CommandText = @"
                     CREATE TABLE films (
@@ -33,7 +32,7 @@ namespace microservice.toolkit.connectionmanager.test
         [Test]
         public async Task ExecuteNonQueryAsync()
         {
-            await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            await connectionManager.ExecuteAsync(async cmd =>
             {
                 cmd.CommandText = @"
                     CREATE TABLE films (
@@ -58,6 +57,7 @@ namespace microservice.toolkit.connectionmanager.test
         public async Task TearDown()
         {
             await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS films");
+            await connectionManager.CloseAsync();
         }
     }
 }

@@ -61,6 +61,7 @@ namespace microservice.toolkit.connectionmanager.test
         public async Task TearDown()
         {
             await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS films");
+            await connectionManager.CloseAsync();
         }
     }
 }

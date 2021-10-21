@@ -77,6 +77,18 @@ namespace microservice.toolkit.connectionmanager.test
             Assert.AreEqual(1, result.Code);
             Assert.AreEqual("my_title 1", result.Title);
         }
+        
+        [Test]
+        public void ExecuteFirst_Query()
+        {
+            var result = this.connectionManager.ExecuteFirst(
+                "SELECT * FROM films WHERE code < @code",
+                reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
+                new Dictionary<string, object> { { "@code", 3 } });
+
+            Assert.AreEqual(1, result.Code);
+            Assert.AreEqual("my_title 1", result.Title);
+        }
 
         [Test]
         public async Task ExecuteNonQueryAsync()
@@ -116,6 +128,7 @@ namespace microservice.toolkit.connectionmanager.test
         public async Task TearDown()
         {
             await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS films");
+            await connectionManager.CloseAsync();
         }
 
         enum FilmGenre

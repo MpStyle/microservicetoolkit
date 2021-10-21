@@ -35,7 +35,7 @@ namespace microservice.toolkit.cachemanager
                 {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }
             };
 
-            var query = @"
+            const string query = @"
                 SELECT value, issuedAt
                 FROM cache 
                 WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
@@ -59,7 +59,7 @@ namespace microservice.toolkit.cachemanager
                 return false;
             }
 
-            var query = @"
+            const string query = @"
                 INSERT INTO `cache` (
                     id,
                     value, 
@@ -90,7 +90,7 @@ namespace microservice.toolkit.cachemanager
 
         public async Task<bool> Delete(string key)
         {
-            var query = @"
+            const string query = @"
                 DELETE FROM `cache`
                 WHERE id = @id;
             ";

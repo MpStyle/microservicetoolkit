@@ -104,14 +104,14 @@ namespace microservice.toolkit.cachemanager.test
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
             this.connectionManager = new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
-            var createTableQuery = @"
+            const string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS cache(
                         id VARCHAR(256) PRIMARY KEY,
                         value TEXT NOT NULL,
                         issuedAt BIGINT NOT NULL
                     );
                 ";
-            var createTable = await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            await this.connectionManager.ExecuteAsync(async cmd =>
             {
                 cmd.CommandText = createTableQuery;
                 return await cmd.ExecuteNonQueryAsync();
@@ -123,8 +123,8 @@ namespace microservice.toolkit.cachemanager.test
         [TearDown]
         public async Task TearDown()
         {
-            var createTableQuery = "DROP TABLE IF EXISTS cache;";
-            var createTable = await connectionManager.ExecuteAsync(async (DbCommand cmd) =>
+            const string createTableQuery = "DROP TABLE IF EXISTS cache;";
+            await this.connectionManager.ExecuteAsync(async cmd =>
             {
                 cmd.CommandText = createTableQuery;
                 return await cmd.ExecuteNonQueryAsync();

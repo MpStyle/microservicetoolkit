@@ -48,7 +48,7 @@ namespace microservice.toolkit.messagemediator
                 this.logger.LogDebug(ex.ToString());
                 return new ServiceResponse<TPayload>
                 {
-                    Error = ErrorCode.SERVICE_NOT_FOUND
+                    Error = ErrorCode.ServiceNotFound
                 };
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace microservice.toolkit.messagemediator
                 this.logger.LogDebug(ex.ToString());
                 return new ServiceResponse<TPayload>
                 {
-                    Error = ErrorCode.UNKNOWN
+                    Error = ErrorCode.Unknown
                 };
             }
         }

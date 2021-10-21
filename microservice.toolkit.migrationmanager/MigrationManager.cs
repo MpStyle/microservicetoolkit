@@ -44,10 +44,10 @@ namespace microservice.toolkit.migrationmanager
             catch (Exception ex)
             {
                 this.logger.LogDebug(ex, "Error while applying migrations");
-                return new ApplyResult() { Exception = ex };
+                return new ApplyResult { Exception = ex };
             }
 
-            return new ApplyResult() { Success = true };
+            return new ApplyResult { Success = true };
         }
     }
 }
