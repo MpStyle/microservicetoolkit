@@ -19,7 +19,7 @@ namespace microservice.toolkit.messagemediator
         private readonly ILogger logger;
         private readonly RabbitMQMessageMediatorConfiguration configuration;
         private readonly ServiceFactory serviceFactory;
-        
+
         private readonly IConnection connection;
         private readonly IModel consumerChannel;
         private readonly IModel producerChannel;
@@ -46,6 +46,7 @@ namespace microservice.toolkit.messagemediator
 
             // Producer
             this.producerChannel = connection.CreateModel();
+            this.producerChannel.QueueDeclare(this.configuration.ReplyQueueName, false, false);
             var producer = new EventingBasicConsumer(this.producerChannel);
             producer.Received += this.OnProducerReceivesResponse;
             this.producerChannel.BasicConsume(
@@ -66,7 +67,9 @@ namespace microservice.toolkit.messagemediator
 
             var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new RabbitMQMessage
             {
-                Pattern = pattern, Payload = message, RequestType = message.GetType().FullName
+                Pattern = pattern,
+                Payload = message,
+                RequestType = message.GetType().FullName
             }));
             this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
 
