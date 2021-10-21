@@ -52,7 +52,7 @@ namespace microservice.toolkit.connectionmanager
             [typeof(object)] = DbType.Object
         };
 
-        private static DbParameter[] ObjectToDictionary(DbCommand command, Dictionary<string, object> obj)
+        private static DbParameter[] ToDbParameter(this Dictionary<string, object> obj, DbCommand command)
         {
             if (obj == null)
             {
@@ -62,10 +62,18 @@ namespace microservice.toolkit.connectionmanager
             return obj.Select(item =>
             {
                 var param = command.CreateParameter();
+                var value = item.Value;
 
                 param.ParameterName = item.Key;
-                param.Value = item.Value ?? DBNull.Value;
-                param.DbType = item.Value == null ? DbType.Object : typeMapper[item.Value.GetType()];
+                param.Value = value ?? DBNull.Value;
+
+                var dbType = DbType.Object;
+                if (value != null)
+                {
+                    dbType = value.GetType().IsEnum ? typeMapper[typeof(int)] : typeMapper[item.Value.GetType()];
+                }
+
+                param.DbType = dbType;
 
                 return param;
             }).ToArray();
@@ -84,7 +92,7 @@ namespace microservice.toolkit.connectionmanager
             return conn.Execute(command =>
             {
                 command.CommandText = sql;
-                command.Parameters.AddRange(ObjectToDictionary(command, parameters));
+                command.Parameters.AddRange(parameters.ToDbParameter(command));
 
                 var objects = new List<T>();
 
@@ -124,7 +132,7 @@ namespace microservice.toolkit.connectionmanager
             return await conn.ExecuteAsync(async command =>
             {
                 command.CommandText = sql;
-                command.Parameters.AddRange(ObjectToDictionary(command, parameters));
+                command.Parameters.AddRange(parameters.ToDbParameter(command));
 
                 var objects = new List<T>();
 
@@ -153,12 +161,12 @@ namespace microservice.toolkit.connectionmanager
             Dictionary<string, object> parameters = null)
         {
             await conn.SafeOpenAsync();
-            using (var cmd = conn.CreateCommand())
+            using (var command = conn.CreateCommand())
             {
-                cmd.CommandText = query;
-                cmd.Parameters.AddRange(ObjectToDictionary(cmd, parameters));
+                command.CommandText = query;
+                command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-                return await cmd.ExecuteNonQueryAsync();
+                return await command.ExecuteNonQueryAsync();
             }
         }
 

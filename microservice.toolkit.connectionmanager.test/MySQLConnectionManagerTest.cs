@@ -82,7 +82,13 @@ namespace microservice.toolkit.connectionmanager.test
         public async Task ExecuteNonQueryAsync()
         {
             Assert.AreEqual(1,
-                await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('5', 'my_title');"));
+                await connectionManager.ExecuteNonQueryAsync(
+                    "INSERT INTO films VALUES (@code, @title, @genre);",
+                    new Dictionary<string, object> {
+                        { "@code", 5 },
+                        { "@title", "my_title 5" },
+                        { "@genre", FilmGenre.Action },
+                    }));
         }
 
         [SetUp]
@@ -97,19 +103,26 @@ namespace microservice.toolkit.connectionmanager.test
 
             // Creates table
             await this.connectionManager.ExecuteNonQueryAsync(
-                "CREATE TABLE films ( code int PRIMARY KEY, title varchar(40) NOT NULL);");
+                "CREATE TABLE films ( code int PRIMARY KEY, title varchar(40) NOT NULL, genre INT(4) NOT NULL);");
 
             // Inserts some rows in table
-            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (1, 'my_title 1');");
-            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (2, 'my_title 2');");
-            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (3, 'my_title 3');");
-            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (4, 'my_title 4');");
+            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (1, 'my_title 1', 1);");
+            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (2, 'my_title 2', 2);");
+            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (3, 'my_title 3', 1);");
+            await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES (4, 'my_title 4', 3);");
         }
 
         [TearDown]
         public async Task TearDown()
         {
             await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS films");
+        }
+
+        enum FilmGenre
+        {
+            Doc,
+            Action,
+            Comedy
         }
     }
 }
