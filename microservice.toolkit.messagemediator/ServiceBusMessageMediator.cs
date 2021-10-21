@@ -19,15 +19,15 @@ namespace microservice.toolkit.messagemediator
 
         private readonly IQueueClient responseClient;
 
-        private readonly ServiceMessageMediatorConfiguration configuration;
+        private readonly ServiceBusMessageMediatorConfiguration configuration;
         private readonly ServiceFactory serviceFactory;
 
-        public ServiceBusMessageMediator(ServiceMessageMediatorConfiguration configuration, ServiceFactory serviceFactory)
+        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration, ServiceFactory serviceFactory)
             : this(configuration, serviceFactory, new DoNothingLogger<ServiceBusMessageMediator>())
         {
         }
 
-        public ServiceBusMessageMediator(ServiceMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
+        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
         {
             this.serviceFactory = serviceFactory;
             this.configuration = configuration;
@@ -57,7 +57,18 @@ namespace microservice.toolkit.messagemediator
             await this.responseSessionClient.CloseAsync();
             await this.requestClient.CloseAsync();
         }
-        
+
+        public async Task Emit<TEvent>(string pattern, TEvent e)
+        {
+            await this.Send<TEvent>(new RpcMessage
+            {
+                Pattern = pattern,
+                Payload = e,
+                RequestType = e.GetType().FullName,
+                WaitingResponse = false
+            }).ConfigureAwait(false);
+        }
+
         public async Task Shutdown()
         {
             await this.Dispose();
@@ -65,17 +76,23 @@ namespace microservice.toolkit.messagemediator
 
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object request)
         {
+            return await this.Send<TPayload>(new RpcMessage
+            {
+                Pattern = pattern,
+                Payload = request,
+                RequestType = request.GetType().FullName,
+                WaitingResponse = true
+            });
+        }
+
+        private async Task<ServiceResponse<TPayload>> Send<TPayload>(RpcMessage rpcMessage)
+        {
             var replySessionId = $"{Guid.NewGuid()}-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
             var session = await this.responseSessionClient.AcceptMessageSessionAsync(replySessionId);
 
             try
             {
-                var rawMessage = JsonSerializer.Serialize(new RpcMessage
-                {
-                    Pattern = pattern,
-                    Payload = request,
-                    RequestType = request.GetType().FullName
-                });
+                var rawMessage = JsonSerializer.Serialize(rpcMessage);
                 var message = new Message
                 {
                     Body = Encoding.UTF8.GetBytes(rawMessage),
@@ -84,17 +101,24 @@ namespace microservice.toolkit.messagemediator
 
                 await this.requestClient.SendAsync(message);
 
-                // Receive response
-                var reply = await session.ReceiveAsync(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-                var response = new ServiceResponse<TPayload> { Error = ErrorCode.InvalidService };
-
-                if (reply != null)
+                if (rpcMessage.WaitingResponse)
                 {
-                    response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(reply.Body));
-                    await session.CompleteAsync(reply.SystemProperties.LockToken);
+                    // Receive response
+                    var reply = await session.ReceiveAsync(
+                        TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
+                    var response = new ServiceResponse<TPayload> { Error = ErrorCode.InvalidService };
+
+                    if (reply != null)
+                    {
+                        response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(
+                            Encoding.UTF8.GetString(reply.Body));
+                        await session.CompleteAsync(reply.SystemProperties.LockToken);
+                    }
+
+                    return response;
                 }
 
-                return response;
+                return null;
             }
             finally
             {
@@ -106,6 +130,12 @@ namespace microservice.toolkit.messagemediator
         {
             var requestMessage = Encoding.UTF8.GetString(message.Body);
             var rpcMessage = JsonSerializer.Deserialize<RpcMessage>(requestMessage);
+
+            if (rpcMessage == null)
+            {
+                return;
+            }
+
             var service = this.serviceFactory.Invoke(rpcMessage.Pattern);
             var response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
 
@@ -132,10 +162,11 @@ namespace microservice.toolkit.messagemediator
             public string Pattern { get; init; }
             public object Payload { get; init; }
             public string RequestType { get; init; }
+            public bool WaitingResponse { get; init; }
         }
     }
 
-    public class ServiceMessageMediatorConfiguration
+    public class ServiceBusMessageMediatorConfiguration
     {
         public string QueueName { get; init; }
         public string ReplayQueueName { get; init; }

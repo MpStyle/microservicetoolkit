@@ -57,26 +57,48 @@ namespace microservice.toolkit.messagemediator
 
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
-            var producerProps = this.producerChannel.CreateBasicProperties();
+            return await this.Send<TPayload>(new RabbitMQMessage
+            {
+                Pattern = pattern, Payload = message, RequestType = message.GetType().FullName, WaitingResponse = true
+            });
+        }
+
+        public async Task Emit<TEvent>(string pattern, TEvent e)
+        {
+            await this.Send<TEvent>(new RabbitMQMessage
+            {
+                Pattern = pattern, Payload = e, RequestType = e.GetType().FullName, WaitingResponse = false
+            }).ConfigureAwait(false);
+        }
+
+        private async Task<ServiceResponse<TPayload>> Send<TPayload>(RabbitMQMessage message)
+        {
             var correlationId = Guid.NewGuid().ToString();
+
+            var producerProps = this.producerChannel.CreateBasicProperties();
             producerProps.CorrelationId = correlationId;
             producerProps.ReplyTo = this.configuration.ReplyQueueName;
 
-            var tcs = new TaskCompletionSource<byte[]>(TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-            this.pendingMessages.TryAdd(correlationId, tcs);
+            var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+            void PublishMessage() => this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
 
-            var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new RabbitMQMessage
+            if (message.WaitingResponse)
             {
-                Pattern = pattern,
-                Payload = message,
-                RequestType = message.GetType().FullName
-            }));
-            this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
+                var tcs = new TaskCompletionSource<byte[]>(
+                    TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
+                this.pendingMessages.TryAdd(correlationId, tcs);
 
-            var rawResponse = await tcs.Task;
-            var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
+                PublishMessage();
 
-            return response;
+                var rawResponse = await tcs.Task;
+                var response =
+                    JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
+
+                return response;
+            }
+            
+            PublishMessage();
+            return null;
         }
 
         private void OnProducerReceivesResponse(object sender, BasicDeliverEventArgs ea)
@@ -97,10 +119,16 @@ namespace microservice.toolkit.messagemediator
             var props = ea.BasicProperties;
             var replyProps = this.consumerChannel.CreateBasicProperties();
             replyProps.CorrelationId = props.CorrelationId;
+            
+            var rpcMessage = JsonSerializer.Deserialize<RabbitMQMessage>(Encoding.UTF8.GetString(body));
+
+            if (rpcMessage == null)
+            {
+                return;
+            }
 
             try
             {
-                var rpcMessage = JsonSerializer.Deserialize<RabbitMQMessage>(Encoding.UTF8.GetString(body));
                 var service = this.serviceFactory(rpcMessage.Pattern);
                 var json = ((JsonElement)rpcMessage.Payload).GetRawText();
                 var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
@@ -113,9 +141,12 @@ namespace microservice.toolkit.messagemediator
             }
             finally
             {
-                var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
-                this.consumerChannel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);
-                this.consumerChannel.BasicAck(ea.DeliveryTag, false);
+                if (rpcMessage.WaitingResponse)
+                {
+                    var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
+                    this.consumerChannel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);
+                    this.consumerChannel.BasicAck(ea.DeliveryTag, false);
+                }
             }
         }
 
@@ -135,6 +166,7 @@ namespace microservice.toolkit.messagemediator
             public string Pattern { get; init; }
             public object Payload { get; init; }
             public string RequestType { get; init; }
+            public bool WaitingResponse { get; init; }
         }
     }
 
