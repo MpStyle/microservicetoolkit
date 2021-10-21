@@ -19,6 +19,10 @@ namespace microservice.toolkit.migrationmanager
             this.logger = logger;
         }
 
+        public MigrationManager() : this(new DoNothingLogger<MigrationManager>())
+        {
+        }
+
         public ApplyResult Apply(MigrationManagerConfiguration configuration)
         {
             try
