@@ -1,3 +1,4 @@
+using microservice.toolkit.configurationmanager.extension;
 using microservice.toolkit.core;
 
 using Microsoft.Extensions.Configuration;
@@ -7,15 +8,14 @@ using System;
 
 namespace microservice.toolkit.configurationmanager
 {
+    [Obsolete("Use IConfigurationManager extensions instead. Import <i>microservice.toolkit.configurationmanager.extension</i> namespace.", false)]
     public class ConfigurationManager : IConfigurationManager
     {
         private readonly IConfiguration configuration;
-        private readonly ILogger<ConfigurationManager> logger = new DoNothingLogger<ConfigurationManager>();
 
-        public ConfigurationManager(IConfiguration configuration, ILogger<ConfigurationManager> logger)
+        public ConfigurationManager(IConfiguration configuration, ILogger<ConfigurationManager> _)
         {
             this.configuration = configuration;
-            this.logger = logger;
         }
 
         public ConfigurationManager(IConfiguration configuration)
@@ -25,69 +25,27 @@ namespace microservice.toolkit.configurationmanager
 
         public bool GetBool(string key)
         {
-            try
-            {
-                return bool.Parse(this.configuration[key]);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogDebug(ex, $"Error while parsing boolean configuration \"{key}\"");
-                return default;
-            }
+            return this.configuration.GetBool(key);
         }
 
         public int GetInt(string key)
         {
-            try
-            {
-                return int.Parse(this.configuration[key]);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogDebug(ex, $"Error while parsing integer configuration \"{key}\"");
-                return default;
-            }
+            return this.configuration.GetInt(key);
         }
 
         public string GetString(string key)
         {
-            try
-            {
-                return this.configuration[key];
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogDebug(ex, $"Error while parsing string configuration \"{key}\"");
-                return default;
-            }
+            return this.configuration.GetString(key);
         }
 
         public string[] GetStringArray(string key)
         {
-            try
-            {
-                var section = configuration.GetSection(key);
-                return section.Get<string[]>();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogDebug(ex, $"Error while parsing string array configuration \"{key}\"");
-                return default;
-            }
+            return this.configuration.GetStringArray(key);
         }
 
         public int[] GetIntArray(string key)
         {
-            try
-            {
-                var section = configuration.GetSection(key);
-                return section.Get<int[]>();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogDebug(ex, $"Error while parsing int array configuration \"{key}\"");
-                return default;
-            }
+            return this.configuration.GetIntArray(key);
         }
     }
 }
