@@ -8,17 +8,17 @@ An interface to define how microservices interact each other, request-response p
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.messagemediator -Version 0.4.0
+Install-Package microservice.toolkit.messagemediator -Version 0.4.2
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.messagemediator --version 0.4.0
+dotnet add package microservice.toolkit.messagemediator --version 0.4.2
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.messagemediator" Version="0.4.0" />
+<PackageReference Include="microservice.toolkit.messagemediator" Version="0.4.2" />
 ```
 
 ## Introduction
