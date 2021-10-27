@@ -65,8 +65,7 @@ To call a service we can use a mediator:
 // Instantiates the mediator
 var mediator = [...]
 
-var response = await mediator.Send(nameof(SquarePow), 2));
-// or, to explicit payload type::
+// to explicit only payload type:
 var response = await mediator.Send<int>(nameof(SquarePow), 2));
 // or, to explicit request and payload type:
 var response = await mediator.Send<int, int>(nameof(SquarePow), 2));
