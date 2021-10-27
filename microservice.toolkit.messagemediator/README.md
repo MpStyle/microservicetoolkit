@@ -92,20 +92,27 @@ Every implementation requires a "service provider" (a delegate) to link the name
 Using __Microsoft Dependency Injection__ in a startup program:
 
 ```C#
+using microservice.toolkit.messagemediator.extension;
+
+[...]
+
 // Registers the message mediator (services is an instance of IServiceCollection)
 services.AddSingleton<IMessageMediator, LocalMessageMediator>();
 
 // Uses assembly scan to retrieve all the "IService" implementations
-var microservices = Assembly.GetAssembly(typeof(MyService))
-    .GetExportedTypes()
-    .Where(y => y.IsClass && !y.IsAbstract && !y.IsGenericType && !y.IsNested)
-    .Where(c => c.GetInterfaces().Any(i => i == typeof(IService)));
+var microservices = Assembly.GetAssembly(typeof(MyService)).GetServices(); 
+// or 
+var microservices = typeof(MyService).GetAssemblyServices();
+
+[...]
 
 // Registers all the microservices to the IoC
 foreach (var microservice in microservices)
 {
     services.AddSingleton(microservice);
 }
+
+[...]
 
 // Registers the "service provider" to resolve pattern (string) to a service instance
 services.AddSingleton<ServiceFactory>(serviceProvider => pattern =>
