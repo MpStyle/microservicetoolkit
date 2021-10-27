@@ -9,7 +9,6 @@
     <Copyright>MIT License</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Title>Microservice Toolkit - Connection Manager</Title>
-    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
