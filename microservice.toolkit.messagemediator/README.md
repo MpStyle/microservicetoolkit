@@ -2,6 +2,8 @@
 
 __The library is a work in progress. It is not yet considered production-ready.__
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 An interface to define how microservices interact each other, request-response pattern.
 
 ## How to install

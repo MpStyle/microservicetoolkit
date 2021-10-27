@@ -2,6 +2,8 @@
 
 __The library is a work in progress. It is not yet considered production-ready.__
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Common interface to manage cache using different providers.
 
 ## How to install
