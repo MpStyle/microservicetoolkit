@@ -2,7 +2,11 @@
 
 __The library is a work in progress. It is not yet considered production-ready.__
 
+[![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
+[![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.configurationmanager)
+![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.configurationmanager)
 
 Common interface to access to configurations value.
 
