@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>microservice, microservices, cloud, cache, redit, database</PackageTags>
+    <Description>Common interface to manage cache using different providers.</Description>
   </PropertyGroup>
 
   <ItemGroup>

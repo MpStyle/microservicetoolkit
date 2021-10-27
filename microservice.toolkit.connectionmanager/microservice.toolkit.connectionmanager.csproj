@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>microservice, database, sql, connection, mysql, postgresql, sqlserver</PackageTags>
+    <Description>Common interface to simplify the access to a SQL database.</Description>
   </PropertyGroup>
 
   <ItemGroup>

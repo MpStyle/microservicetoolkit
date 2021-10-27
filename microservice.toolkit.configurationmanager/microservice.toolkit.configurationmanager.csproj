@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>Common interface to access to configurations value.</Description>
   </PropertyGroup>
 
   <ItemGroup>

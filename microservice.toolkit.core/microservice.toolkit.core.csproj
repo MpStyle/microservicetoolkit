@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
+    <Description>Everything you need for your entire micro services development life cycle. </Description>
   </PropertyGroup>
 
   <ItemGroup>
