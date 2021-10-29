@@ -8,7 +8,7 @@ __The library is a work in progress. It is not yet considered production-ready._
 ![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.messagemediator)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.messagemediator)
 
-An interface to define how microservices interact each other, request-response pattern.
+An interface to define how cloud microservices interact each other across multi instances, using request-response pattern.
 
 ## How to install
 
@@ -43,40 +43,6 @@ Where:
 
 Only one of the fields can have a value: if "error" has a value, "payload" doesn't have it, and vice versa.
 
-### Service implementation
-To implement a service, extend the abstract class "_Service<TRequest, TPayload>_", where:
-- "_TRequest_" is the service input (or request)
-- "_TPayload_" is the service output (or payload of the response)
-
-Example code:
-
-```C#
-public class UserExists : Service<UserExistsRequest, UserExistsResponse>
-{
-    public async override Task<ServiceResponse<UserExistsResponse>> Run(UserExistsRequest request)
-    {
-        return this.SuccessfulResponse(new UserExistsResponse
-        {
-            Exists = "Alice" == request.Username
-        });
-    }
-}
-```
-
-### Service call
-
-To call a service we can use a mediator:
-
-```C#
-// Instantiates the mediator
-var mediator = [...]
-
-// to explicit only payload type:
-var response = await mediator.Send<int>(nameof(SquarePow), 2));
-// or, to explicit request and payload type:
-var response = await mediator.Send<int, int>(nameof(SquarePow), 2));
-```
-
 ## Implementations
 
 Microservice Toolkit provides some implementations of the message mediator interface:
@@ -92,39 +58,9 @@ or in a multi instances environment:
 
 ![Single instance](./docs/mediator_multi_instances.png)
 
+A bus can be a message broker (RabbitMQ or Azure Service bus).
+
 Every implementation requires a "service provider" (a delegate) to link the name (pattern) to the instance of a service.
-
-Using __Microsoft Dependency Injection__ in a startup program:
-
-```C#
-using microservice.toolkit.messagemediator.extension;
-
-[...]
-
-// Registers the message mediator (services is an instance of IServiceCollection)
-services.AddSingleton<IMessageMediator, LocalMessageMediator>();
-
-// Uses assembly scan to retrieve all the "IService" implementations
-var microservices = Assembly.GetAssembly(typeof(MyService)).GetServices(); 
-// or 
-var microservices = typeof(MyService).GetAssemblyServices();
-
-[...]
-
-// Registers all the microservices to the IoC
-foreach (var microservice in microservices)
-{
-    services.AddSingleton(microservice);
-}
-
-[...]
-
-// Registers the "service provider" to resolve pattern (string) to a service instance
-services.AddSingleton<ServiceFactory>(serviceProvider => pattern =>
-{
-    return serviceProvider.GetService(microservices.First(ms => ms.Name.Equals(pattern))) as IService;
-});
-```
 
 ### Local
 
@@ -160,4 +96,63 @@ Install-Package Microsoft.Azure.ServiceBus -Version 5.1.3
 Or:
 ```
 <PackageReference Include="Microsoft.Azure.ServiceBus" Version="5.1.3"/>
+```
+
+## How to use
+
+### Service implementation
+To implement a service, extend the abstract class "_Service<TRequest, TPayload>_", where:
+- "_TRequest_" is the service input (or request)
+- "_TPayload_" is the service output (or payload of the response)
+
+Example code:
+
+```C#
+public class UserExists : Service<UserExistsRequest, UserExistsResponse>
+{
+    public async override Task<ServiceResponse<UserExistsResponse>> Run(UserExistsRequest request)
+    {
+        return this.SuccessfulResponse(new UserExistsResponse
+        {
+            Exists = "Alice" == request.Username
+        });
+    }
+}
+```
+
+### Services registration
+
+To register the services into IoC (using __Microsoft Dependency Injection__) and mediator, add at startup program ("__services__" is an instance of IServiceCollection):
+
+```C#
+using microservice.toolkit.messagemediator.extension;
+
+[...]
+
+// Uses assembly scan to retrieve all the "Service<,>" implementations
+var microservices = Assembly.GetAssembly(typeof(MyService)).GetServices(); 
+// or 
+var microservices = typeof(MyService).GetAssemblyServices();
+
+// Registers all the microservices
+services.AddServices(microservices);
+
+// Registers the "service factory" to resolve pattern into a service instance
+services.AddSingleton<ServiceFactory>(serviceProvider => pattern =>
+    serviceProvider.GetService(microservices.First(ms => ms.Name.Equals(pattern))) as IService
+);
+
+// Registers the message mediator 
+services.AddSingleton<IMessageMediator, LocalMessageMediator>();
+```
+
+### Service call
+
+To call a service using a mediator:
+
+```C#
+// to explicit only payload type:
+var response = await mediator.Send<int>(nameof(SquarePow), 2));
+// or, to explicit request and payload type:
+var response = await mediator.Send<int, int>(nameof(SquarePow), 2));
 ```
