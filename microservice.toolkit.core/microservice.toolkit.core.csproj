@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
     <Description>Everything you need for your entire micro services development life cycle. </Description>
   </PropertyGroup>
@@ -21,7 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\image\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
