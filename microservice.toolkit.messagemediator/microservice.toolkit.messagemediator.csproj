@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
-    <Description>An interface to define how microservices interact each other, using request-response pattern.</Description>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,6 +31,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\image\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include=".\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
