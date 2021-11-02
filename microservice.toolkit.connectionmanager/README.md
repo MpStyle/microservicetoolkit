@@ -14,17 +14,17 @@ Common interface to simplify the access to a SQL database.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.connectionmanager -Version 0.4.3
+Install-Package microservice.toolkit.connectionmanager -Version 0.4.4
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.connectionmanager --version 0.4.3
+dotnet add package microservice.toolkit.connectionmanager --version 0.4.4
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.connectionmanager" Version="0.4.3" />
+<PackageReference Include="microservice.toolkit.connectionmanager" Version="0.4.4" />
 ```
 
 ## Available extensions methods
