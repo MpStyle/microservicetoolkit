@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Evolve" Version="3.0.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+        <PackageReference Include="MySqlConnector" Version="1.3.14" />
+        <PackageReference Include="NUnit" Version="3.13.1" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+        <PackageReference Include="coverlet.collector" Version="3.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj" />
+      <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+      <ProjectReference Include="..\microservice.toolkit.migrationmanager\microservice.toolkit.migrationmanager.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="data\V1_0_0__Create_user_table.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="data\V2_0_0__Create_admin_user.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>

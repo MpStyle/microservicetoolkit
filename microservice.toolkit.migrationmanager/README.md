@@ -35,3 +35,13 @@ To start using Evolve migration manager, first install the required package:
 ```xml
 <PackageReference Include="Evolve" Version="3.0.0" />
 ```
+
+Example code:
+```C#
+var manager = new MigrationManager();
+var connectionString = "Server=127.0.0.1;User ID=root;Password=<PASSWORD>;database=test_db;";
+var migrationsFolder = "./migrations";
+var migrationExtension = ".mysql";
+
+manager.Apply(connectionString, migrationsFolder, migrationExtension);
+```

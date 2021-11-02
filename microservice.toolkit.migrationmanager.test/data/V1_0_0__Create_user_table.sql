@@ -1,0 +1,5 @@
+﻿CREATE TABLE t_user(
+    id VARCHAR(256) NOT NULL PRIMARY KEY,
+    username VARCHAR(256) NOT NULL,
+    password VARCHAR(256) NOT NULL
+);
