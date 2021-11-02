@@ -1,3 +1,4 @@
+using microservice.toolkit.configurationmanager.extension;
 
 using Microsoft.Extensions.Configuration;
 
@@ -11,13 +12,21 @@ namespace microservice.toolkit.configurationmanager.test
     [ExcludeFromCodeCoverage]
     public class ConfigurationManagerTest
     {
-        private ConfigurationManager configurationManager;
+        private IConfiguration configurationManager;
 
         [Test]
         public void GetString()
         {
             var stringValue = this.configurationManager.GetString("stringValue");
             Assert.AreEqual("Hello World!", stringValue);
+        }
+
+        [Test]
+        public void GetString_DefaultValue()
+        {
+            const string defaultValue = "Ciao Mondo!";
+            var stringValue = this.configurationManager.GetString("stringDefaultValue", defaultValue);
+            Assert.AreEqual(defaultValue, stringValue);
         }
 
         [Test]
@@ -28,9 +37,23 @@ namespace microservice.toolkit.configurationmanager.test
         }
 
         [Test]
+        public void GetInt_Default()
+        {
+            var intValue = this.configurationManager.GetInt("intDefaultValue", 69);
+            Assert.AreEqual(69, intValue);
+        }
+
+        [Test]
         public void GetBool()
         {
             var boolValue = this.configurationManager.GetBool("boolValue");
+            Assert.IsTrue(boolValue);
+        }
+
+        [Test]
+        public void GetBool_Default()
+        {
+            var boolValue = this.configurationManager.GetBool("boolDefaultValue", true);
             Assert.IsTrue(boolValue);
         }
 
@@ -44,6 +67,16 @@ namespace microservice.toolkit.configurationmanager.test
         }
 
         [Test]
+        public void GetStringArray_Default()
+        {
+            var stringArrayValue =
+                this.configurationManager.GetStringArray("stringArrayDefaultValue", new[] { "Ciao", "Mondo", "!" });
+            Assert.AreEqual("Ciao", stringArrayValue[0]);
+            Assert.AreEqual("Mondo", stringArrayValue[1]);
+            Assert.AreEqual("!", stringArrayValue[2]);
+        }
+
+        [Test]
         public void GetIntArray()
         {
             var intArrayValue = this.configurationManager.GetIntArray("intArrayValue");
@@ -53,20 +86,31 @@ namespace microservice.toolkit.configurationmanager.test
             Assert.AreEqual(4, intArrayValue[3]);
         }
 
+        [Test]
+        public void GetIntArray_Default()
+        {
+            var intArrayValue = this.configurationManager.GetIntArray("intArrayDefaultValue", new[] { 0, 9, 8, 7 });
+            Assert.AreEqual(0, intArrayValue[0]);
+            Assert.AreEqual(9, intArrayValue[1]);
+            Assert.AreEqual(8, intArrayValue[2]);
+            Assert.AreEqual(7, intArrayValue[3]);
+        }
+
         #region SetUp & TearDown
+
         [SetUp]
         public void SetUp()
         {
-            IConfiguration configuration = new ConfigurationBuilder()
+            this.configurationManager = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine("data", "ConfigurationManagerTest.json"))
                 .Build();
-            this.configurationManager = new ConfigurationManager(configuration);
         }
 
         [TearDown]
         public void TearDown()
         {
         }
+
         #endregion
     }
 }

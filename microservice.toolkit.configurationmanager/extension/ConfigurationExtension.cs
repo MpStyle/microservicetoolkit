@@ -1,12 +1,14 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 using System;
+using System.Diagnostics;
 
 namespace microservice.toolkit.configurationmanager.extension
 {
     public static class ConfigurationExtension
     {
-        public static bool GetBool(this IConfiguration configuration, string key)
+        public static bool GetBool(this IConfiguration configuration, string key, bool defaultValue = default)
         {
             try
             {
@@ -14,11 +16,12 @@ namespace microservice.toolkit.configurationmanager.extension
             }
             catch (Exception ex)
             {
-                return default;
+                Debug.WriteLine(ex);
+                return defaultValue;
             }
         }
 
-        public static int GetInt(this IConfiguration configuration, string key)
+        public static int GetInt(this IConfiguration configuration, string key, int defaultValue = default)
         {
             try
             {
@@ -26,45 +29,50 @@ namespace microservice.toolkit.configurationmanager.extension
             }
             catch (Exception ex)
             {
-                return default;
+                Debug.WriteLine(ex);
+                return defaultValue;
             }
         }
 
-        public static string GetString(this IConfiguration configuration, string key)
+        public static string GetString(this IConfiguration configuration, string key, string defaultValue = default)
         {
             try
             {
-                return configuration[key];
+                return configuration[key] ?? defaultValue;
             }
             catch (Exception ex)
             {
-                return default;
+                Debug.WriteLine(ex);
+                return defaultValue;
             }
         }
 
-        public static string[] GetStringArray(this IConfiguration configuration, string key)
-        {
-            try
-            {
-                var section = configuration.GetSection(key);
-                return section.Get<string[]>();
-            }
-            catch (Exception ex)
-            {
-                return default;
-            }
-        }
-
-        public static int[] GetIntArray(this IConfiguration configuration, string key)
+        public static string[] GetStringArray(this IConfiguration configuration, string key,
+            string[] defaultValue = default)
         {
             try
             {
                 var section = configuration.GetSection(key);
-                return section.Get<int[]>();
+                return section.Get<string[]>() ?? defaultValue;
             }
             catch (Exception ex)
             {
-                return default;
+                Debug.WriteLine(ex);
+                return defaultValue;
+            }
+        }
+
+        public static int[] GetIntArray(this IConfiguration configuration, string key, int[] defaultValue = default)
+        {
+            try
+            {
+                var section = configuration.GetSection(key);
+                return section.Get<int[]>() ?? defaultValue;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return defaultValue;
             }
         }
     }
