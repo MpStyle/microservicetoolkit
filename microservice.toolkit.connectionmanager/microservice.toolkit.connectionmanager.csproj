@@ -14,6 +14,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>microservice, database, sql, connection, mysql, postgresql, sqlserver</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
+    <Description>Common interface to simplify the access to a SQL database.</Description>
   </PropertyGroup>
 
   <ItemGroup>
