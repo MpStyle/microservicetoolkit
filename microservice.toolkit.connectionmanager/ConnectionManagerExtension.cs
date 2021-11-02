@@ -11,7 +11,7 @@ namespace microservice.toolkit.connectionmanager
 {
     public static class ConnectionManagerExtension
     {
-        private readonly static Dictionary<Type, DbType> typeMapper = new Dictionary<Type, DbType>(37)
+        private readonly static Dictionary<Type, DbType> TypeMapper = new(37)
         {
             [typeof(byte)] = DbType.Byte,
             [typeof(sbyte)] = DbType.SByte,
@@ -70,7 +70,7 @@ namespace microservice.toolkit.connectionmanager
                 var dbType = DbType.Object;
                 if (value != null)
                 {
-                    dbType = value.GetType().IsEnum ? typeMapper[typeof(int)] : typeMapper[item.Value.GetType()];
+                    dbType = value.GetType().IsEnum ? TypeMapper[typeof(int)] : TypeMapper[item.Value.GetType()];
                 }
 
                 param.DbType = dbType;
