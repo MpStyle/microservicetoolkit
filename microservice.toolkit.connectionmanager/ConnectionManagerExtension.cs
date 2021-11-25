@@ -86,7 +86,7 @@ namespace microservice.toolkit.connectionmanager
             return lambda(cmd);
         }
 
-        public static List<T> Execute<T>(this DbConnection conn, string sql, Func<DbDataReader, T> lambda,
+        public static T[] Execute<T>(this DbConnection conn, string sql, Func<DbDataReader, T> lambda,
             Dictionary<string, object> parameters = null)
         {
             return conn.Execute(command =>
@@ -94,16 +94,16 @@ namespace microservice.toolkit.connectionmanager
                 command.CommandText = sql;
                 command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-                var objects = new List<T>();
-
                 using (var reader = command.ExecuteReader())
                 {
+                    var objects = new List<T>();
+                    
                     while (reader.Read())
                     {
                         objects.Add(lambda(reader));
                     }
 
-                    return objects;
+                    return objects.ToArray();
                 }
             });
         }
@@ -125,7 +125,7 @@ namespace microservice.toolkit.connectionmanager
             }
         }
 
-        public static async Task<List<T>> ExecuteAsync<T>(this DbConnection conn, string sql,
+        public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
             Func<DbDataReader, T> lambda,
             Dictionary<string, object> parameters = null)
         {
@@ -134,16 +134,16 @@ namespace microservice.toolkit.connectionmanager
                 command.CommandText = sql;
                 command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-                var objects = new List<T>();
-
                 using (var reader = await command.ExecuteReaderAsync())
                 {
+                    var objects = new List<T>();
+                    
                     while (await reader.ReadAsync())
                     {
                         objects.Add(lambda(reader));
                     }
 
-                    return objects;
+                    return objects.ToArray();
                 }
             });
         }

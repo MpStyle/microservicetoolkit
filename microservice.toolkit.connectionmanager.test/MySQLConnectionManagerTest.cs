@@ -57,9 +57,9 @@ namespace microservice.toolkit.connectionmanager.test
                 reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(2, result.Length);
 
-            for (var i = 0; i < result.Count; i++)
+            for (var i = 0; i < result.Length; i++)
             {
                 Assert.AreEqual(i + 1, result[i].Code);
                 Assert.AreEqual($"my_title {i + 1}", result[i].Title);
