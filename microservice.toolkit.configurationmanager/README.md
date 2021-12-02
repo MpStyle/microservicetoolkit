@@ -14,17 +14,17 @@ Common interface to access to configurations value.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.configurationmanager -Version 0.4.6
+Install-Package microservice.toolkit.configurationmanager -Version 0.4.7
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.configurationmanager --version 0.4.6
+dotnet add package microservice.toolkit.configurationmanager --version 0.4.7
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.configurationmanager" Version="0.4.6" />
+<PackageReference Include="microservice.toolkit.configurationmanager" Version="0.4.7" />
 ```
 
 ## Available methods
