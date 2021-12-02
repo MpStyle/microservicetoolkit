@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.connectionmanager
 {
-    public static class ConnectionManagerExtension
+    public static class DbConnectionExtension
     {
         private readonly static Dictionary<Type, DbType> TypeMapper = new(37)
         {
