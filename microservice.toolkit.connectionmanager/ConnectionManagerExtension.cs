@@ -79,10 +79,18 @@ namespace microservice.toolkit.connectionmanager
             }).ToArray();
         }
 
-        public static T Execute<T>(this DbConnection conn, Func<DbCommand, T> lambda)
+        public static T Execute<T>(this DbConnection conn, 
+            Func<DbCommand, T> lambda,
+            Dictionary<string, object> parameters = null)
         {
             conn.SafeOpen();
             using var cmd = conn.CreateCommand();
+            
+            if (parameters != null)
+            {
+                cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
+            }
+            
             return lambda(cmd);
         }
 
