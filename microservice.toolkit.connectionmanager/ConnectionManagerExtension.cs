@@ -116,11 +116,18 @@ namespace microservice.toolkit.connectionmanager
             return result.IsNullOrEmpty() ? default : result.First();
         }
 
-        public static async Task<T> ExecuteAsync<T>(this DbConnection conn, Func<DbCommand, Task<T>> lambda)
+        public static async Task<T> ExecuteAsync<T>(this DbConnection conn, 
+            Func<DbCommand, Task<T>> lambda,
+            Dictionary<string, object> parameters = null)
         {
             await conn.SafeOpenAsync();
             using (var cmd = conn.CreateCommand())
             {
+                if (parameters != null)
+                {
+                    cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
+                }
+
                 return await lambda(cmd);
             }
         }
