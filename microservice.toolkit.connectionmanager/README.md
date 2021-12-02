@@ -44,9 +44,9 @@ List<T> Execute<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, 
 T ExecuteFirst<T>(string sql, Func<DbDataReader, T> lambda, Dictionary<string, object> parameters = null);
 ```
 
-### ExecuteAsync<T>(Func<DbCommand, Task<T>>, Dictionary<string, object>)
+### ExecuteAsync<T>(Func<DbCommand, Task<T>>)
 ```C#
-Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda, Dictionary<string, object> parameters = null);
+Task<T> ExecuteAsync<T>(Func<DbCommand, Task<T>> lambda);
 ```
 
 ### ExecuteAsync<T>(string, Func<DbDataReader, T>, Dictionary<string, object>)
