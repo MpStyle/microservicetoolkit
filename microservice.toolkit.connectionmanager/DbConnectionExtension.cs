@@ -91,7 +91,7 @@ namespace microservice.toolkit.connectionmanager
 
                 if (parameters.IsNullOrEmpty() == false)
                 {
-                    cmd.Parameters.Add(parameters.ToDbParameter(cmd));
+                    cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
                 }
 
                 return cmd.ExecuteNonQuery();
@@ -114,7 +114,7 @@ namespace microservice.toolkit.connectionmanager
                 
                 if (parameters.IsNullOrEmpty() == false)
                 {
-                    command.Parameters.Add(parameters.ToDbParameter(command));
+                    command.Parameters.AddRange(parameters.ToDbParameter(command));
                 }
 
                 using (var reader = command.ExecuteReader())
@@ -151,7 +151,7 @@ namespace microservice.toolkit.connectionmanager
 
                 if (parameters.IsNullOrEmpty() == false)
                 {
-                    cmd.Parameters.Add(parameters.ToDbParameter(cmd));
+                    cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
                 }
 
                 return await cmd.ExecuteNonQueryAsync();
