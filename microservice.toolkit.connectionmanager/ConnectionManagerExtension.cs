@@ -78,6 +78,25 @@ namespace microservice.toolkit.connectionmanager
                 return param;
             }).ToArray();
         }
+        
+        public static int ExecuteStoredProcedure(this DbConnection conn, string storedProcedureName,
+            Dictionary<string, object> parameters = null)
+        {
+            conn.SafeOpen();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = storedProcedureName;
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (parameters.IsNullOrEmpty() == false)
+                {
+                    cmd.Parameters.Add(parameters.ToDbParameter(cmd));
+                }
+
+                return cmd.ExecuteNonQuery();
+            }
+        }
 
         public static T Execute<T>(this DbConnection conn, Func<DbCommand, T> lambda)
         {
@@ -92,12 +111,16 @@ namespace microservice.toolkit.connectionmanager
             return conn.Execute(command =>
             {
                 command.CommandText = sql;
-                command.Parameters.AddRange(parameters.ToDbParameter(command));
+                
+                if (parameters.IsNullOrEmpty() == false)
+                {
+                    command.Parameters.Add(parameters.ToDbParameter(command));
+                }
 
                 using (var reader = command.ExecuteReader())
                 {
                     var objects = new List<T>();
-                    
+
                     while (reader.Read())
                     {
                         objects.Add(lambda(reader));
@@ -114,6 +137,25 @@ namespace microservice.toolkit.connectionmanager
             var result = conn.Execute(sql, lambda, parameters);
 
             return result.IsNullOrEmpty() ? default : result.First();
+        }
+
+        public static async Task<int> ExecuteStoredProcedureAsync(this DbConnection conn, string storedProcedureName,
+            Dictionary<string, object> parameters = null)
+        {
+            await conn.SafeOpenAsync();
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = storedProcedureName;
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (parameters.IsNullOrEmpty() == false)
+                {
+                    cmd.Parameters.Add(parameters.ToDbParameter(cmd));
+                }
+
+                return await cmd.ExecuteNonQueryAsync();
+            }
         }
 
         public static async Task<T> ExecuteAsync<T>(this DbConnection conn, Func<DbCommand, Task<T>> lambda)
@@ -137,7 +179,7 @@ namespace microservice.toolkit.connectionmanager
                 using (var reader = await command.ExecuteReaderAsync())
                 {
                     var objects = new List<T>();
-                    
+
                     while (await reader.ReadAsync())
                     {
                         objects.Add(lambda(reader));
