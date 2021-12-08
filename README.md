@@ -16,17 +16,17 @@ __Microservice Toolkit__ is the fastest and smartest way to produce industry-lea
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.core -Version 0.4.9
+Install-Package microservice.toolkit.core -Version 0.5.0
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.core --version 0.4.9
+dotnet add package microservice.toolkit.core --version 0.5.0
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.core" Version="0.4.9" />
+<PackageReference Include="microservice.toolkit.core" Version="0.5.0" />
 ```
 
 ## Key Features :key:
