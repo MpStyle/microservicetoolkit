@@ -27,7 +27,7 @@ namespace microservice.toolkit.messagemediator
             }
         }
         
-        protected Task<ServiceResponse<TPayload>> SuccessfulResponseAsync(TPayload payload)
+        protected Task<ServiceResponse<TPayload>> SuccessfulResponseTask(TPayload payload)
         {
             return Task.FromResult(this.SuccessfulResponse(payload));
         }
@@ -37,7 +37,7 @@ namespace microservice.toolkit.messagemediator
             return this.Response(payload, null);
         }
         
-        protected Task<ServiceResponse<TPayload>> UnsuccessfulResponseAsync(int error)
+        protected Task<ServiceResponse<TPayload>> UnsuccessfulResponseTask(int error)
         {
             return Task.FromResult(UnsuccessfulResponse(error));
         }
@@ -50,7 +50,7 @@ namespace microservice.toolkit.messagemediator
             };
         }
         
-        protected Task<ServiceResponse<TPayload>> ResponseAsync(TPayload payload, int? error)
+        protected Task<ServiceResponse<TPayload>> ResponseTask(TPayload payload, int? error)
         {
             return Task.FromResult(this.Response(payload, error));
         }
