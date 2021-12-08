@@ -62,15 +62,15 @@ namespace microservice.toolkit.connectionmanager
             return obj.Select(item =>
             {
                 var param = command.CreateParameter();
-                var value = item.Value;
+                var (key, value) = item;
 
-                param.ParameterName = item.Key;
+                param.ParameterName = key;
                 param.Value = value ?? DBNull.Value;
 
-                var dbType = DbType.Object;
+                var dbType = DbType.Int64;
                 if (value != null)
                 {
-                    dbType = value.GetType().IsEnum ? TypeMapper[typeof(int)] : TypeMapper[item.Value.GetType()];
+                    dbType = value.GetType().IsEnum ? TypeMapper[typeof(int)] : TypeMapper[value.GetType()];
                 }
 
                 param.DbType = dbType;
@@ -78,7 +78,7 @@ namespace microservice.toolkit.connectionmanager
                 return param;
             }).ToArray();
         }
-        
+
         public static int ExecuteStoredProcedure(this DbConnection conn, string storedProcedureName,
             Dictionary<string, object> parameters = null)
         {
@@ -111,7 +111,7 @@ namespace microservice.toolkit.connectionmanager
             return conn.Execute(command =>
             {
                 command.CommandText = sql;
-                
+
                 if (parameters.IsNullOrEmpty() == false)
                 {
                     command.Parameters.AddRange(parameters.ToDbParameter(command));
@@ -151,7 +151,8 @@ namespace microservice.toolkit.connectionmanager
 
                 if (parameters.IsNullOrEmpty() == false)
                 {
-                    cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
+                    var values = parameters.ToDbParameter(cmd);
+                    cmd.Parameters.AddRange(values);
                 }
 
                 return await cmd.ExecuteNonQueryAsync();

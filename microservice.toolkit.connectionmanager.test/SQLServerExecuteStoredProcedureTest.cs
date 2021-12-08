@@ -45,6 +45,41 @@ namespace microservice.toolkit.connectionmanager.test
 
             Assert.AreEqual(itemId, itemIds[0]);
         }
+        
+        [Test]
+        public async Task ExecuteStoredProcedureAsync_NullValue()
+        {
+            var itemPropertyId = Guid.NewGuid().ToString();
+            await this.dbConnection.ExecuteStoredProcedureAsync("ItemPropertyUpsert",
+                new Dictionary<string, object>
+                {
+                    {"@Id", itemPropertyId},
+                    {"@ItemId", Guid.NewGuid().ToString()},
+                    {"@Key", Guid.NewGuid().ToString()},
+                    {"@StringValue", null},
+                    {"@IntValue", 1},
+                    {"@LongValue", null},
+                    {"@FloatValue", null},
+                    {"@BoolValue", null},
+                    {"@Order", null},
+                });
+            
+            var itemPropertyIds = this.dbConnection.Execute(cmd =>
+            {
+                cmd.CommandText = "SELECT * FROM ItemProperty";
+                using var reader = cmd.ExecuteReader();
+                var objects = new List<string>();
+
+                while (reader.Read())
+                {
+                    objects.Add(reader.GetString(0));
+                }
+
+                return objects;
+            });
+
+            Assert.AreEqual(itemPropertyId, itemPropertyIds[0]);
+        }
 
         [SetUp]
         public void SetUp()
@@ -58,19 +93,23 @@ namespace microservice.toolkit.connectionmanager.test
             var currentAssemblyLocation =
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
 
-            this.dbConnection.Execute(cmd =>
+            var setupFiles = new string[]
             {
-                cmd.CommandText =
-                    File.ReadAllText(Path.Combine(currentAssemblyLocation, "data", "CreateItemTable.sql"));
-                return cmd.ExecuteNonQuery();
-            });
+                "CreateItemTable.sql",
+                "CreateItemUpsertProcedure.sql",
+                "CreateItemPropertyTable.sql",
+                "CreateItemPropertyUpsertProcedure.sql"
+            };
 
-            this.dbConnection.Execute(cmd =>
+            foreach (var setupFile in setupFiles)
             {
-                cmd.CommandText =
-                    File.ReadAllText(Path.Combine(currentAssemblyLocation, "data", "CreateItemUpsertProcedure.sql"));
-                return cmd.ExecuteNonQuery();
-            });
+                this.dbConnection.Execute(cmd =>
+                {
+                    cmd.CommandText =
+                        File.ReadAllText(Path.Combine(currentAssemblyLocation, "data", setupFile));
+                    return cmd.ExecuteNonQuery();
+                });
+            }
         }
 
         [TearDown]
@@ -78,7 +117,7 @@ namespace microservice.toolkit.connectionmanager.test
         {
             this.dbConnection.Execute(cmd =>
             {
-                cmd.CommandText = "DROP TABLE Item; DROP PROCEDURE ItemUpsert;";
+                cmd.CommandText = "DROP TABLE Item; DROP PROCEDURE ItemUpsert;DROP TABLE ItemProperty; DROP PROCEDURE ItemPropertyUpsert;";
                 return cmd.ExecuteNonQuery();
             });
         }
