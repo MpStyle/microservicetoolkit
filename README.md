@@ -12,7 +12,17 @@ Everything you need for your entire micro services development life cycle.
 
 __Microservice Toolkit__ is the fastest and smartest way to produce industry-leading microservices that users love.
 
+A progressive .NET and ASP.NET toolkit for coding fast, reliable and scalable server-side and desktop applications.
+
+Written in C#, __Microservice Toolkit__ takes advantage of the power of .NET framework to make possible to write efficient code in a short time. 
+
+![Microservice Toolkit Logo](image/icon.png)
+
 ## How to install
+
+It is a modular toolkit. 
+
+The Core library ("__microservice.toolkit.core__") is the foundation and it is a necessary dependency if you want to use __Microservice Toolkit__.
 
 ### Package Manager
 ```
@@ -30,10 +40,13 @@ dotnet add package microservice.toolkit.core --version 0.5.0
 ```
 
 ## Key Features :key:
+
+The other libraries (included in __Microservice Toolkit__) collects and enriches the already powerful .NET framework and other C# libraries. 
+
 - [Message mediator](./microservice.toolkit.messagemediator/README.md): microservices connection on desktop and cloud application
-- [Cache manager](./microservice.toolkit.cachemanager/README.md): warehouse for frequently requested data
+- [Cache manager](./microservice.toolkit.cachemanager/README.md): warehouse for web and cloud application for frequently requested data
 - [Configuration Manager](./microservice.toolkit.configurationmanager/README.md): strongly typed configuration reader
-- [Database connection manager](./microservice.toolkit.connectionmanager/README.md): link to SQL databases
+- [Database connection manager](./microservice.toolkit.connectionmanager/README.md): enriches the DbConnection object with powerful extension methods
 - [Migration Manager](./microservice.toolkit.migrationmanager/README.md): version control for databases
 
 ### Release Notes :page_with_curl:

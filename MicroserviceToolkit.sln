@@ -47,6 +47,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.core.t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.migrationmanager.test", "microservice.toolkit.migrationmanager.test\microservice.toolkit.migrationmanager.test.csproj", "{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{244E9E5D-0A4D-47EF-9D41-A784EDAE119F}"
+ProjectSection(SolutionItems) = preProject
+	image\icon.png = image\icon.png
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,5 +116,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{41198E3E-B08B-4D9B-80CE-917C624F4E4B} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 		{21F4632F-39C1-4ECF-B71D-B49F87D98771} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
+		{244E9E5D-0A4D-47EF-9D41-A784EDAE119F} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 	EndGlobalSection
 EndGlobal
