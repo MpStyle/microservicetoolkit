@@ -1,5 +1,6 @@
 using microservice.toolkit.connectionmanager;
 using microservice.toolkit.core;
+using microservice.toolkit.migrationmanager.extension;
 
 using MySqlConnector;
 
@@ -13,16 +14,12 @@ namespace microservice.toolkit.migrationmanager.test
 {
     public class MigrationManagerTest
     {
-        private IMigrationManager manager;
         private DbConnection connectionManager;
 
         [Test]
         public void Apply()
         {
-            this.manager.Apply(new MigrationManagerConfiguration
-            {
-                DbConnection = this.connectionManager, Extension = ".sql", Folder = "./data"
-            });
+            this.connectionManager.Apply("./data", ".sql");
 
             var result = this.connectionManager.ExecuteFirst(
                 "SELECT * FROM t_user WHERE id = \"admin-01\"",
@@ -45,7 +42,6 @@ namespace microservice.toolkit.migrationmanager.test
             var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? "root";
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
-            this.manager = new MigrationManager();
             this.connectionManager =
                 new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
         }
