@@ -61,7 +61,7 @@ namespace microservice.toolkit.connectionmanager
 
             return obj.Select(item => command.ToDbParameter(item.Key, item.Value)).ToArray();
         }
-        
+
         public static DbParameter ToDbParameter(this DbCommand command, string name, object value)
         {
             var param = command.CreateParameter();
@@ -191,7 +191,7 @@ namespace microservice.toolkit.connectionmanager
                 }
             });
         }
-
+        
         public static async Task<T> ExecuteFirstAsync<T>(this DbConnection conn, string sql,
             Func<DbDataReader, T> lambda,
             Dictionary<string, object> parameters = null)
@@ -199,6 +199,19 @@ namespace microservice.toolkit.connectionmanager
             var result = await conn.ExecuteAsync(sql, lambda, parameters);
 
             return result.IsNullOrEmpty() ? default : result.First();
+        }
+
+        public static int ExecuteNonQuery(this DbConnection conn, string query,
+            Dictionary<string, object> parameters = null)
+        {
+            conn.SafeOpen();
+            using (var command = conn.CreateCommand())
+            {
+                command.CommandText = query;
+                command.Parameters.AddRange(parameters.ToDbParameter(command));
+
+                return command.ExecuteNonQuery();
+            }
         }
 
         public static async Task<int> ExecuteNonQueryAsync(this DbConnection conn, string query,
