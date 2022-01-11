@@ -59,24 +59,25 @@ namespace microservice.toolkit.connectionmanager
                 return Array.Empty<DbParameter>();
             }
 
-            return obj.Select(item =>
+            return obj.Select(item => command.ToDbParameter(item.Key, item.Value)).ToArray();
+        }
+        
+        public static DbParameter ToDbParameter(this DbCommand command, string name, object value)
+        {
+            var param = command.CreateParameter();
+
+            param.ParameterName = name;
+            param.Value = value ?? DBNull.Value;
+
+            var dbType = DbType.Int64;
+            if (value != null)
             {
-                var param = command.CreateParameter();
-                var (key, value) = item;
+                dbType = value.GetType().IsEnum ? TypeMapper[typeof(int)] : TypeMapper[value.GetType()];
+            }
 
-                param.ParameterName = key;
-                param.Value = value ?? DBNull.Value;
+            param.DbType = dbType;
 
-                var dbType = DbType.Int64;
-                if (value != null)
-                {
-                    dbType = value.GetType().IsEnum ? TypeMapper[typeof(int)] : TypeMapper[value.GetType()];
-                }
-
-                param.DbType = dbType;
-
-                return param;
-            }).ToArray();
+            return param;
         }
 
         public static int ExecuteStoredProcedure(this DbConnection conn, string storedProcedureName,
