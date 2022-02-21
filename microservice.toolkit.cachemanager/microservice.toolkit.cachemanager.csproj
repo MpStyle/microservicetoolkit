@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>microservice.toolkit.cachemanager</AssemblyName>
     <RootNamespace>microservice.toolkit.cachemanager</RootNamespace>
     <Authors>Michele Pagnin</Authors>
@@ -15,6 +15,7 @@
     <PackageTags>microservice, microservices, cloud, cache, redit, database</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Common interface to manage cache using different providers.</Description>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>microservice.toolkit.configurationmanager</AssemblyName>
     <RootNamespace>microservice.toolkit.configurationmanager</RootNamespace>
     <Authors>Michele Pagnin</Authors>
@@ -14,6 +14,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Common interface to access to configurations value.</Description>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
