@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace microservice.toolkit.connectionmanager.test
 {
     [ExcludeFromCodeCoverage]
-    public class SQLServerExecuteStoredProcedureTest
+    public class SqlServerExecuteStoredProcedureTest
     {
         private SqlConnection dbConnection;
 
@@ -51,6 +51,41 @@ namespace microservice.toolkit.connectionmanager.test
         {
             var itemPropertyId = Guid.NewGuid().ToString();
             await this.dbConnection.ExecuteStoredProcedureAsync("ItemPropertyUpsert",
+                new Dictionary<string, object>
+                {
+                    {"@Id", itemPropertyId},
+                    {"@ItemId", Guid.NewGuid().ToString()},
+                    {"@Key", Guid.NewGuid().ToString()},
+                    {"@StringValue", null},
+                    {"@IntValue", 1},
+                    {"@LongValue", null},
+                    {"@FloatValue", null},
+                    {"@BoolValue", null},
+                    {"@Order", null},
+                });
+            
+            var itemPropertyIds = this.dbConnection.Execute(cmd =>
+            {
+                cmd.CommandText = "SELECT * FROM ItemProperty";
+                using var reader = cmd.ExecuteReader();
+                var objects = new List<string>();
+
+                while (reader.Read())
+                {
+                    objects.Add(reader.GetString(0));
+                }
+
+                return objects;
+            });
+
+            Assert.AreEqual(itemPropertyId, itemPropertyIds[0]);
+        }
+        
+        [Test]
+        public void ExecuteStoredProcedure_NullValue()
+        {
+            var itemPropertyId = Guid.NewGuid().ToString();
+            this.dbConnection.ExecuteStoredProcedure("ItemPropertyUpsert",
                 new Dictionary<string, object>
                 {
                     {"@Id", itemPropertyId},
