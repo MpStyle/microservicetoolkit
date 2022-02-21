@@ -12,17 +12,17 @@ __The library is a work in progress. It is not yet considered production-ready._
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.migrationmanager -Version 0.6.0
+Install-Package microservice.toolkit.migrationmanager -Version 0.6.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.migrationmanager --version 0.6.0
+dotnet add package microservice.toolkit.migrationmanager --version 0.6.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.migrationmanager" Version="0.6.0" />
+<PackageReference Include="microservice.toolkit.migrationmanager" Version="0.6.1" />
 ```
 
 ## Implementations
