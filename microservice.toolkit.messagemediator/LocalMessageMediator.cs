@@ -61,9 +61,9 @@ namespace microservice.toolkit.messagemediator
             }
         }
 
-        public async Task Emit<TEvent>(string pattern, TEvent e)
+        public void Emit<TEvent>(string pattern, TEvent e)
         {
-            await this.Send<TEvent>(pattern, e).ConfigureAwait(false);
+            this.Send<TEvent>(pattern, e).ConfigureAwait(false);
         }
 
         public Task Shutdown()

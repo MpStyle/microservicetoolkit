@@ -29,7 +29,7 @@ namespace microservice.toolkit.core
         /// <returns></returns>
         Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
 
-        Task Emit<TEvent>(string pattern, TEvent e);
+        void Emit<TEvent>(string pattern, TEvent e);
 
         Task Shutdown();
     }

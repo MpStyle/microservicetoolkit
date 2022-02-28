@@ -64,12 +64,16 @@ namespace microservice.toolkit.messagemediator
             });
         }
 
-        public async Task Emit<TEvent>(string pattern, TEvent e)
+        public void Emit<TEvent>(string pattern, TEvent e)
         {
-            await this.Send<TEvent>(new BrokeredMessage
+            var message = new BrokeredMessage
             {
                 Pattern = pattern, Payload = e, RequestType = e.GetType().FullName, WaitingResponse = false
-            }).ConfigureAwait(false);
+            };
+
+            var producerProps = this.producerChannel.CreateBasicProperties();
+            var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+            this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
         }
 
         private async Task<ServiceResponse<TPayload>> Send<TPayload>(BrokeredMessage message)

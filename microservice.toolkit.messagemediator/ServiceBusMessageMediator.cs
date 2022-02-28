@@ -43,7 +43,7 @@ namespace microservice.toolkit.messagemediator
             {
                 logger.LogError(args.Exception.Message);
                 return Task.CompletedTask;
-            }) { AutoComplete = false, MaxConcurrentCalls = (int)this.configuration.ConsumersPerQueue });
+            }) {AutoComplete = false, MaxConcurrentCalls = (int)this.configuration.ConsumersPerQueue});
 
             this.responseSessionClient = new SessionClient(connection, configuration.ReplayQueueName);
 
@@ -57,12 +57,16 @@ namespace microservice.toolkit.messagemediator
             await this.requestClient.CloseAsync();
         }
 
-        public async Task Emit<TEvent>(string pattern, TEvent e)
+        public void Emit<TEvent>(string pattern, TEvent e)
         {
-            await this.Send<TEvent>(new BrokeredMessage
+            var message = new BrokeredMessage
             {
                 Pattern = pattern, Payload = e, RequestType = e.GetType().FullName, WaitingResponse = false
-            }).ConfigureAwait(false);
+            };
+            var serializedMessage = JsonSerializer.Serialize(message);
+            var encodedMessage = new Message {Body = Encoding.UTF8.GetBytes(serializedMessage)};
+
+            this.requestClient.SendAsync(encodedMessage).ConfigureAwait(false);
         }
 
         public async Task Shutdown()
@@ -105,7 +109,7 @@ namespace microservice.toolkit.messagemediator
                 // Receive response
                 var reply = await session.ReceiveAsync(
                     TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
-                var response = new ServiceResponse<TPayload> { Error = ErrorCode.InvalidService };
+                var response = new ServiceResponse<TPayload> {Error = ErrorCode.InvalidService};
 
                 // Timeout
                 if (reply == null)
@@ -136,7 +140,7 @@ namespace microservice.toolkit.messagemediator
             }
 
             var service = this.serviceFactory.Invoke(rpcMessage.Pattern);
-            var response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
+            var response = new ServiceResponse<object> {Error = ErrorCode.ServiceNotFound};
 
             if (service != null && rpcMessage.Payload is JsonElement element)
             {
