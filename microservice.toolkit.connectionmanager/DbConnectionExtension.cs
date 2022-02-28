@@ -1,5 +1,4 @@
-﻿using microservice.toolkit.connectionmanager.objectmapper;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.extension;
 
 using System;
 using System.Collections.Generic;
@@ -323,8 +322,8 @@ namespace microservice.toolkit.connectionmanager
         {
             return reader =>
             {
-                var accessor = ObjectMapper.Create(typeof(T));
-                var members = accessor.GetMemberNames();
+                var accessor = objectmapper.TypeMapper.Map(typeof(T));
+                var members = accessor.TypeTypeProperties;
                 var t = new T();
 
                 for (var i = 0; i < reader.FieldCount; i++)
@@ -335,15 +334,15 @@ namespace microservice.toolkit.connectionmanager
                     }
 
                     var typeMemberName =
-                        members.FirstOrDefault(m => string.Equals(m, reader.GetName(i), fieldsComparison));
+                        members.FirstOrDefault(m => string.Equals(m.Name, reader.GetName(i), fieldsComparison));
                     if (typeMemberName == default)
                     {
                         continue;
                     }
 
                     var ts = transformations ?? new Dictionary<string, Func<object, object>>();
-                    var transformation = ts.GetValueOrDefault(typeMemberName, obj => obj);
-                    accessor[t, typeMemberName] = transformation(reader.GetValue(i));
+                    var transformation = ts.GetValueOrDefault(typeMemberName.Name, obj => obj);
+                    accessor[t, typeMemberName.Name] = transformation(reader.GetValue(i));
                 }
 
                 return t;
