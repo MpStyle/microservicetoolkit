@@ -8,6 +8,17 @@ __The library is a work in progress. It is not yet considered production-ready._
 ![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.migrationmanager)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.migrationmanager)
 
+A collection of extension methods to manage schema evolution across all your environments.
+
+Supported databases:
+- PostgreSQL
+- SQL Server
+- SQLite
+- MySQL
+- MariaDB
+- Cassandra
+- CockroachDB
+
 ## How to install
 
 ### Package Manager
@@ -25,23 +36,18 @@ dotnet add package microservice.toolkit.migrationmanager --version 0.6.2
 <PackageReference Include="microservice.toolkit.migrationmanager" Version="0.6.2" />
 ```
 
-## Implementations
-- [Evolve](#evolve)
+## How to use
+Under the hood, the library use [Evolve](https://evolve-db.netlify.app/) to apply DB migrations, so before to start using Migration Manager, install the required package:
 
-### Evolve migration manager
-
-<a name="evolve"></a>
-To start using Evolve migration manager, first install the required package:
 ```xml
 <PackageReference Include="Evolve" Version="3.0.0" />
 ```
 
 Example code:
 ```C#
-var manager = new MigrationManager();
-var connectionString = "Server=127.0.0.1;User ID=root;Password=<PASSWORD>;database=test_db;";
+var dbConnection = new MySqlConnection("Server=<HOST>;User ID=<USERNAME>;Password=<PASSWORD>;database=<DATABASE_NAME>;");
 var migrationsFolder = "./migrations";
 var migrationExtension = ".mysql";
 
-manager.Apply(connectionString, migrationsFolder, migrationExtension);
+manager.Apply(migrationsFolder, migrationExtension);
 ```
