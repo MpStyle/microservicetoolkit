@@ -18,7 +18,7 @@ public class AssemblyScannerExtensionTest
     public void GetServices()
     {
         var serviceTypes = Assembly.GetAssembly(typeof(ValidService01)).GetServices();
-        Assert.AreEqual(2, serviceTypes.Length);
+        Assert.AreEqual(4, serviceTypes.Length);
         Assert.AreEqual(typeof(ValidService01).FullName, serviceTypes[0].FullName);
         Assert.AreEqual(typeof(ValidService02).FullName, serviceTypes[1].FullName);
     }
@@ -27,7 +27,7 @@ public class AssemblyScannerExtensionTest
     public void GetAssemblyServices()
     {
         var serviceTypes = typeof(ValidService01).GetAssemblyServices();
-        Assert.AreEqual(2, serviceTypes.Length);
+        Assert.AreEqual(4, serviceTypes.Length);
         Assert.AreEqual(typeof(ValidService01).FullName, serviceTypes[0].FullName);
         Assert.AreEqual(typeof(ValidService02).FullName, serviceTypes[1].FullName);
     }
