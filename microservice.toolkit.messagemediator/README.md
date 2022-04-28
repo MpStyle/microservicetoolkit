@@ -108,6 +108,7 @@ To implement a service, extend the abstract class "_Service<TRequest, TPayload>_
 Example code:
 
 ```C#
+[MicroService(nameof(UserExists))]
 public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 {
     public async override Task<ServiceResponse<UserExistsResponse>> Run(UserExistsRequest request)
@@ -130,19 +131,23 @@ using microservice.toolkit.messagemediator.extension;
 [...]
 
 // Uses assembly scan to retrieve all the "Service<,>" implementations
-var microservices = Assembly.GetAssembly(typeof(MyService)).GetServices(); 
+var microservices = Assembly.GetAssembly(typeof(UserExists)).GetServices(); 
 // or 
-var microservices = typeof(MyService).GetAssemblyServices();
+// var microservices = typeof(UserExists).GetAssemblyServices();
 
 // Registers all the microservices as singleton
 services.AddServices(microservices);
 // Or specify the life time
 // services.AddServices(ServiceLifetime.Scoped, microservices);
 
-// Registers the "service factory" to resolve pattern into a service instance
-services.AddSingleton<ServiceFactory>(serviceProvider => pattern =>
-    serviceProvider.GetService(microservices.First(ms => ms.Name.Equals(pattern))) as IService
+[...]
+
+// Registers the "service factory" 
+services.AddSingleton<ServiceFactory>(serviceProvider => 
+    serviceProvider.ByNameServiceFactory(microservices)
 );
+
+[...]
 
 // Registers the message mediator 
 services.AddSingleton<IMessageMediator, LocalMessageMediator>();
