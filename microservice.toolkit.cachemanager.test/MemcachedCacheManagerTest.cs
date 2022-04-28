@@ -96,6 +96,12 @@ namespace microservice.toolkit.cachemanager.test
         {
             this.manager = new MemcachedCacheManager("localhost:11211");
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            this.manager.Dispose(true);
+        }
         #endregion
     }
 }
