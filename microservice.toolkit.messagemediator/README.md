@@ -134,8 +134,10 @@ var microservices = Assembly.GetAssembly(typeof(MyService)).GetServices();
 // or 
 var microservices = typeof(MyService).GetAssemblyServices();
 
-// Registers all the microservices
+// Registers all the microservices as singleton
 services.AddServices(microservices);
+// Or specify the life time
+// services.AddServices(ServiceLifetime.Scoped, microservices);
 
 // Registers the "service factory" to resolve pattern into a service instance
 services.AddSingleton<ServiceFactory>(serviceProvider => pattern =>

@@ -11,37 +11,46 @@ namespace microservice.toolkit.messagemediator.extension
     public static class AssemblyScannerExtension
     {
         /// <summary>
-        /// Registers as singleton instance every implementation of Service&lt;,&gt; found in assembly in which the specified type is defined.
+        /// Registers (as singleton instance, as default) every implementation of Service&lt;,&gt; found in assembly in which the specified type is defined.
         /// </summary>
         /// <param name="services"></param>
         /// <param name="type"></param>
+        /// <param name="lifeTime"></param>
         /// <returns></returns>
-        public static IServiceCollection AddAssemblyServices(this IServiceCollection services, Type type)
+        public static IServiceCollection AddAssemblyServices(this IServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
         {
-            foreach (var service in Assembly.GetAssembly(type).GetServices())
-            {
-                services.AddSingleton(service);
-            }
-
-            return services;
+            return services.AddServices(Assembly.GetAssembly(type),lifeTime);
         }
 
         /// <summary>
-        /// Registers as singleton instance every implementation of Service&lt;,&gt; found in the assembly.
+        /// Registers (as singleton instance, as default) every implementation of Service&lt;,&gt; found in the assembly.
         /// </summary>
         /// <param name="services"></param>
         /// <param name="assembly"></param>
+        /// <param name="lifeTime"></param>
         /// <returns></returns>
-        public static IServiceCollection AddServices(this IServiceCollection services, Assembly assembly)
+        public static IServiceCollection AddServices(this IServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
         {
-            foreach (var service in assembly.GetServices())
+            return services.AddServices(lifeTime, assembly.GetServices());
+        }
+
+        /// <summary>
+        /// Registers (as singleton instance, as default) the types.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="lifeTime"></param>
+        /// <param name="types"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddServices(this IServiceCollection services, ServiceLifetime lifeTime = ServiceLifetime.Singleton, params Type[] types)
+        {
+            foreach (var type in types)
             {
-                services.AddSingleton(service);
+                services.Add(new ServiceDescriptor(type, type, lifeTime));
             }
 
             return services;
         }
-
+        
         /// <summary>
         /// Registers as singleton instance the types.
         /// </summary>
