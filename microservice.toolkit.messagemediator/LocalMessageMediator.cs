@@ -12,12 +12,7 @@ namespace microservice.toolkit.messagemediator
     public class LocalMessageMediator : IMessageMediator
     {
         private readonly ServiceFactory serviceFactory;
-        private readonly ILogger<IMessageMediator> logger = new DoNothingLogger<IMessageMediator>();
-
-        public LocalMessageMediator(ServiceFactory serviceFactory)
-        {
-            this.serviceFactory = serviceFactory;
-        }
+        private readonly ILogger<IMessageMediator> logger;
 
         public LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
         {

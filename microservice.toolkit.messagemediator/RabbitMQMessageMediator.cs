@@ -17,7 +17,7 @@ namespace microservice.toolkit.messagemediator
 {
     public class RabbitMQMessageMediator : IMessageMediator, IDisposable
     {
-        private readonly ILogger logger;
+        private readonly ILogger<RabbitMQMessageMediator> logger;
         private readonly RabbitMQMessageMediatorConfiguration configuration;
         private readonly ServiceFactory serviceFactory;
 
@@ -28,7 +28,7 @@ namespace microservice.toolkit.messagemediator
         private readonly ConcurrentDictionary<string, TaskCompletionSource<byte[]>> pendingMessages = new();
 
         public RabbitMQMessageMediator(RabbitMQMessageMediatorConfiguration configuration,
-            ServiceFactory serviceFactory, ILogger logger = null)
+            ServiceFactory serviceFactory, ILogger<RabbitMQMessageMediator> logger)
         {
             this.configuration = configuration;
             this.serviceFactory = serviceFactory;
