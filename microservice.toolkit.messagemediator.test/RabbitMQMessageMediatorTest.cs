@@ -1,6 +1,8 @@
 ﻿using microservice.toolkit.core;
 using microservice.toolkit.core.entity;
 
+using Microsoft.Extensions.Logging.Abstractions;
+
 using NUnit.Framework;
 
 using System;
@@ -25,7 +27,8 @@ namespace microservice.toolkit.messagemediator.test
         public async Task Run_Object_Int()
         {
             this.mediator = new RabbitMQMessageMediator(configuration,
-                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null);
+                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
+                new NullLogger<RabbitMQMessageMediator>());
 
             Assert.AreEqual(4, (await mediator.Send<int>(nameof(SquarePow), 2)).Payload);
         }
@@ -34,7 +37,8 @@ namespace microservice.toolkit.messagemediator.test
         public async Task Run_Int_Int()
         {
             this.mediator = new RabbitMQMessageMediator(configuration,
-                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null);
+                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
+                new NullLogger<RabbitMQMessageMediator>());
 
             Assert.AreEqual(4, (await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload);
         }
@@ -43,7 +47,8 @@ namespace microservice.toolkit.messagemediator.test
         public async Task Run_Object_Int_WithError()
         {
             this.mediator = new RabbitMQMessageMediator(configuration,
-                name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null);
+                name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
+                new NullLogger<RabbitMQMessageMediator>());
 
             Assert.AreEqual(-1, (await mediator.Send<int>(nameof(SquarePowError), 2)).Error);
         }
@@ -52,9 +57,11 @@ namespace microservice.toolkit.messagemediator.test
         public async Task MultipleRun()
         {
             this.mediator01 = new RabbitMQMessageMediator(configuration,
-                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null);
+                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
+                new NullLogger<RabbitMQMessageMediator>());
             this.mediator02 = new RabbitMQMessageMediator(configuration,
-                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null);
+                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
+                new NullLogger<RabbitMQMessageMediator>());
 
             Assert.AreEqual(4, (await mediator01.Send<int, int>(nameof(SquarePow), 2)).Payload);
             Assert.AreEqual(4, (await mediator02.Send<int, int>(nameof(SquarePow), 2)).Payload);
@@ -71,19 +78,19 @@ namespace microservice.toolkit.messagemediator.test
         {
             try
             {
-                if(this.mediator!=null)
+                if (this.mediator != null)
                 {
                     await this.mediator.Shutdown();
                     this.mediator = null;
                 }
 
-                if(this.mediator01!=null)
+                if (this.mediator01 != null)
                 {
                     await this.mediator01.Shutdown();
                     this.mediator01 = null;
                 }
 
-                if(this.mediator02!=null)
+                if (this.mediator02 != null)
                 {
                     await this.mediator02.Shutdown();
                     this.mediator02 = null;

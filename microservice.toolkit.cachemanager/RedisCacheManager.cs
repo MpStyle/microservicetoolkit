@@ -11,7 +11,7 @@ namespace microservice.toolkit.cachemanager
 {
     public class RedisCacheManager : Disposable, ICacheManager
     {
-        private readonly ILogger<RedisCacheManager> logger = new DoNothingLogger<RedisCacheManager>();
+        private readonly ILogger<RedisCacheManager> logger;
         private readonly ConnectionMultiplexer connection;
 
         public RedisCacheManager(string connectionString, ILogger<RedisCacheManager> logger)

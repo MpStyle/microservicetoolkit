@@ -24,12 +24,6 @@ namespace microservice.toolkit.messagemediator
         private readonly ServiceFactory serviceFactory;
 
         public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration,
-            ServiceFactory serviceFactory)
-            : this(configuration, serviceFactory, new DoNothingLogger<ServiceBusMessageMediator>())
-        {
-        }
-
-        public ServiceBusMessageMediator(ServiceBusMessageMediatorConfiguration configuration,
             ServiceFactory serviceFactory, ILogger<ServiceBusMessageMediator> logger)
         {
             this.serviceFactory = serviceFactory;

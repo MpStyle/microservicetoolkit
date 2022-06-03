@@ -32,7 +32,7 @@ namespace microservice.toolkit.messagemediator
         {
             this.configuration = configuration;
             this.serviceFactory = serviceFactory;
-            this.logger = logger ?? new DoNothingLogger<RabbitMQMessageMediator>();
+            this.logger = logger;
 
             var factory = new ConnectionFactory() { HostName = this.configuration.ConnectionString };
             this.connection = factory.CreateConnection();
