@@ -74,9 +74,10 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         return response;
     }
 
-    public Task Shutdown()
+    public async Task Shutdown()
     {
-        throw new NotImplementedException();
+        await this.producerClient.DisposeAsync();
+        await this.consumerClient.DisposeAsync();
     }
 
     private void RegisterConsumer()
@@ -122,8 +123,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
 
     public async void Dispose()
     {
-        await this.producerClient.DisposeAsync();
-        await this.consumerClient.DisposeAsync();
+        await this.Shutdown();
     }
 
     public class Configuration

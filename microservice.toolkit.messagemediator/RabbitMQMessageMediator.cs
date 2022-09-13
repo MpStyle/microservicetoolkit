@@ -146,7 +146,13 @@ namespace microservice.toolkit.messagemediator
 
         public void Dispose()
         {
+            this.Shutdown();
+        }
+
+        public Task Shutdown()
+        {
             this.connection.Close();
+            return Task.CompletedTask;
         }
     }
 

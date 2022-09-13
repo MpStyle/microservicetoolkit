@@ -28,5 +28,7 @@ namespace microservice.toolkit.core
         /// <param name="message"></param>
         /// <returns></returns>
         Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
+
+        Task Shutdown();
     }
 }
