@@ -40,7 +40,7 @@ namespace microservice.toolkit.messagemediator
             }
             catch (ServiceNotFoundException ex)
             {
-                this.logger.LogDebug(ex.ToString());
+                this.logger.LogDebug("Service not found: {Message}", ex.ToString());
                 return new ServiceResponse<TPayload>
                 {
                     Error = ErrorCode.ServiceNotFound
@@ -48,22 +48,12 @@ namespace microservice.toolkit.messagemediator
             }
             catch (Exception ex)
             {
-                this.logger.LogDebug(ex.ToString());
+                this.logger.LogDebug("Generic error: {Message}", ex.ToString());
                 return new ServiceResponse<TPayload>
                 {
                     Error = ErrorCode.Unknown
                 };
             }
-        }
-
-        public void Emit<TEvent>(string pattern, TEvent e)
-        {
-            this.Send<TEvent>(pattern, e).ConfigureAwait(false);
-        }
-
-        public Task Shutdown()
-        {
-            return Task.CompletedTask;
         }
     }
 

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 using NUnit.Framework;
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -71,36 +70,6 @@ namespace microservice.toolkit.messagemediator.test
             Assert.AreEqual(16, (await mediator02.Send<int, int>(nameof(SquarePow), 4)).Payload);
             Assert.AreEqual(25, (await mediator01.Send<int, int>(nameof(SquarePow), 5)).Payload);
             Assert.AreEqual(25, (await mediator02.Send<int, int>(nameof(SquarePow), 5)).Payload);
-        }
-
-        [TearDown]
-        public async Task TearDown()
-        {
-            try
-            {
-                if (this.mediator != null)
-                {
-                    await this.mediator.Shutdown();
-                    this.mediator = null;
-                }
-
-                if (this.mediator01 != null)
-                {
-                    await this.mediator01.Shutdown();
-                    this.mediator01 = null;
-                }
-
-                if (this.mediator02 != null)
-                {
-                    await this.mediator02.Shutdown();
-                    this.mediator02 = null;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
         class SquarePow : Service<int, int>

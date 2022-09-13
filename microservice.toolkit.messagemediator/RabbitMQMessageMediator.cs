@@ -64,18 +64,6 @@ namespace microservice.toolkit.messagemediator
             });
         }
 
-        public void Emit<TEvent>(string pattern, TEvent e)
-        {
-            var message = new BrokeredMessage
-            {
-                Pattern = pattern, Payload = e, RequestType = e.GetType().FullName, WaitingResponse = false
-            };
-
-            var producerProps = this.producerChannel.CreateBasicProperties();
-            var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-            this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
-        }
-
         private async Task<ServiceResponse<TPayload>> Send<TPayload>(BrokeredMessage message)
         {
             var correlationId = Guid.NewGuid().ToString();
@@ -140,9 +128,9 @@ namespace microservice.toolkit.messagemediator
                 var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
                 response = await service.Run(request);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                this.logger.LogDebug(e.ToString());
+                this.logger.LogDebug("Generic error: {Message}", ex.ToString());
                 response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
             }
             finally
@@ -154,12 +142,6 @@ namespace microservice.toolkit.messagemediator
                     this.consumerChannel.BasicAck(ea.DeliveryTag, false);
                 }
             }
-        }
-
-        public Task Shutdown()
-        {
-            this.connection.Close();
-            return Task.CompletedTask;
         }
 
         public void Dispose()
