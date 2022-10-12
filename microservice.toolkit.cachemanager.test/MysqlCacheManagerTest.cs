@@ -5,7 +5,6 @@ using MySqlConnector;
 using NUnit.Framework;
 
 using System;
-using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 

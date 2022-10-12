@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Logging.Abstractions;
+
 using NUnit.Framework;
 
 using System;
@@ -94,7 +96,7 @@ namespace microservice.toolkit.cachemanager.test
         [SetUp]
         public void SetUp()
         {
-            this.manager = new RedisCacheManager("localhost:6379");
+            this.manager = new RedisCacheManager("localhost:6379", new NullLogger<RedisCacheManager>());
         }
         #endregion
     }

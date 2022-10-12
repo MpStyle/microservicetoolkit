@@ -20,11 +20,6 @@ namespace microservice.toolkit.cachemanager
             this.logger = logger;
         }
 
-        public RedisCacheManager(string connectionString)
-        {
-            this.connection = ConnectionMultiplexer.Connect(connectionString);
-        }
-
         public Task<bool> Delete(string key)
         {
             var db = this.connection.GetDatabase();
