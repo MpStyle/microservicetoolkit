@@ -59,7 +59,7 @@ public class DbDataReaderExtensionTest
 
         Assert.IsFalse(result.invalidPosition.invalidPositionResult);
         Assert.AreEqual(default(int), result.invalidPosition.invalidPositionValue);
-        
+
         Assert.IsFalse(result.nullValue.nullResult);
         Assert.AreEqual(default(long), result.nullValue.nullValue);
     }
@@ -72,7 +72,7 @@ public class DbDataReaderExtensionTest
         var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
         this.connectionManager =
-            new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
+            new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSL Mode=None");
 
         // Creates table
         await this.connectionManager.ExecuteNonQueryAsync(@"
