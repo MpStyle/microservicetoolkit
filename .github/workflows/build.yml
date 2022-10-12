@@ -44,7 +44,7 @@ jobs:
         ports:
           - "1433:1433"
       mysql:
-        image: mysql:5.7
+        image: mysql:8
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: microservice_framework_tests
