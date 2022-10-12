@@ -26,7 +26,7 @@ namespace microservice.toolkit.messagemediator
                 return new ServiceResponse<dynamic> { Error = ErrorCode.InvalidServiceExecution };
             }
         }
-        
+
         protected Task<ServiceResponse<TPayload>> SuccessfulResponseTask(TPayload payload)
         {
             return Task.FromResult(this.SuccessfulResponse(payload));
@@ -36,10 +36,10 @@ namespace microservice.toolkit.messagemediator
         {
             return this.Response(payload, null);
         }
-        
+
         protected Task<ServiceResponse<TPayload>> UnsuccessfulResponseTask(int error)
         {
-            return Task.FromResult(UnsuccessfulResponse(error));
+            return Task.FromResult(this.UnsuccessfulResponse(error));
         }
 
         protected ServiceResponse<TPayload> UnsuccessfulResponse(int error)
@@ -49,7 +49,7 @@ namespace microservice.toolkit.messagemediator
                 Error = error
             };
         }
-        
+
         protected Task<ServiceResponse<TPayload>> ResponseTask(TPayload payload, int? error)
         {
             return Task.FromResult(this.Response(payload, error));
