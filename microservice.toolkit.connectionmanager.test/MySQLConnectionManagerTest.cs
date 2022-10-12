@@ -28,7 +28,7 @@ namespace microservice.toolkit.connectionmanager.test
                 {
                     while (await reader.ReadAsync())
                     {
-                        objects.Add(new Film {Code = reader.GetInt16(0), Title = reader.GetString(1),});
+                        objects.Add(new Film { Code = reader.GetInt16(0), Title = reader.GetString(1), });
                     }
 
                     return objects;
@@ -49,8 +49,8 @@ namespace microservice.toolkit.connectionmanager.test
         {
             var result = await this.connectionManager.ExecuteAsync(
                 "SELECT * FROM films WHERE code < @code",
-                reader => new {Code = reader.GetInt16(0), Title = reader.GetString(1),},
-                new Dictionary<string, object> {{"@code", 3}});
+                reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(2, result.Length);
 
@@ -73,7 +73,7 @@ namespace microservice.toolkit.connectionmanager.test
                         obj => (obj as string).Split(",").Select(p => (FilmGenre)int.Parse(p)).ToArray()
                     }
                 }),
-                new Dictionary<string, object> {{"@code", 3}});
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(2, result.Length);
 
@@ -83,13 +83,13 @@ namespace microservice.toolkit.connectionmanager.test
                 Assert.AreEqual($"my_title {i + 1}", result[i].Title);
             }
         }
-        
+
         [Test]
         public async Task ExecuteAsync_Query_AutoMapping()
         {
             var result = await this.connectionManager.ExecuteAsync<Film>(
                 "SELECT code, title FROM films WHERE code < @code",
-                new Dictionary<string, object> {{"@code", 3}});
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(2, result.Length);
 
@@ -105,8 +105,8 @@ namespace microservice.toolkit.connectionmanager.test
         {
             var result = await this.connectionManager.ExecuteFirstAsync(
                 "SELECT * FROM films WHERE code < @code",
-                reader => new {Code = reader.GetInt16(0), Title = reader.GetString(1),},
-                new Dictionary<string, object> {{"@code", 3}});
+                reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(1, result.Code);
             Assert.AreEqual("my_title 1", result.Title);
@@ -124,7 +124,7 @@ namespace microservice.toolkit.connectionmanager.test
                         obj => (obj as string).Split(",").Select(p => (FilmGenre)int.Parse(p)).ToArray()
                     }
                 }),
-                new Dictionary<string, object> {{"@code", 3}});
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(1, result.Code);
             Assert.AreEqual("my_title 1", result.Title);
@@ -137,8 +137,8 @@ namespace microservice.toolkit.connectionmanager.test
         {
             var result = this.connectionManager.ExecuteFirst(
                 "SELECT * FROM films WHERE code < @code",
-                reader => new {Code = reader.GetInt16(0), Title = reader.GetString(1),},
-                new Dictionary<string, object> {{"@code", 3}});
+                reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
+                new Dictionary<string, object> { { "@code", 3 } });
 
             Assert.AreEqual(1, result.Code);
             Assert.AreEqual("my_title 1", result.Title);
@@ -164,7 +164,7 @@ namespace microservice.toolkit.connectionmanager.test
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
             this.connectionManager =
-                new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
+                new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSL Mode=None");
 
             // Creates table
             await this.connectionManager.ExecuteNonQueryAsync(
