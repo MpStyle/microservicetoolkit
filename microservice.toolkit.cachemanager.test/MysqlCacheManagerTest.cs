@@ -102,7 +102,7 @@ namespace microservice.toolkit.cachemanager.test
             var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? "root";
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
-            this.connectionManager = new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSL Mode=None");
+            this.connectionManager = new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
             const string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS cache(
                         id VARCHAR(256) PRIMARY KEY,

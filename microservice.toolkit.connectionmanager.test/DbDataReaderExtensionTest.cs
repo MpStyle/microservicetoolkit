@@ -72,7 +72,7 @@ public class DbDataReaderExtensionTest
         var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
         this.connectionManager =
-            new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSL Mode=None");
+            new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
 
         // Creates table
         await this.connectionManager.ExecuteNonQueryAsync(@"
