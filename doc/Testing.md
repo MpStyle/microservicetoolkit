@@ -6,7 +6,7 @@ To run unit test locally, you can take advantage of Docker containers.
 
 **MySQL**:
 ```bash
-docker run --detach --name=microserviceframework-test-mysql --env="MYSQL_ROOT_PASSWORD=root" --publish 3306:3306 mysql:8
+docker run --detach --name=microserviceframework-test-mysql --env="MYSQL_ROOT_PASSWORD=root" --env="MYSQL_DATABASE=microservice_framework_tests" --publish 3306:3306 mysql:8
 ```
 **PostgreSQL**:
 ```bash
@@ -24,3 +24,6 @@ docker run --name microserviceframework-test-redis -p 6379:6379 -d redis:alpine
 ```bash
 docker run --name microserviceframework-test-memcached -d -p 11211:11211 memcached:alpine
 ```
+
+**RabbitMQ**
+docker run -d --name microserviceframework-test-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:alpine
