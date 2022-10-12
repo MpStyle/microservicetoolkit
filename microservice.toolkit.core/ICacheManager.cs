@@ -3,8 +3,8 @@
 namespace microservice.toolkit.core
 {
     /// <summary>
-    /// Common interface to manage cache using different providers.
-    /// All methods return a Task (and they will be async where possible).
+    /// Caching is a great and simple technique that helps improve your app's performance. It acts as a temporary data store providing high performance data access.
+    /// ICacheManager is an interface to manage cache using different providers.
     /// </summary>
     public interface ICacheManager
     {

@@ -15,7 +15,7 @@ public static class ServiceFactoryExtension
     }
 
     /// <summary>
-    /// Returns a <see cref="microservice.toolkit.messagemediator.ServiceFactory"/> 
+    /// Returns a <see cref="microservice.toolkit.messagemediator.ServiceFactory"/> which instantiates services using IoC.
     /// </summary>
     /// <param name="serviceProvider"></param>
     /// <param name="serviceTypes"></param>
@@ -32,7 +32,7 @@ public static class ServiceFactoryExtension
             {
                 if (attr is MicroService microService)
                 {
-                    mapper.Add(microService.Name, serviceType);
+                    mapper.Add(microService.Pattern, serviceType);
                 }
             }
         }

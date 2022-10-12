@@ -2,13 +2,16 @@
 
 namespace microservice.toolkit.messagemediator.attribute;
 
+/// <summary>
+/// Specifies the pattern for a <see cref="Service{TRequest, TPayload}"/>.
+/// </summary>
 [AttributeUsage(AttributeTargets.Class)]
 public class MicroService : Attribute
 {
-    public string Name { get; }
+    public string Pattern { get; }
 
-    public MicroService(string name)
+    public MicroService(string pattern)
     {
-        this.Name = name;
+        this.Pattern = pattern;
     }
 }
