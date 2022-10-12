@@ -8,13 +8,25 @@ namespace microservice.toolkit.messagemediator.extension;
 
 public static class ServiceFactoryExtension
 {
+    [Obsolete("This method is obsolete. Use " + nameof(ServiceFactory) + " instead")]
     public static ServiceFactory ByNameServiceFactory(this IServiceProvider serviceProvider, IEnumerable<Type> serviceTypes)
+    {
+        return serviceProvider.ServiceFactory(serviceTypes);
+    }
+
+    /// <summary>
+    /// Returns a <see cref="microservice.toolkit.messagemediator.ServiceFactory"/> 
+    /// </summary>
+    /// <param name="serviceProvider"></param>
+    /// <param name="serviceTypes"></param>
+    /// <returns></returns>
+    public static ServiceFactory ServiceFactory(this IServiceProvider serviceProvider, IEnumerable<Type> serviceTypes)
     {
         var mapper = new Dictionary<string, Type>();
 
         foreach (var serviceType in serviceTypes)
         {
-            var attrs = Attribute.GetCustomAttributes(serviceType); 
+            var attrs = Attribute.GetCustomAttributes(serviceType);
 
             foreach (var attr in attrs)
             {

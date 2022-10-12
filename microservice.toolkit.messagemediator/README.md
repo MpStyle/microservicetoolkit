@@ -123,7 +123,7 @@ public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 
 ### Services registration
 
-To register the services into IoC (using __Microsoft Dependency Injection__) and mediator, add at startup program ("__services__" is an instance of IServiceCollection):
+To register services, service factory and mediator into IoC (using __Microsoft Dependency Injection__), add to program startup ("__services__" is an instance of IServiceCollection):
 
 ```C#
 using microservice.toolkit.messagemediator.extension;
@@ -137,14 +137,14 @@ var microservices = Assembly.GetAssembly(typeof(UserExists)).GetServices();
 
 // Registers all the microservices as singleton
 services.AddServices(microservices);
-// Or specify the life time
+// Or if you want to specify the life time
 // services.AddServices(ServiceLifetime.Scoped, microservices);
 
 [...]
 
 // Registers the "service factory" 
 services.AddSingleton<ServiceFactory>(serviceProvider => 
-    serviceProvider.ByNameServiceFactory(microservices)
+    serviceProvider.ServiceFactory(microservices)
 );
 
 [...]

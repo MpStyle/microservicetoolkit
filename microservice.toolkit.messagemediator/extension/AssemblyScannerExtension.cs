@@ -19,7 +19,7 @@ namespace microservice.toolkit.messagemediator.extension
         /// <returns></returns>
         public static IServiceCollection AddAssemblyServices(this IServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
         {
-            return services.AddServices(Assembly.GetAssembly(type),lifeTime);
+            return services.AddServices(Assembly.GetAssembly(type), lifeTime);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace microservice.toolkit.messagemediator.extension
 
             return services;
         }
-        
+
         /// <summary>
         /// Registers as singleton instance the types.
         /// </summary>
@@ -68,7 +68,7 @@ namespace microservice.toolkit.messagemediator.extension
         }
 
         /// <summary>
-        /// Returns the implementations of Service&lt;,&gt; found in assembly in which the specified type is defined.
+        /// Returns the implementations of Service&lt;,&gt; found in assembly in which the <i>type</i> is defined.
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
