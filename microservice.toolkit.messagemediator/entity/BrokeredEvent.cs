@@ -1,0 +1,9 @@
+﻿namespace microservice.toolkit.messagemediator.entity
+{
+    internal class BrokeredEvent
+    {
+        public string Pattern { get; init; }
+        public object Payload { get; init; }
+        public string RequestType { get; init; }
+    }
+}
