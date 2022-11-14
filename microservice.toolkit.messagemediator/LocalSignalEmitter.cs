@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
-public class LocalSignalEmitter:ISignalEmitter
+public class LocalSignalEmitter : ISignalEmitter
 {
     private readonly SignalHandlerFactory signalHandlerFactory;
     private readonly ILogger<ISignalEmitter> logger;
@@ -30,7 +30,7 @@ public class LocalSignalEmitter:ISignalEmitter
                 throw new SignalHandlerNotFoundException(pattern);
             }
 
-            handler.Run(message).ConfigureAwait(false);
+            _ = handler.Run(message).ConfigureAwait(false);
         }
         catch (SignalHandlerNotFoundException ex)
         {

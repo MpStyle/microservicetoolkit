@@ -1,6 +1,9 @@
 ﻿using microservice.toolkit.core;
+
 using Microsoft.Extensions.Logging.Abstractions;
+
 using NUnit.Framework;
+
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -14,11 +17,11 @@ public class LocalSignalEmitterTest
     [Test]
     public async Task Run_Int()
     {
-        ISignalEmitter mediator =
+        ISignalEmitter signalEmitter =
             new LocalSignalEmitter(name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<LocalSignalEmitter>());
 
-        await mediator.Emit(nameof(SquarePow), 2);
+        await signalEmitter.Emit(nameof(SquarePow), 2);
 
         Assert.IsFalse(isSignalHandlerRunned);
 
@@ -28,7 +31,8 @@ public class LocalSignalEmitterTest
     }
 
     [SetUp]
-    public void SetUp() {
+    public void SetUp()
+    {
         isSignalHandlerRunned = false;
     }
 
