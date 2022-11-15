@@ -1,5 +1,6 @@
 ﻿using microservice.toolkit.core;
 using microservice.toolkit.core.entity;
+using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging;
@@ -124,8 +125,8 @@ namespace microservice.toolkit.messagemediator
 
             var rpcMessage = JsonSerializer.Deserialize<BrokeredMessage>(Encoding.UTF8.GetString(body));
 
-            // Invalid message from the queue
-            if (rpcMessage == null)
+            // Invalid message from the queue or invalid props
+            if (rpcMessage == null || props.ReplyTo.IsNullOrEmpty() || props.CorrelationId.IsNullOrEmpty())
             {
                 return;
             }
@@ -136,14 +137,16 @@ namespace microservice.toolkit.messagemediator
 
                 if (service == null)
                 {
-                    response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
+                    throw new RabbitMQMessageMediatorException(ErrorCode.ServiceNotFound);
                 }
-                else
-                {
-                    var json = ((JsonElement)rpcMessage.Payload).GetRawText();
-                    var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
-                    response = await service.Run(request);
-                }
+
+                var json = ((JsonElement)rpcMessage.Payload).GetRawText();
+                var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
+                response = await service.Run(request);
+            }
+            catch (RabbitMQMessageMediatorException ex)
+            {
+                response = new ServiceResponse<object> { Error = ex.ErrorCode };
             }
             catch (Exception ex)
             {
@@ -180,5 +183,15 @@ namespace microservice.toolkit.messagemediator
         /// Milliseconds
         /// </summary>
         public int ResponseTimeout { get; init; } = 10000;
+    }
+
+    public class RabbitMQMessageMediatorException : Exception
+    {
+        public int ErrorCode { get; }
+
+        public RabbitMQMessageMediatorException(int errorCode)
+        {
+            this.ErrorCode = errorCode;
+        }
     }
 }
