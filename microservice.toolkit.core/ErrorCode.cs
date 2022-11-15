@@ -9,5 +9,6 @@
         public const int ExecutionTimeout = 8005;
         public const int EmptyResponse = 8006;
         public const int EmptyRequest = 8007;
+        public const int TimeOut = 8008;
     }
 }

@@ -10,7 +10,7 @@ public class MicroService : Attribute
 {
     public string Pattern { get; }
 
-    public MicroService(string pattern)
+    public MicroService(string pattern = null)
     {
         this.Pattern = pattern;
     }

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator
@@ -60,7 +61,9 @@ namespace microservice.toolkit.messagemediator
         {
             return await this.Send<TPayload>(new BrokeredMessage
             {
-                Pattern = pattern, Payload = message, RequestType = message.GetType().FullName, WaitingResponse = true
+                Pattern = pattern,
+                Payload = message,
+                RequestType = message.GetType().FullName,
             });
         }
 
@@ -73,25 +76,31 @@ namespace microservice.toolkit.messagemediator
             producerProps.ReplyTo = this.configuration.ReplyQueueName;
 
             var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-            void PublishMessage() => this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
 
-            if (message.WaitingResponse)
+            try
             {
-                var tcs = new TaskCompletionSource<byte[]>(
-                    TimeSpan.FromMilliseconds(this.configuration.ResponseTimeout));
+                var tcs = new TaskCompletionSource<byte[]>();
+
+                var ct = new CancellationTokenSource(this.configuration.ResponseTimeout);
+                ct.Token.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: false);
+
                 this.pendingMessages.TryAdd(correlationId, tcs);
 
-                PublishMessage();
+                this.producerChannel.BasicPublish("", this.configuration.QueueName, producerProps, messageBytes);
 
                 var rawResponse = await tcs.Task;
-                var response =
-                    JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
+                var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
 
                 return response;
             }
-            
-            PublishMessage();
-            return null;
+            catch (Exception ex)
+            {
+                this.logger.LogDebug("Time out error: {Message}", ex.ToString());
+                return new ServiceResponse<TPayload>
+                {
+                    Error = ErrorCode.TimeOut
+                };
+            }
         }
 
         private void OnProducerReceivesResponse(object sender, BasicDeliverEventArgs ea)
@@ -112,7 +121,7 @@ namespace microservice.toolkit.messagemediator
             var props = ea.BasicProperties;
             var replyProps = this.consumerChannel.CreateBasicProperties();
             replyProps.CorrelationId = props.CorrelationId;
-            
+
             var rpcMessage = JsonSerializer.Deserialize<BrokeredMessage>(Encoding.UTF8.GetString(body));
 
             // Invalid message from the queue
@@ -124,23 +133,28 @@ namespace microservice.toolkit.messagemediator
             try
             {
                 var service = this.serviceFactory(rpcMessage.Pattern);
-                var json = ((JsonElement)rpcMessage.Payload).GetRawText();
-                var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
-                response = await service.Run(request);
+
+                if (service == null)
+                {
+                    response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
+                }
+                else
+                {
+                    var json = ((JsonElement)rpcMessage.Payload).GetRawText();
+                    var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
+                    response = await service.Run(request);
+                }
             }
             catch (Exception ex)
             {
                 this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
+                response = new ServiceResponse<object> { Error = ErrorCode.Unknown };
             }
             finally
             {
-                if (rpcMessage.WaitingResponse)
-                {
-                    var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
-                    this.consumerChannel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);
-                    this.consumerChannel.BasicAck(ea.DeliveryTag, false);
-                }
+                var responseBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));
+                this.consumerChannel.BasicPublish("", props.ReplyTo, replyProps, responseBytes);
+                this.consumerChannel.BasicAck(ea.DeliveryTag, false);
             }
         }
 
@@ -165,6 +179,6 @@ namespace microservice.toolkit.messagemediator
         /// <summary>
         /// Milliseconds
         /// </summary>
-        public uint ResponseTimeout { get; init; } = 10000;
+        public int ResponseTimeout { get; init; } = 10000;
     }
 }

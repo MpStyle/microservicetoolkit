@@ -1,0 +1,53 @@
+﻿using microservice.toolkit.messagemediator.extension;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace microservice.toolkit.messagemediator.collection;
+
+public class MicroserviceCollection
+{
+    private readonly Dictionary<string, Type> services = new Dictionary<string, Type>();
+
+    public int Count => this.services.Count;
+
+    public Type this[string pattern]
+    {
+        get => this.services[pattern];
+    }
+
+    internal MicroserviceCollection(Dictionary<string, Type> services)
+    {
+        this.services = services;
+    }
+
+    public bool ContainsPattern(string pattern)
+    {
+        return this.services.ContainsKey(pattern);
+    }
+
+    public Type ByPatternOrDefault(string pattern)
+    {
+        var service = this.services.FirstOrDefault(ms => ms.Key.Equals(pattern), new KeyValuePair<string, Type>("default", null));
+        return service.Value;
+    }
+
+    public Dictionary<string, Type> ToDictionary()
+    {
+        return services;
+    }
+}
+
+static class MicroserviceCollectionExtensions
+{
+    public static MicroserviceCollection ToMicroserviceCollection(this IEnumerable<Type> collections)
+    {
+        return new MicroserviceCollection(collections.ToDictionary(x => x.ToPattern(), x => x));
+    }
+
+    public static MicroserviceCollection ToMicroserviceCollection(this IEnumerable<MicroserviceCollection> collections)
+    {
+        return new MicroserviceCollection(collections.SelectMany(c => c.ToDictionary()).ToDictionary(x => x.Key, x => x.Value));
+    }
+}

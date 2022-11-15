@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.core.entity;
+﻿using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator.attribute;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -43,6 +43,7 @@ namespace microservice.toolkit.messagemediator.test
             Assert.AreEqual(-1, (await mediator.Send<int>(nameof(SquarePowError), 2)).Error);
         }
 
+        [MicroService]
         class SquarePow : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)
@@ -51,6 +52,7 @@ namespace microservice.toolkit.messagemediator.test
             }
         }
 
+        [MicroService]
         class SquarePowError : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)

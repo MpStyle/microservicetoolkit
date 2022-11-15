@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.core.entity;
+﻿using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator.attribute;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -16,7 +16,9 @@ namespace microservice.toolkit.messagemediator.test
     {
         private readonly RabbitMQMessageMediatorConfiguration configuration = new RabbitMQMessageMediatorConfiguration
         {
-            ConnectionString = "localhost", QueueName = "test_queue", ReplyQueueName = "test_reply_queue"
+            ConnectionString = "localhost",
+            QueueName = "test_queue",
+            ReplyQueueName = "test_reply_queue"
         };
 
         private IMessageMediator mediator;
@@ -72,7 +74,7 @@ namespace microservice.toolkit.messagemediator.test
             Assert.AreEqual(25, (await mediator01.Send<int, int>(nameof(SquarePow), 5)).Payload);
             Assert.AreEqual(25, (await mediator02.Send<int, int>(nameof(SquarePow), 5)).Payload);
         }
-        
+
         [TearDown]
         public async Task TearDown()
         {
@@ -103,6 +105,7 @@ namespace microservice.toolkit.messagemediator.test
             }
         }
 
+        [MicroService]
         class SquarePow : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)
@@ -111,6 +114,7 @@ namespace microservice.toolkit.messagemediator.test
             }
         }
 
+        [MicroService]
         class SquarePowError : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)

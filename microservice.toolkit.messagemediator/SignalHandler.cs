@@ -8,7 +8,7 @@ public abstract class SignalHandler<TEvent> : ISignalHandler
 
     public async Task Run(object request)
     {
-        await this.Run((TEvent)request);
+        _ = this.Run((TEvent)request).ConfigureAwait(false);
     }
 }
 

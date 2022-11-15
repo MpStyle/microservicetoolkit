@@ -5,6 +5,5 @@
         public string Pattern { get; init; }
         public object Payload { get; init; }
         public string RequestType { get; init; }
-        public bool WaitingResponse { get; init; }
     }
 }
