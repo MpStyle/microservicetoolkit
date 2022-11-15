@@ -130,7 +130,9 @@ using microservice.toolkit.messagemediator.extension;
 
 [...]
 
-// Registers all the microservices as singleton and the ""service factory""
+// Registers all the microservices in the same assembly of "UserExists" class.
+// Registers all the microservices as Singleton.
+// Registers the service factory as Singleton.
 services.AddServiceContext(typeof(UserExists));
 
 [...]
@@ -155,7 +157,7 @@ public MyClass(IMessageMediator mediator){
 
 ```C#
 // to explicit only payload type:
-var response = await mediator.Send<int>(nameof(SquarePow), 2));
+var response = await mediator.Send<int>(typeof(SquarePow), 2));
 // or, to explicit request and payload type:
-var response = await mediator.Send<int, int>(nameof(SquarePow), 2));
+var response = await mediator.Send<int, int>(typeof(SquarePow), 2));
 ```
