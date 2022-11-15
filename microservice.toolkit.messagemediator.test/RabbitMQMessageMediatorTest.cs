@@ -17,8 +17,8 @@ namespace microservice.toolkit.messagemediator.test
         private readonly RabbitMQMessageMediatorConfiguration configuration = new RabbitMQMessageMediatorConfiguration
         {
             ConnectionString = "localhost",
-            QueueName = "test_queue",
-            ReplyQueueName = "test_reply_queue"
+            QueueName = $"test_queue_{Guid.NewGuid()}",
+            ReplyQueueName = $"test_reply_queue_{Guid.NewGuid()}"
         };
 
         private IMessageMediator mediator;
