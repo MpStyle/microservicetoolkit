@@ -145,6 +145,7 @@ services.AddSingleton<IMessageMediator, LocalMessageMediator>();
 
 To call a service using a mediator:
 
+```C#
 private readonly IMessageMediator mediator;
 
 [...]
@@ -155,7 +156,6 @@ public MyClass(IMessageMediator mediator){
 
 [...]
 
-```C#
 // to explicit only payload type:
 var response = await mediator.Send<int>(typeof(SquarePow), 2));
 // or, to explicit request and payload type:
