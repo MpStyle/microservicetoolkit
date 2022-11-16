@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static partial class MessageMediatorExtensions
+public static partial class SignalEmitterExtensions
 {
 
     /// <summary>
@@ -19,14 +19,14 @@ public static partial class MessageMediatorExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static MicroserviceCollection GetServices(this Type type)
+    public static MicroserviceCollection GetHandlers(this Type type)
     {
-        return new Type[] { type }.GetServices();
+        return new Type[] { type }.GetHandlers();
     }
 
-    public static MicroserviceCollection GetServices(this Type[] types)
+    public static MicroserviceCollection GetHandlers(this Type[] types)
     {
-        return types.Select(t => Assembly.GetAssembly(t)).ToArray().GetServices();
+        return types.Select(t => Assembly.GetAssembly(t)).ToArray().GetHandlers();
     }
 
     /// <summary>
@@ -34,20 +34,20 @@ public static partial class MessageMediatorExtensions
     /// </summary>
     /// <param name="assembly"></param>
     /// <returns></returns>
-    public static MicroserviceCollection GetServices(this Assembly assembly)
+    public static MicroserviceCollection GetHandlers(this Assembly assembly)
     {
-        return new Assembly[] { assembly }.GetServices();
+        return new Assembly[] { assembly }.GetHandlers();
     }
 
-    public static MicroserviceCollection GetServices(this Assembly[] assemblies)
+    public static MicroserviceCollection GetHandlers(this Assembly[] assemblies)
     {
         return assemblies
             .SelectMany(a => a.GetExportedTypes())
-            .Where(t => t.IsService())
+            .Where(t => t.IsHandler())
             .ToMicroserviceCollection();
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Type[] types, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static ServiceCollection AddHandlerContext(this ServiceCollection services, Type[] types, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = types.GetServices();
 
@@ -57,7 +57,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static ServiceCollection AddHandlerContext(this ServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = type.GetServices();
 
@@ -67,7 +67,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Assembly[] assemblies, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static ServiceCollection AddHandlerContext(this ServiceCollection services, Assembly[] assemblies, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = assemblies.GetServices();
 
@@ -77,7 +77,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static ServiceCollection AddHandlerContext(this ServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = assembly.GetServices();
 
@@ -87,7 +87,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServices(this ServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static ServiceCollection AddHandlers(this ServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         foreach (var item in mapper.ToDictionary())
         {
@@ -97,19 +97,19 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceProvider(this ServiceCollection services, MicroserviceCollection mapper)
+    public static ServiceCollection AddHandlerProvider(this ServiceCollection services, MicroserviceCollection mapper)
     {
-        services.AddSingleton(serviceProvider => new ServiceFactory(pattern =>
+        services.AddSingleton(serviceProvider => new SignalHandlerFactory(pattern =>
         {
             var serviceType = mapper.ByPatternOrDefault(pattern);
 
-            return serviceProvider.GetService(serviceType) as IService;
+            return serviceProvider.GetService(serviceType) as ISignalHandler;
         }));
 
         return services;
     }
 
-    private static bool IsService(this Type type)
+    private static bool IsHandler(this Type type)
     {
         if (type == null)
         {
@@ -130,7 +130,7 @@ public static partial class MessageMediatorExtensions
         }
 
         // Checks if is a subclass of "Service<,>"
-        var fullname = typeof(Service<,>).FullName;
+        var fullname = typeof(SignalHandler<>).FullName;
 
         if (fullname.IsNullOrEmpty())
         {

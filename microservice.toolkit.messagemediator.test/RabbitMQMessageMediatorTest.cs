@@ -105,7 +105,7 @@ namespace microservice.toolkit.messagemediator.test
             }
         }
 
-        [MicroService]
+        [Microservice]
         class SquarePow : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)
@@ -114,7 +114,7 @@ namespace microservice.toolkit.messagemediator.test
             }
         }
 
-        [MicroService]
+        [Microservice]
         class SquarePowError : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)

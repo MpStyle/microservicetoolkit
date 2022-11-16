@@ -9,7 +9,7 @@ public static partial class MicroserviceExtensions
 {
     public static string ToPattern(this Type type)
     {
-        var attrs = Attribute.GetCustomAttributes(type).FirstOrDefault(x => x is MicroService) as MicroService;
+        var attrs = Attribute.GetCustomAttributes(type).FirstOrDefault(x => x is Microservice) as Microservice;
 
         if (attrs?.Pattern.IsNullOrEmpty() == false)
         {

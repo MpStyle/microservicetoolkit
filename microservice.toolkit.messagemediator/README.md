@@ -108,7 +108,7 @@ To implement a service, extend the abstract class "_Service<TRequest, TPayload>_
 Example code:
 
 ```C#
-[MicroService("/user/exists")]
+[Microservice("/user/exists")]
 public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 {
     public async override Task<ServiceResponse<UserExistsResponse>> Run(UserExistsRequest request)

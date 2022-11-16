@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.test.data
 {
-    [MicroService]
+    [Microservice]
     public class ValidService01 : Service<int, int>
     {
         public override Task<ServiceResponse<int>> Run(int request)
@@ -13,7 +13,7 @@ namespace microservice.toolkit.messagemediator.test.data
             throw new System.NotImplementedException();
         }
 
-        [MicroService]
+        [Microservice]
         public class InvalidNestedService : Service<int, int>
         {
             public override Task<ServiceResponse<int>> Run(int request)
@@ -23,7 +23,7 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
-    [MicroService]
+    [Microservice]
     public class ValidService02 : Service<int, int>
     {
         public override Task<ServiceResponse<int>> Run(int request)
@@ -32,12 +32,12 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
-    [MicroService]
+    [Microservice]
     public abstract class InvalidAbstractService : Service<int, int>
     {
     }
 
-    [MicroService]
+    [Microservice]
     public class InvalidGenericService<T> : Service<int, int>
     {
         public override Task<ServiceResponse<int>> Run(int request)
@@ -46,7 +46,7 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
-    [MicroService(nameof(ValidService03))]
+    [Microservice(nameof(ValidService03))]
     public class ValidService03 : Service<int, int>
     {
         public override Task<ServiceResponse<int>> Run(int request)
@@ -55,7 +55,7 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
-    [MicroService(nameof(ValidService04))]
+    [Microservice(nameof(ValidService04))]
     public class ValidService04 : Service<int, int>
     {
         public override Task<ServiceResponse<int>> Run(int request)
