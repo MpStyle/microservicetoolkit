@@ -11,19 +11,8 @@ using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static class MessageMediatorExtensions
+public static partial class MessageMediatorExtensions
 {
-    public static string ToPattern(this Type type)
-    {
-        var attrs = Attribute.GetCustomAttributes(type).FirstOrDefault(x => x is MicroService) as MicroService;
-
-        if (attrs?.Pattern.IsNullOrEmpty() == false)
-        {
-            return attrs.Pattern;
-        }
-
-        return type.FullName.Replace(".", "/");
-    }
 
     /// <summary>
     /// Returns the implementations of Service&lt;,&gt; found in assembly in which the <i>type</i> is defined.

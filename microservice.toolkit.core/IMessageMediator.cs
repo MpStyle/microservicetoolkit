@@ -1,5 +1,5 @@
 ﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator.extension;
+using microservice.toolkit.core.extension;
 
 using System;
 using System.Threading.Tasks;

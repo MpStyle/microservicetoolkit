@@ -1,4 +1,4 @@
-﻿using microservice.toolkit.messagemediator.extension;
+﻿using microservice.toolkit.core.extension;
 
 using System;
 using System.Collections.Generic;

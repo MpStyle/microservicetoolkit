@@ -1,6 +1,4 @@
-﻿using microservice.toolkit.core;
-
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 
 using NUnit.Framework;
 
@@ -40,7 +38,7 @@ public class LocalSignalEmitterTest
     {
         public override async Task Run(int request)
         {
-            await Task.Delay(5000);
+            await Task.Delay(1000);
             isSignalHandlerRunned = true;
         }
     }
