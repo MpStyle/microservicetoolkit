@@ -26,17 +26,17 @@ The Core library ("__microservice.toolkit.core__") is the foundation and it is a
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.core -Version 0.8.0
+Install-Package microservice.toolkit.core -Version 0.9.0
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.core --version 0.8.0
+dotnet add package microservice.toolkit.core --version 0.9.0
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.core" Version="0.8.0" />
+<PackageReference Include="microservice.toolkit.core" Version="0.9.0" />
 ```
 
 ## Key Features :key:
