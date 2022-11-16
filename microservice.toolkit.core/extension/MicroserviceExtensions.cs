@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace microservice.toolkit.core.extension;
 
-public static partial class MessageMediatorExtensions
+public static partial class MicroserviceExtensions
 {
     public static string ToPattern(this Type type)
     {
