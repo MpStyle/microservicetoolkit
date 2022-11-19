@@ -8,7 +8,7 @@ __The library is a work in progress. It is not yet considered production-ready._
 ![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.messagemediator)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.messagemediator)
 
-An interface to define how cloud microservices interact each other across multi instances, using request-response pattern.
+An interface to define how cloud microservices interact each other across multi instances, using **request-response** pattern.
 
 ## How to install
 
@@ -49,6 +49,7 @@ Microservice Toolkit provides some implementations of the message mediator inter
 - [Local](#local)
 - [RabbitMQ](#rabbitmq)
 - [Azure Service Bus](#servicebus)
+- [NATS](#nats)
 
 The implementations of __message mediator__ can work in a single instance environment
 
@@ -65,7 +66,7 @@ Every implementation requires a "service provider" (a delegate) to link the name
 ### Local
 
 <a name="local"></a>
-To use in a single instance environment or for testing.
+To use in a single instance environment, in a desktop application, or to testing.
 
 No external dependencies needed.
 
@@ -74,7 +75,7 @@ No external service will be query/use.
 ### RabbitMQ
 
 <a name="rabbitmq"></a>
-RabbitMQ is an open-source and lightweight message broker which supports multiple messaging protocols. It can be deployed in distributed and federated configurations to meet high-scale, high-availability requirements. In addition, it's the most widely deployed message broker, used worldwide at small startups and large enterprises.
+[RabbitMQ](https://www.rabbitmq.com/) is an open-source and lightweight message broker which supports multiple messaging protocols. It can be deployed in distributed and federated configurations to meet high-scale, high-availability requirements. In addition, it's the most widely deployed message broker, used worldwide at small startups and large enterprises.
 
 To start building RabbitMQ-based microservices, first install the required packages:
 ```
@@ -88,7 +89,7 @@ Or:
 ### Azure Service Bus
 
 <a name="servicebus"></a>
-To start building Azure Service Bus -based microservices, first install the required packages:
+To start building [Azure Service Bus](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview)-based microservices, first install the required packages:
 
 ```
 Install-Package Microsoft.Azure.ServiceBus -Version 5.1.3
@@ -96,6 +97,19 @@ Install-Package Microsoft.Azure.ServiceBus -Version 5.1.3
 Or:
 ```
 <PackageReference Include="Microsoft.Azure.ServiceBus" Version="5.1.3"/>
+```
+
+### NATS
+
+<a name="nats"></a>
+To start building [NATS](https://nats.io/)-based microservices, first install the required packages:
+
+```
+Install-Package NATS.Client -Version 1.0.2
+```
+Or:
+```
+<PackageReference Include="NATS.Clients" Version="1.0.2"/>
 ```
 
 ## How to use
@@ -133,7 +147,8 @@ using microservice.toolkit.messagemediator.extension;
 // Registers all the microservices in the same assembly of "UserExists" class.
 // Registers all the microservices as Singleton.
 // Registers the service factory as Singleton.
-services.AddServiceContext(typeof(UserExists));
+var myAssembly = Assembly.GetAssembly(typeof(UserExists));
+services.AddServiceContext(myAssembly);
 
 [...]
 

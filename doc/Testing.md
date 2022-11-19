@@ -27,3 +27,6 @@ docker run --name microserviceframework-test-memcached -d -p 11211:11211 memcach
 
 **RabbitMQ**
 docker run -d --name microserviceframework-test-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:alpine
+
+**NATS**
+docker run -d --name microserviceframework-test-nats -p 4222:4222 -p 8222:8222 -p 6222:6222 nats:alpine
