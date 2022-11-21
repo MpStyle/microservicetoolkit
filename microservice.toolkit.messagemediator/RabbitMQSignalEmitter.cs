@@ -60,7 +60,7 @@ namespace microservice.toolkit.messagemediator
             return Task.CompletedTask;
         }
 
-        private async void OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea)
+        private void OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
             var props = ea.BasicProperties;
