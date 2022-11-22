@@ -3,7 +3,6 @@ using microservice.toolkit.messagemediator.attribute;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using System;
 using System.Linq;
@@ -47,7 +46,7 @@ public static partial class MessageMediatorExtensions
             .ToMicroserviceCollection();
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Type[] types, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Type[] types, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = types.GetServices();
 
@@ -57,7 +56,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = type.GetServices();
 
@@ -67,7 +66,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Assembly[] assemblies, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Assembly[] assemblies, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = assemblies.GetServices();
 
@@ -77,7 +76,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceContext(this ServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         var mapper = assembly.GetServices();
 
@@ -87,7 +86,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServices(this ServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServices(this IServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         foreach (var item in mapper.ToDictionary())
         {
@@ -97,7 +96,7 @@ public static partial class MessageMediatorExtensions
         return services;
     }
 
-    public static ServiceCollection AddServiceProvider(this ServiceCollection services, MicroserviceCollection mapper)
+    public static IServiceCollection AddServiceProvider(this IServiceCollection services, MicroserviceCollection mapper)
     {
         services.AddSingleton(serviceProvider => new ServiceFactory(pattern =>
         {
