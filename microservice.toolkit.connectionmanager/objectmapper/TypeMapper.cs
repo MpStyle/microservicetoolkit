@@ -5,15 +5,15 @@ namespace microservice.toolkit.connectionmanager.objectmapper;
 
 internal static class TypeMapper
 {
-    private static Dictionary<string, TypeMap> sharedDatabase = new();
-    
+    private static readonly Dictionary<string, TypeMap> sharedDatabase = new();
+
     public static TypeMap Map(Type target)
     {
         if (target == null)
         {
             throw new ArgumentNullException(nameof(target));
         }
-        
+
         var fullNameType = target.FullName;
 
         if (string.IsNullOrEmpty(fullNameType))
