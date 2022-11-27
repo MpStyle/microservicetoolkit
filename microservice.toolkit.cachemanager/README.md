@@ -62,10 +62,20 @@ Task<bool> Delete(string key);
 Removed the entry from the cache provider.
 
 ## Implementations
+- [In-memory](#inmemory)
 - [SqLite](#sqlite)
 - [MySql](#mysql)
 - [Memcached](#memcached)
 - [Redis](#redis)
+
+### In memory
+<a name="inmemory"></a>
+Naif version of an in-memory cache implementation.
+
+How to use:
+```C#
+var manager = new InMemoryCacheManager();
+```
 
 ### SQLite cache manager
 
