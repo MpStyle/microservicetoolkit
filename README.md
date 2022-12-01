@@ -65,9 +65,3 @@ To release a new version of the package:
 ## How to contribute
 
 [Contributing](CONTRIBUTING.md)
-
-## Sponsor :handshake:
-Special thanks to:
-- JetBrains and its Open Source projects support
-![JetBrains Logo (Main) logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png)
-Copyright © 2000-2021 JetBrains s.r.o. JetBrains and the JetBrains logo are registered trademarks of JetBrains s.r.o.
