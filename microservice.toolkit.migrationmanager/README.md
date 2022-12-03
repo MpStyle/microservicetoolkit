@@ -37,7 +37,7 @@ dotnet add package microservice.toolkit.migrationmanager --version 0.9.1
 ```
 
 ## How to use
-Under the hood, the library use [Evolve](https://evolve-db.netlify.app/) to apply DB migrations, so before to start using Migration Manager, install the required package:
+Under the hood, the library uses [Evolve](https://evolve-db.netlify.app/) to apply DB migrations, so before to start using Migration Manager, install the required package:
 
 ```xml
 <PackageReference Include="Evolve" Version="3.0.0" />
