@@ -1,4 +1,5 @@
-﻿using microservice.toolkit.connectionmanager;
+﻿using microservice.toolkit.cachemanager.serializer;
+using microservice.toolkit.connectionmanager;
 using microservice.toolkit.core;
 
 using Microsoft.Data.Sqlite;
@@ -22,13 +23,19 @@ namespace microservice.toolkit.cachemanager
     public class SQLiteCacheManager : ICacheManager
     {
         private readonly SqliteConnection connectionManager;
+        private readonly ICacheValueSerializer serializer;
 
-        public SQLiteCacheManager(SqliteConnection connectionManager)
+        public SQLiteCacheManager(SqliteConnection connectionManager) : this(connectionManager, new JsonCacheValueSerializer())
         {
+        }
+
+        public SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueSerializer serializer)
+        {
+            this.serializer = serializer;
             this.connectionManager = connectionManager;
         }
 
-        public async Task<string> Get(string key)
+        public async Task<TValue> Get<TValue>(string key)
         {
             var parameters = new Dictionary<string, object>(){
                 {"@CacheId", key},
@@ -41,7 +48,8 @@ namespace microservice.toolkit.cachemanager
                 WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
             ";
 
-            return await this.connectionManager.ExecuteFirstAsync(query, reader => reader.GetString(0), parameters);
+            var value = await this.connectionManager.ExecuteFirstAsync(query, reader => reader.GetString(0), parameters);
+            return this.serializer.Deserialize<TValue>(value);
         }
 
         /// <summary>
@@ -51,7 +59,7 @@ namespace microservice.toolkit.cachemanager
         /// <param name="value"></param>
         /// <param name="issuedAt"></param>
         /// <returns></returns>
-        public async Task<bool> Set(string key, string value, long issuedAt)
+        public async Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
         {
             if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
@@ -83,7 +91,7 @@ namespace microservice.toolkit.cachemanager
             return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
         }
 
-        public Task<bool> Set(string key, string value)
+        public Task<bool> Set<TValue>(string key, TValue value)
         {
             return this.Set(key, value, 0);
         }

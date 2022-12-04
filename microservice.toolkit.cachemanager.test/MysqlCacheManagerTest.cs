@@ -23,7 +23,7 @@ namespace microservice.toolkit.cachemanager.test
 
             Assert.IsTrue(setResponse);
 
-            var getResponse = await this.manager.Get("my_key");
+            var getResponse = await this.manager.Get<string>("my_key");
 
             Assert.AreEqual("my_value", getResponse);
         }
@@ -35,7 +35,7 @@ namespace microservice.toolkit.cachemanager.test
 
             Assert.IsTrue(setResponse);
 
-            var getResponse = await this.manager.Get("my_key");
+            var getResponse = await this.manager.Get<string>("my_key");
 
             Assert.AreEqual("my_value", getResponse);
         }
@@ -49,7 +49,7 @@ namespace microservice.toolkit.cachemanager.test
 
             await Task.Delay(5000);
 
-            var getResponse = await this.manager.Get("my_key");
+            var getResponse = await this.manager.Get<string>("my_key");
 
             Assert.IsNull(getResponse);
         }
@@ -61,7 +61,7 @@ namespace microservice.toolkit.cachemanager.test
 
             Assert.IsTrue(setResponse);
 
-            var getResponse = await this.manager.Get("my_key");
+            var getResponse = await this.manager.Get<string>("my_key");
 
             Assert.AreEqual("my_value", getResponse);
 
@@ -69,7 +69,7 @@ namespace microservice.toolkit.cachemanager.test
 
             Assert.IsFalse(setResponse);
 
-            getResponse = await this.manager.Get("my_key");
+            getResponse = await this.manager.Get<string>("my_key");
 
             Assert.IsNull(getResponse);
         }
@@ -81,7 +81,7 @@ namespace microservice.toolkit.cachemanager.test
 
             Assert.IsTrue(setResponse);
 
-            var getResponse = await this.manager.Get("my_key");
+            var getResponse = await this.manager.Get<string>("my_key");
 
             Assert.AreEqual("my_value", getResponse);
 
@@ -89,7 +89,7 @@ namespace microservice.toolkit.cachemanager.test
 
             Assert.IsTrue(deleteResponse);
 
-            getResponse = await this.manager.Get("my_key");
+            getResponse = await this.manager.Get<string>("my_key");
 
             Assert.IsNull(getResponse);
         }

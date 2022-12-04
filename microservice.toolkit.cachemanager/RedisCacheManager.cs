@@ -1,4 +1,5 @@
-﻿using microservice.toolkit.core;
+﻿using microservice.toolkit.cachemanager.serializer;
+using microservice.toolkit.core;
 
 using Microsoft.Extensions.Logging;
 
@@ -13,9 +14,15 @@ namespace microservice.toolkit.cachemanager
     {
         private readonly ILogger<RedisCacheManager> logger;
         private readonly ConnectionMultiplexer connection;
+        private readonly ICacheValueSerializer serializer = new JsonCacheValueSerializer();
 
-        public RedisCacheManager(string connectionString, ILogger<RedisCacheManager> logger)
+        public RedisCacheManager(string connectionString, ILogger<RedisCacheManager> logger) : this(connectionString, new JsonCacheValueSerializer(), logger)
         {
+        }
+
+        public RedisCacheManager(string connectionString, ICacheValueSerializer serializer, ILogger<RedisCacheManager> logger)
+        {
+            this.serializer = serializer;
             this.connection = ConnectionMultiplexer.Connect(connectionString);
             this.logger = logger;
         }
@@ -26,7 +33,7 @@ namespace microservice.toolkit.cachemanager
             return db.KeyDeleteAsync(new RedisKey(key));
         }
 
-        public async Task<string> Get(string key)
+        public async Task<TValue> Get<TValue>(string key)
         {
             this.logger.LogDebug($"Calling RedisCacheManager#Get({key ?? string.Empty})...");
             var db = this.connection.GetDatabase();
@@ -34,18 +41,18 @@ namespace microservice.toolkit.cachemanager
 
             if (result.Expiry.HasValue == false && result.Value.HasValue)
             {
-                return result.Value.ToString();
+                return this.serializer.Deserialize<TValue>(result.Value.ToString());
             }
 
             if (result.Expiry.HasValue && result.Expiry.Value.TotalMilliseconds > 0 && result.Value.HasValue)
             {
-                return result.Value.ToString();
+                return this.serializer.Deserialize<TValue>(result.Value.ToString());
             }
 
-            return null;
+            return default(TValue);
         }
 
-        public async Task<bool> Set(string key, string value, long issuedAt)
+        public async Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
         {
             if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
@@ -55,16 +62,16 @@ namespace microservice.toolkit.cachemanager
 
             this.logger.LogDebug($"Calling RedisCacheManager#Set({key ?? string.Empty})...");
             var db = this.connection.GetDatabase();
-            var setResult = await db.StringSetAsync(key, value, DateTimeOffset.FromUnixTimeMilliseconds(issuedAt).Subtract(DateTime.UtcNow));
+            var setResult = await db.StringSetAsync(key, this.serializer.Serialize(value), DateTimeOffset.FromUnixTimeMilliseconds(issuedAt).Subtract(DateTime.UtcNow));
 
             return setResult;
         }
 
-        public async Task<bool> Set(string key, string value)
+        public async Task<bool> Set<TValue>(string key, TValue value)
         {
             this.logger.LogDebug($"Calling RedisCacheManager#Set({key ?? string.Empty})...");
             var db = this.connection.GetDatabase();
-            var setResult = await db.StringSetAsync(key, value);
+            var setResult = await db.StringSetAsync(key, this.serializer.Serialize(value));
             return setResult;
         }
     }

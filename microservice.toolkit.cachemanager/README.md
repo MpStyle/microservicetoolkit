@@ -29,30 +29,25 @@ dotnet add package microservice.toolkit.cachemanager --version 0.9.1
 
 ## Available methods
 
-### Set(string, string, long);
+### bool Set(string, TValue, long);
+
 ```C#
-Task<bool> Set(string key, string value, long issuedAt);
+Task<bool> Set<TValue>(string key, TValue value) where TValue : ISerializable;
 ```
 
-Adds an entry in the cache provider with an expiration time (UTC Unix timestamp in milliseconds).
+### bool Set<TValue>(string, TValue);
+
 ```C#
-// 2 days until expiration time
-var issuedAt = DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds()
+Task<bool> Set<TValue>(string key, TValue value, long issuedAt) where TValue : ISerializable
 ```
 
-### Set(string, string);
+Adds an entry in the cache provider without expiration time.
+
+### TValue Get(string);
+
 ```C#
-Task<bool> Set(string key, string value);
+Task<TValue> Get<TValue>(string key) where TValue : ISerializable;
 ```
-
-Adds an entry in the cache provider without an expiration time.
-
-### Get(string);
-```C#
-Task<string> Get(string key);
-```
-
-Tries to retrieve the _value_ of the entry using the _key_. If the entry does not exist or is expired the method returns _null_.
 
 ### Delete(string);
 ```C#

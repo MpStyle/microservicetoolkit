@@ -1,6 +1,7 @@
 ﻿
 using Enyim.Caching.Memcached;
 
+using microservice.toolkit.cachemanager.serializer;
 using microservice.toolkit.core;
 
 using System;
@@ -25,13 +26,12 @@ namespace microservice.toolkit.cachemanager
             return this.client.DeleteAsync(key);
         }
 
-        public async Task<string> Get(string key)
+        public async Task<TValue> Get<TValue>(string key)
         {
-            var response = await this.client.GetAsync(key);
-            return response as string;
+            return await this.client.GetAsync<TValue>(key);
         }
 
-        public Task<bool> Set(string key, string value, long issuedAt)
+        public Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
         {
             if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
@@ -44,7 +44,7 @@ namespace microservice.toolkit.cachemanager
             return this.client.SetAsync(key, value, new Expiration(duration));
         }
 
-        public Task<bool> Set(string key, string value)
+        public Task<bool> Set<TValue>(string key, TValue value)
         {
             return this.client.SetAsync(key, value);
         }
