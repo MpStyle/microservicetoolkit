@@ -49,6 +49,12 @@ namespace microservice.toolkit.cachemanager
             ";
 
             var value = await this.connectionManager.ExecuteFirstAsync(query, reader => reader.GetString(0), parameters);
+
+            if (value == null)
+            {
+                return default;
+            }
+
             return this.serializer.Deserialize<TValue>(value);
         }
 
@@ -84,7 +90,7 @@ namespace microservice.toolkit.cachemanager
 
             var parameters = new Dictionary<string, object>(){
                 {"@id", key},
-                {"@value", value},
+                {"@value", this.serializer.Serialize(value)},
                 {"@issuedAt", issuedAt}
             };
 
