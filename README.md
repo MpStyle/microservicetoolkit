@@ -7,6 +7,7 @@ __The library is a work in progress. It is not yet considered production-ready._
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.core)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.core)
+![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/MpStyle/766e0bdc4243664288b0e418c5356861/raw/microservice-toolkit-code-coverage.json)
 
 Everything you need for your entire micro services development life cycle. 
 
