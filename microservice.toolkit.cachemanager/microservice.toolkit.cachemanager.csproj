@@ -25,6 +25,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" >
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.6.66">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

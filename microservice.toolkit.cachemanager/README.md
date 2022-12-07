@@ -27,18 +27,18 @@ dotnet add package microservice.toolkit.cachemanager --version 0.9.1
 <PackageReference Include="microservice.toolkit.cachemanager" Version="0.9.1" />
 ```
 
-## Available methods
+## ICacheManager interface
 
 ### bool Set(string, TValue, long);
 
 ```C#
-Task<bool> Set<TValue>(string key, TValue value) where TValue : ISerializable;
+Task<bool> Set<TValue>(string key, TValue value)
 ```
 
 ### bool Set<TValue>(string, TValue);
 
 ```C#
-Task<bool> Set<TValue>(string key, TValue value, long issuedAt) where TValue : ISerializable
+Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
 ```
 
 Adds an entry in the cache provider without expiration time.
@@ -46,7 +46,7 @@ Adds an entry in the cache provider without expiration time.
 ### TValue Get(string);
 
 ```C#
-Task<TValue> Get<TValue>(string key) where TValue : ISerializable;
+Task<TValue> Get<TValue>(string key)
 ```
 
 ### Delete(string);
@@ -72,6 +72,28 @@ How to use:
 var manager = new InMemoryCacheManager();
 ```
 
+You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
+
+**Newtonsoft JSON**\
+Install Newtonsoft JSON dependency:
+```
+dotnet add package Newtonsoft.Json --version 13.0.2
+```
+And use the serializer:
+```C#
+var manager = new InMemoryCacheManager(new NewtonsoftJsonCacheValueSerializer());
+```
+
+**System.Text.Json**
+```C#
+var manager = new InMemoryCacheManager(new JsonCacheValueSerializer());
+```
+
+**XML**
+```C#
+var manager = new InMemoryCacheManager(new XmlCacheValueSerializer());
+```
+
 ### SQLite cache manager
 
 <a name="sqlite"></a>
@@ -80,7 +102,7 @@ To start using SQLite cache manager, first install the required package:
 <PackageReference Include="Microsoft.Data.SQLite" Version="5.0.10" />
 ```
 
-and create the table cache:
+Create the table cache:
 
 ```sql
 CREATE TABLE cache(
@@ -88,6 +110,34 @@ CREATE TABLE cache(
     value TEXT NOT NULL,
     issuedAt INTEGER NOT NULL
 );
+```
+
+And instantiate the cache manger:
+```C#
+var connectionManager = new SqliteConnection($"[CONNECTION_STRING]");
+var manager = new SQLiteCacheManager(connectionManager);
+```
+
+You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
+
+**Newtonsoft JSON**\
+Install Newtonsoft JSON dependency:
+```
+dotnet add package Newtonsoft.Json --version 13.0.2
+```
+And use the serializer:
+```C#
+var manager = new SQLiteCacheManager(connectionManager, new NewtonsoftJsonCacheValueSerializer());
+```
+
+**System.Text.Json**
+```C#
+var manager = new SQLiteCacheManager(connectionManager, new JsonCacheValueSerializer());
+```
+
+**XML**
+```C#
+var manager = new SQLiteCacheManager(connectionManager, new XmlCacheValueSerializer());
 ```
 
 ### MySQL cache manager
@@ -98,7 +148,7 @@ To start using MySql cache manager, first install the required package:
 <PackageReference Include="MySqlConnector" Version="1.3.12" />
 ```
 
-and create the table cache:
+Create the table cache:
 
 ```sql
 CREATE TABLE cache(
@@ -106,6 +156,34 @@ CREATE TABLE cache(
     value TEXT NOT NULL,
     issuedAt BIGINT NOT NULL
 );
+```
+
+And instantiate the cache manger:
+```C#
+var connectionManager = new MySqlConnection($"[CONNECTION_STRING]");
+var manager = new MysqlCacheManager(connectionManager);
+```
+
+You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
+
+**Newtonsoft JSON**\
+Install Newtonsoft JSON dependency:
+```
+dotnet add package Newtonsoft.Json --version 13.0.2
+```
+And use the serializer:
+```C#
+var manager = new MysqlCacheManager(connectionManager, new NewtonsoftJsonCacheValueSerializer());
+```
+
+**System.Text.Json**
+```C#
+var manager = new MysqlCacheManager(connectionManager, new JsonCacheValueSerializer());
+```
+
+**XML**
+```C#
+var manager = new MysqlCacheManager(connectionManager, new XmlCacheValueSerializer());
 ```
 
 ### Memcached
@@ -137,4 +215,26 @@ How to use:
 
 ```C#
 var manager = new RedisCacheManager("localhost:6379");
+```
+
+You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
+
+**Newtonsoft JSON**\
+Install Newtonsoft JSON dependency:
+```
+dotnet add package Newtonsoft.Json --version 13.0.2
+```
+And use the serializer:
+```C#
+var manager = new RedisCacheManager("localhost:6379", new NewtonsoftJsonCacheValueSerializer());
+```
+
+**System.Text.Json**
+```C#
+var manager = new RedisCacheManager("localhost:6379", new JsonCacheValueSerializer());
+```
+
+**XML**
+```C#
+var manager = new RedisCacheManager("localhost:6379", new XmlCacheValueSerializer());
 ```
