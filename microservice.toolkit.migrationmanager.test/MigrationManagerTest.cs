@@ -1,5 +1,4 @@
 using microservice.toolkit.connectionmanager;
-using microservice.toolkit.core;
 using microservice.toolkit.migrationmanager.extension;
 
 using MySqlConnector;
@@ -8,10 +7,12 @@ using NUnit.Framework;
 
 using System;
 using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.migrationmanager.test
 {
+    [ExcludeFromCodeCoverage]
     public class MigrationManagerTest
     {
         private DbConnection connectionManager;
@@ -25,7 +26,9 @@ namespace microservice.toolkit.migrationmanager.test
                 "SELECT * FROM t_user WHERE id = \"admin-01\"",
                 reader => new
                 {
-                    Id = reader.GetString(0), Username = reader.GetString(1), Password = reader.GetString(2)
+                    Id = reader.GetString(0),
+                    Username = reader.GetString(1),
+                    Password = reader.GetString(2)
                 });
 
             Assert.AreEqual("admin-01", result.Id);

@@ -1,10 +1,12 @@
 ﻿using microservice.toolkit.core.entity;
 using microservice.toolkit.messagemediator.attribute;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.test.data
 {
+    [ExcludeFromCodeCoverage]
     [Microservice]
     public class ValidService01 : Service<int, int>
     {
@@ -23,6 +25,7 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
+    [ExcludeFromCodeCoverage]
     [Microservice]
     public class ValidService02 : Service<int, int>
     {
@@ -32,11 +35,13 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
+    [ExcludeFromCodeCoverage]
     [Microservice]
     public abstract class InvalidAbstractService : Service<int, int>
     {
     }
 
+    [ExcludeFromCodeCoverage]
     [Microservice]
     public class InvalidGenericService<T> : Service<int, int>
     {
@@ -46,6 +51,7 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
+    [ExcludeFromCodeCoverage]
     [Microservice(nameof(ValidService03))]
     public class ValidService03 : Service<int, int>
     {
@@ -55,6 +61,7 @@ namespace microservice.toolkit.messagemediator.test.data
         }
     }
 
+    [ExcludeFromCodeCoverage]
     [Microservice(nameof(ValidService04))]
     public class ValidService04 : Service<int, int>
     {
