@@ -94,7 +94,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov       
+      run: dotnet test --no-build --verbosity normal
       env:
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_PORT: 5432
@@ -106,10 +106,3 @@ jobs:
           SQLSERVER_HOST: 127.0.0.1
           SQLSERVER_PORT: 1433
           SQLSERVER_ROOT_PASSWORD: my_root_password123
-    - name: Publish coverage report to coveralls.io
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ./microservice.toolkit.cachemanager.test/TestResults/**/coverage.info 
-        flag-name: "Unit"
-        base-path: "microservice.toolkit.cachemanager.test"
