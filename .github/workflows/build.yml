@@ -94,7 +94,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
       env:
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_PORT: 5432
@@ -106,3 +106,45 @@ jobs:
           SQLSERVER_HOST: 127.0.0.1
           SQLSERVER_PORT: 1433
           SQLSERVER_ROOT_PASSWORD: my_root_password123
+    - name: Publish cachemanager coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./microservice.toolkit.cachemanager.test/TestResults/coverage.info 
+        flag-name: "Unit"
+        base-path: ./microservice.toolkit.cachemanager.test
+    - name: Publish configurationmanager coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./microservice.toolkit.configurationmanager.test/TestResults/coverage.info 
+        flag-name: "Unit"
+        base-path: ./microservice.toolkit.configurationmanager.test
+    - name: Publish connectionmanager coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./microservice.toolkit.connectionmanager.test/TestResults/coverage.info 
+        flag-name: "Unit"
+        base-path: ./microservice.toolkit.connectionmanager.test
+    - name: Publish core coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./microservice.toolkit.core.test/TestResults/coverage.info 
+        flag-name: "Unit"
+        base-path: ./microservice.toolkit.core.test
+    - name: Publish messagemediator coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./microservice.toolkit.messagemediator.test/TestResults/coverage.info 
+        flag-name: "Unit"
+        base-path: ./microservice.toolkit.messagemediator.test
+    - name: Publish migrationmanager coverage report to coveralls.io
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ./microservice.toolkit.migrationmanager.test/TestResults/coverage.info 
+        flag-name: "Unit"
+        base-path: ./microservice.toolkit.migrationmanager.test
