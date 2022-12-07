@@ -6,3 +6,7 @@
 **/.idea/
 *.user
 **/coverage
+**/coverage.json
+**/coverage.cobertura.html
+**/coverage.cobertura.xml
+**/coverage.info
