@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>microservice.toolkit.tsid</AssemblyName>
+    <RootNamespace>microservice.toolkit.tsid</RootNamespace>
+    <Authors>Michele Pagnin</Authors>
+    <Product>Microservice Toolkit - TSID</Product>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - TSID</Title>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>time sortable identifiers, microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
+    <Description>Everything you need for your entire micro services development life cycle. </Description>
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\image\icon.png">
+      <Pack>True</Pack>
+      <PackagePath />
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath />
+    </None>
+  </ItemGroup>
+</Project>

@@ -52,3 +52,8 @@ jobs:
         run: dotnet pack ./microservice.toolkit.migrationmanager/microservice.toolkit.migrationmanager.csproj -c Release
       - name: Release - Migration Manager
         run: dotnet nuget push ./microservice.toolkit.migrationmanager/bin/Release/microservice.toolkit.migrationmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+      
+      - name: Pack - TSID
+        run: dotnet pack ./microservice.toolkit.tsid/microservice.toolkit.tsid.csproj -c Release
+      - name: Release - TSID
+        run: dotnet nuget push ./microservice.toolkit.tsid/bin/Release/microservice.toolkit.tsid.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json

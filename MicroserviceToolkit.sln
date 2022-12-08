@@ -31,26 +31,28 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator.test", "microservice.toolkit.messagemediator.test\microservice.toolkit.messagemediator.test.csproj", "{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{41198E3E-B08B-4D9B-80CE-917C624F4E4B}"
-ProjectSection(SolutionItems) = preProject
-	doc\Testing.md = doc\Testing.md
-	README.md = README.md
-	CONTRIBUTING.md = CONTRIBUTING.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		doc\Testing.md = doc\Testing.md
+		README.md = README.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{21F4632F-39C1-4ECF-B71D-B49F87D98771}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\build.yml = .github\workflows\build.yml
-	.github\workflows\release.yml = .github\workflows\release.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.core.test", "microservice.toolkit.core.test\microservice.toolkit.core.test.csproj", "{B0991DC5-2799-45C2-A9BB-D36258ADB022}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.migrationmanager.test", "microservice.toolkit.migrationmanager.test\microservice.toolkit.migrationmanager.test.csproj", "{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{244E9E5D-0A4D-47EF-9D41-A784EDAE119F}"
-ProjectSection(SolutionItems) = preProject
-	image\icon.png = image\icon.png
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		image\icon.png = image\icon.png
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.tsid", "microservice.toolkit.tsid\microservice.toolkit.tsid.csproj", "{D777A8E8-D51F-4255-9DC0-E53955C13B54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,6 +108,10 @@ Global
 		{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D777A8E8-D51F-4255-9DC0-E53955C13B54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D777A8E8-D51F-4255-9DC0-E53955C13B54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D777A8E8-D51F-4255-9DC0-E53955C13B54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D777A8E8-D51F-4255-9DC0-E53955C13B54}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

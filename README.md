@@ -48,6 +48,7 @@ The other libraries (included in __Microservice Toolkit__) collects and enriches
 - [Configuration Manager](./microservice.toolkit.configurationmanager/README.md): strongly typed configuration reader
 - [Database connection manager](./microservice.toolkit.connectionmanager/README.md): enriches the DbConnection object with powerful extension methods
 - [Migration Manager](./microservice.toolkit.migrationmanager/README.md): version control for databases
+- [TSID](./microservice.toolkit.tsid/README.md): Time Sortable Identifier library
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
