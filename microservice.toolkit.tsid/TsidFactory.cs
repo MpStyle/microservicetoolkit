@@ -32,11 +32,11 @@ public class TsidFactory
     private readonly IRandom random;
     private readonly int randomBytes;
 
-    private const int NODE_BITS_256 = 8;
-    private const int NODE_BITS_1024 = 10;
-    private const int NODE_BITS_4096 = 12;
+    public const int NodeBits256 = 8;
+    public const int NodeBits1024 = 10;
+    public const int NodeBits4096 = 12;
 
-    private const int CLOCK_DRIFT_TOLERANCE = 10_000;
+    private const int ClockDriftTolerance = 10_000;
 
     public TsidFactory() : this(new Builder())
     {
@@ -53,7 +53,7 @@ public class TsidFactory
         this.random = builder.GetRandom();
         this.clock = builder.GetClock();
 
-        this.counterBits = (int)(Tsid.randomBits - nodeBits);
+        this.counterBits = (int)(Tsid.RandomBits - nodeBits);
         this.counterMask = (int)(Tsid.randomMask >>> nodeBits);
         this.nodeMask = Tsid.randomMask >>> counterBits;
 
@@ -67,39 +67,39 @@ public class TsidFactory
 
     public static TsidFactory NewInstance256()
     {
-        return new Builder().WithNodeBits(NODE_BITS_256).Build();
+        return new Builder().WithNodeBits(NodeBits256).Build();
     }
 
     public static TsidFactory NewInstance256(int node)
     {
-        return new Builder().WithNodeBits(NODE_BITS_256).WithNode(node).Build();
+        return new Builder().WithNodeBits(NodeBits256).WithNode(node).Build();
     }
 
     public static TsidFactory NewInstance1024()
     {
-        return new Builder().WithNodeBits(NODE_BITS_1024).Build();
+        return new Builder().WithNodeBits(NodeBits1024).Build();
     }
 
     public static TsidFactory NewInstance1024(int node)
     {
-        return new Builder().WithNodeBits(NODE_BITS_1024).WithNode(node).Build();
+        return new Builder().WithNodeBits(NodeBits1024).WithNode(node).Build();
     }
 
     public static TsidFactory NewInstance4096()
     {
-        return new Builder().WithNodeBits(NODE_BITS_4096).Build();
+        return new Builder().WithNodeBits(NodeBits4096).Build();
     }
 
     public static TsidFactory NewInstance4096(int node)
     {
-        return new Builder().WithNodeBits(NODE_BITS_4096).WithNode(node).Build();
+        return new Builder().WithNodeBits(NodeBits4096).WithNode(node).Build();
     }
 
     public Tsid Create()
     {
         lock (this)
         {
-            var newTime = (long)(GetTime() << Tsid.randomBits);
+            var newTime = (long)(GetTime() << Tsid.RandomBits);
             var newNode = (long)this.node << this.counterBits;
             var newCounter = (long)this.counter & this.counterMask;
 
@@ -113,7 +113,7 @@ public class TsidFactory
         {
             var time = clock.ToUnixTimeMilliseconds();
 
-            if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime))
+            if ((time > this.lastTime - ClockDriftTolerance) && (time <= this.lastTime))
             {
                 this.counter++;
 
@@ -165,7 +165,7 @@ public class TsidFactory
         private int? nodeBits;
         private long? customEpoch;
         private IRandom random;
-        private DateTimeOffset clock;
+        private DateTimeOffset? clock;
 
         public Builder WithNode(int? node)
         {
@@ -248,7 +248,7 @@ public class TsidFactory
         {
             if (this.nodeBits == null)
             {
-                this.nodeBits = TsidFactory.NODE_BITS_1024; // 10 bits
+                this.nodeBits = TsidFactory.NodeBits1024; // 10 bits
             }
 
             return this.nodeBits;
@@ -281,7 +281,7 @@ public class TsidFactory
                 this.WithClock(DateTimeOffset.UtcNow);
             }
 
-            return this.clock;
+            return this.clock.Value;
         }
 
         public TsidFactory Build()

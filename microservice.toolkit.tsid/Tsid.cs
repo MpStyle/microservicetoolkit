@@ -6,7 +6,7 @@ public class Tsid
 {
     private const long serialVersionUID = -5446820982139116297L;
     private readonly long number;
-    internal const int randomBits = 22;
+    public const int RandomBits = 22;
     internal const int randomMask = 0x003fffff;
     private readonly char[] alphabetUppercase = new char[]
             { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
@@ -128,10 +128,10 @@ public class Tsid
 
     long GetTime()
     {
-        return this.number >>> randomBits;
+        return this.number >>> RandomBits;
     }
 
-    long GetRandom()
+    public long GetRandom()
     {
         return this.number & randomMask;
     }
