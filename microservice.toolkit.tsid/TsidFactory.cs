@@ -1,38 +1,49 @@
+using System;
+
 namespace microservice.toolkit.tsid;
+
+internal class Integer
+{
+    internal static readonly int BYTES = 4;
+    internal static readonly int SIZE = 32;
+}
+
+internal class Byte
+{
+    internal static readonly int SIZE = 8;
+}
 
 public class TsidFactory
 {
     private int counter;
     private long lastTime;
 
-    private readonly int node;
+    private readonly int? node;
 
-    private readonly int nodeBits;
+    private readonly int? nodeBits;
     private readonly int counterBits;
 
     private readonly int nodeMask;
     private readonly int counterMask;
 
-    private readonly Clock clock;
-    private readonly long customEpoch;
+    private readonly DateTimeOffset clock;
+    private readonly long? customEpoch;
 
     private readonly IRandom random;
     private readonly int randomBytes;
 
-    private static const int NODE_BITS_256 = 8;
-    private static const int NODE_BITS_1024 = 10;
-    private static const int NODE_BITS_4096 = 12;
+    private const int NODE_BITS_256 = 8;
+    private const int NODE_BITS_1024 = 10;
+    private const int NODE_BITS_4096 = 12;
 
-    private static const int CLOCK_DRIFT_TOLERANCE = 10_000;
+    private const int CLOCK_DRIFT_TOLERANCE = 10_000;
 
-    public TsidFactory()
+    public TsidFactory() : this(new Builder())
     {
-        this(Builder());
     }
 
-    public TsidFactory(int node)
+    public TsidFactory(int node) : this(new Builder().WithNode(node))
     {
-        this(Builder().withNode(node));
     }
 
     private TsidFactory(Builder builder)
@@ -42,65 +53,65 @@ public class TsidFactory
         this.random = builder.GetRandom();
         this.clock = builder.GetClock();
 
-        this.counterBits = RANDOM_BITS - nodeBits;
-        this.counterMask = RANDOM_MASK >>> nodeBits;
-        this.nodeMask = RANDOM_MASK >>> counterBits;
+        this.counterBits = (int)(Tsid.randomBits - nodeBits);
+        this.counterMask = (int)(Tsid.randomMask >>> nodeBits);
+        this.nodeMask = Tsid.randomMask >>> counterBits;
 
         this.randomBytes = ((this.counterBits - 1) / 8) + 1;
 
         this.node = builder.GetNode() & nodeMask;
 
-        this.lastTime = clock.millis();
+        this.lastTime = clock.ToUnixTimeMilliseconds();
         this.counter = GetRandomCounter();
     }
 
     public static TsidFactory NewInstance256()
     {
-        return TsidFactory.Builder().withNodeBits(NODE_BITS_256).build();
+        return new Builder().WithNodeBits(NODE_BITS_256).Build();
     }
 
     public static TsidFactory NewInstance256(int node)
     {
-        return TsidFactory.Builder().withNodeBits(NODE_BITS_256).withNode(node).build();
+        return new Builder().WithNodeBits(NODE_BITS_256).WithNode(node).Build();
     }
 
     public static TsidFactory NewInstance1024()
     {
-        return TsidFactory.Builder().withNodeBits(NODE_BITS_1024).build();
+        return new Builder().WithNodeBits(NODE_BITS_1024).Build();
     }
 
     public static TsidFactory NewInstance1024(int node)
     {
-        return TsidFactory.Builder().withNodeBits(NODE_BITS_1024).withNode(node).build();
+        return new Builder().WithNodeBits(NODE_BITS_1024).WithNode(node).Build();
     }
 
     public static TsidFactory NewInstance4096()
     {
-        return TsidFactory.Builder().withNodeBits(NODE_BITS_4096).build();
+        return new Builder().WithNodeBits(NODE_BITS_4096).Build();
     }
 
     public static TsidFactory NewInstance4096(int node)
     {
-        return TsidFactory.Builder().withNodeBits(NODE_BITS_4096).withNode(node).build();
+        return new Builder().WithNodeBits(NODE_BITS_4096).WithNode(node).Build();
     }
 
     public Tsid Create()
     {
         lock (this)
         {
-            var _newTime = GetTime() << RANDOM_BITS;
+            var newTime = (long)(GetTime() << Tsid.randomBits);
             var newNode = (long)this.node << this.counterBits;
             var newCounter = (long)this.counter & this.counterMask;
 
-            return new Tsid(_newTime | newNode | newCounter);
+            return new Tsid(newTime | newNode | newCounter);
         }
     }
 
-    private long GetTime()
+    private long? GetTime()
     {
         lock (this)
         {
-            var time = clock.millis();
+            var time = clock.ToUnixTimeMilliseconds();
 
             if ((time > this.lastTime - CLOCK_DRIFT_TOLERANCE) && (time <= this.lastTime))
             {
@@ -131,7 +142,7 @@ public class TsidFactory
             {
                 var bytes = random.NextBytes(this.randomBytes);
 
-                switch (bytes.length)
+                switch (bytes.Length)
                 {
                     case 1:
                         return (bytes[0] & 0xff) & this.counterMask;
@@ -148,30 +159,25 @@ public class TsidFactory
         }
     }
 
-    public static Builder Builder()
+    public class Builder
     {
-        return new Builder();
-    }
-
-    public static class Builder
-    {
-        private Integer node;
-        private Integer nodeBits;
-        private Long customEpoch;
+        private int? node;
+        private int? nodeBits;
+        private long? customEpoch;
         private IRandom random;
-        private Clock clock;
+        private DateTimeOffset clock;
 
-        public Builder WithNode(Integer node)
+        public Builder WithNode(int? node)
         {
             this.node = node;
             return this;
         }
 
-        public Builder WithNodeBits(Integer nodeBits)
+        public Builder WithNodeBits(int? nodeBits)
         {
             if (nodeBits < 0 || nodeBits > 20)
             {
-                throw new IllegalArgumentException("Node bits out of range: [0, 20]");
+                throw new ArgumentException("Node bits out of range: [0, 20]");
             }
 
             this.nodeBits = nodeBits;
@@ -179,9 +185,9 @@ public class TsidFactory
             return this;
         }
 
-        public Builder WithCustomEpoch(Instant customEpoch)
+        public Builder WithCustomEpoch(DateTimeOffset customEpoch)
         {
-            this.customEpoch = customEpoch.toEpochMilli();
+            this.customEpoch = customEpoch.ToUnixTimeMilliseconds();
             return this;
         }
 
@@ -189,7 +195,7 @@ public class TsidFactory
         {
             if (random != null)
             {
-                if (random is SecureRandom)
+                if (random is Random)
                 {
                     this.random = new ByteRandom(random);
                 }
@@ -201,25 +207,25 @@ public class TsidFactory
             return this;
         }
 
-        public Builder WithRandomFunction(IntSupplier randomFunction)
+        public Builder WithRandomFunction(Func<int> randomFunction)
         {
             this.random = new IntRandom(randomFunction);
             return this;
         }
 
-        public Builder WithRandomFunction(IntFunction<byte[]> randomFunction)
+        public Builder WithRandomFunction(Func<int, byte[]> randomFunction)
         {
             this.random = new ByteRandom(randomFunction);
             return this;
         }
 
-        public Builder WithClock(Clock clock)
+        public Builder WithClock(DateTimeOffset clock)
         {
             this.clock = clock;
             return this;
         }
 
-        protected Integer GetNode()
+        internal int? GetNode()
         {
             int mask = 0x3fffff;
 
@@ -238,7 +244,7 @@ public class TsidFactory
             return this.node & mask;
         }
 
-        protected Integer GetNodeBits()
+        internal int? GetNodeBits()
         {
             if (this.nodeBits == null)
             {
@@ -248,7 +254,7 @@ public class TsidFactory
             return this.nodeBits;
         }
 
-        protected Long GetCustomEpoch()
+        internal long? GetCustomEpoch()
         {
             if (this.customEpoch == null)
             {
@@ -258,21 +264,21 @@ public class TsidFactory
             return this.customEpoch;
         }
 
-        protected IRandom GetRandom()
+        internal IRandom GetRandom()
         {
             if (this.random == null)
             {
-                this.withRandom(new SecureRandom());
+                this.WithRandom(new Random());
             }
 
             return this.random;
         }
 
-        protected Clock GetClock()
+        internal DateTimeOffset GetClock()
         {
             if (this.clock == null)
             {
-                this.withClock(Clock.systemUTC());
+                this.WithClock(DateTimeOffset.UtcNow);
             }
 
             return this.clock;
@@ -284,35 +290,33 @@ public class TsidFactory
         }
     }
 
-    static interface IRandom
+    internal interface IRandom
     {
         public int NextInt();
 
         public byte[] NextBytes(int length);
     }
 
-    static class IntRandom : IRandom
+    internal class IntRandom : IRandom
     {
-        private readonly IntSupplier randomFunction;
+        private readonly Func<int> randomFunction;
 
-        public IntRandom()
+        public IntRandom() : this(NewRandomFunction(null))
         {
-            this(NewRandomFunction(null));
         }
 
-        public IntRandom(Random random)
+        public IntRandom(Random random) : this(NewRandomFunction(random))
         {
-            this(NewRandomFunction(random));
         }
 
-        public IntRandom(IntSupplier randomFunction)
+        public IntRandom(Func<int> randomFunction)
         {
             this.randomFunction = randomFunction != null ? randomFunction : NewRandomFunction(null);
         }
 
         public int NextInt()
         {
-            return randomFunction.getAsInt();
+            return randomFunction();
         }
 
         public byte[] NextBytes(int length)
@@ -326,7 +330,7 @@ public class TsidFactory
                 if (shift < Byte.SIZE)
                 {
                     shift = Integer.SIZE;
-                    random = randomFunction.getAsInt();
+                    random = randomFunction();
                 }
                 shift -= Byte.SIZE; // 56, 48, 40...
                 bytes[i] = (byte)(random >>> shift);
@@ -335,28 +339,25 @@ public class TsidFactory
             return bytes;
         }
 
-        protected static IntSupplier NewRandomFunction(Random random)
+        protected static Func<int> NewRandomFunction(Random random)
         {
-            var entropy = random ??= new SecureRandom();
-            return entropy::nextInt;
+            return () => (random ??= new Random()).Next();
         }
     }
 
-    static class ByteRandom : IRandom
+    internal class ByteRandom : IRandom
     {
-        private readonly IntFunction<byte[]> randomFunction;
+        private readonly Func<int, byte[]> randomFunction;
 
-        public ByteRandom()
+        public ByteRandom() : this(NewRandomFunction(null))
         {
-            this(NewRandomFunction(null));
         }
 
-        public ByteRandom(Random random)
+        public ByteRandom(Random random) : this(NewRandomFunction(random))
         {
-            this(NewRandomFunction(random));
         }
 
-        public ByteRandom(IntFunction<byte[]> randomFunction)
+        public ByteRandom(Func<int, byte[]> randomFunction)
         {
             this.randomFunction = randomFunction != null ? randomFunction : NewRandomFunction(null);
         }
@@ -364,7 +365,7 @@ public class TsidFactory
         public int NextInt()
         {
             var number = 0;
-            var bytes = this.randomFunction.apply(Integer.BYTES);
+            var bytes = this.randomFunction(Integer.BYTES);
 
             for (var i = 0; i < Integer.BYTES; i++)
             {
@@ -376,18 +377,18 @@ public class TsidFactory
 
         public byte[] NextBytes(int length)
         {
-            return this.randomFunction.apply(length);
+            return this.randomFunction(length);
         }
 
-        protected static IntFunction<byte[]> NewRandomFunction(Random random)
+        protected static Func<int, byte[]> NewRandomFunction(Random random)
         {
-            var entropy = random ??= new SecureRandom();
+            var entropy = random ??= new Random();
 
             return (int length) =>
             {
                 var bytes = new byte[length];
 
-                entropy.nextBytes(bytes);
+                entropy.NextBytes(bytes);
 
                 return bytes;
             };

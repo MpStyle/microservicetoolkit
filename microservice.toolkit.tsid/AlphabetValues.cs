@@ -2,10 +2,10 @@ namespace microservice.toolkit.tsid;
 
 internal static class AlphabetValues
 {
-    public static Get()
+    internal static long[] Get()
     {
         long[] alphabetValues = new long[128];
-        for (int i = 0; i < alphabetValues.length; i++)
+        for (int i = 0; i < alphabetValues.Length; i++)
         {
             alphabetValues[i] = -1;
         }

@@ -18,19 +18,19 @@ In summary:
 Create a TSID:
 
 ```C#
-var tsid = TsidCreator.getTsid1024();
+var tsid = TsidCreator.Tsid1024();
 ```
 
 Create a TSID number:
 
 ```C#
-var numberTsid = TsidCreator.getTsid1024().toLong(); // 38352658567418872
+var numberTsid = TsidCreator.Tsid1024().toLong(); // 38352658567418872
 ```
 
 Create a TSID string:
 
 ```C#
-var stringTsid = TsidCreator.getTsid1024().toString(); // 01226N0640J7Q
+var stringTsid = TsidCreator.Tsid1024().toString(); // 01226N0640J7Q
 ```
 
 There are three predefined node ranges: 256, 1024 and 4096.
@@ -45,17 +45,17 @@ The method `Tsid.toLong()` simply unwraps the internal `long` value.
 
 ```C#
 // Create a TSID for up to 256 nodes and 16384 ID/ms
-var tsid = TsidCreator.getTsid256().toLong();
+var tsid = TsidCreator.Tsid256().toLong();
 ```
 
 ```C#
 // Create a TSID for up to 1024 nodes and 4096 ID/ms
-var tsid = TsidCreator.getTsid1024().toLong();
+var tsid = TsidCreator.Tsid1024().toLong();
 ```
 
 ```C#
 // Create a TSID for up to 4096 nodes and 1024 ID/ms
-var tsid = TsidCreator.getTsid4096().toLong();
+var tsid = TsidCreator.Tsid4096().toLong();
 ```
 
 Sequence of TSIDs:

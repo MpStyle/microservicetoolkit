@@ -14,7 +14,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>time sortable identifiers, microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
     <Description>Everything you need for your entire micro services development life cycle. </Description>
-    <LangVersion>10</LangVersion>
+    <LangVersion>11</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\image\icon.png">
@@ -25,5 +25,8 @@
       <Pack>True</Pack>
       <PackagePath />
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
   </ItemGroup>
 </Project>

@@ -1,24 +1,26 @@
+using System;
+
 namespace microservice.toolkit.tsid;
 
 public class Tsid
 {
-    private static const long serialVersionUID = -5446820982139116297L;
+    private const long serialVersionUID = -5446820982139116297L;
     private readonly long number;
-    private static const int randomBits = 22;
-    private static const int randomMask = 0x003fffff;
-    private static const char[] alphabetUppercase = //
-			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
+    internal const int randomBits = 22;
+    internal const int randomMask = 0x003fffff;
+    private readonly char[] alphabetUppercase = new char[]
+            { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', //
 					'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' };
-    private static const char[] alphabetLowercase = //
-			{ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
+    private readonly static char[] alphabetLowercase = new char[]
+            { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
 					'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', //
 					'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
-    private static const long[] alphabetLowercase = AlphabetValues.Get();
+    private readonly long[] alphabetValues = AlphabetValues.Get();
 
-    public static const int TsidBytes = 8;
-    public static const int TsidChars = 13;
-    public static const long TsidEpoch = Instant.parse("2020-01-01T00:00:00.000Z").toEpochMilli();
+    public readonly static int TsidBytes = 8;
+    public readonly static int TsidChars = 13;
+    public readonly static long TsidEpoch = DateTimeOffset.Parse("2020-01-01T00:00:00.000Z").ToUnixTimeMilliseconds();
 
     public Tsid(long number)
     {
@@ -32,9 +34,9 @@ public class Tsid
 
     public static Tsid From(byte[] bytes)
     {
-        if (bytes == null || bytes.length != TsidBytes)
+        if (bytes == null || bytes.Length != Tsid.TsidBytes)
         {
-            throw new IllegalArgumentException("Invalid TSID bytes");
+            throw new ArgumentException("Invalid TSID bytes");
         }
 
         long number = 0;
@@ -53,7 +55,7 @@ public class Tsid
 
     public static Tsid From(string s)
     {
-        const char[] chars = ToCharArray(s);
+        var chars = ToCharArray(s);
         var number = 0;
 
         number |= alphabetLowercase[chars[0x00]] << 60;
@@ -80,7 +82,7 @@ public class Tsid
 
     public byte[] ToBytes()
     {
-        const byte[] bytes = new byte[TsidBytes];
+        var bytes = new byte[TsidBytes];
 
         bytes[0x0] = (byte)(number >>> 56);
         bytes[0x1] = (byte)(number >>> 48);
@@ -101,17 +103,17 @@ public class Tsid
 
     public string ToLowerCase()
     {
-        return toString(alphabetLowercase);
+        return ToString(alphabetLowercase);
     }
 
-    public Instant GetInstant()
+    public DateTimeOffset GetInstant()
     {
-        return Instant.ofEpochMilli(GetUnixMilliseconds());
+        return DateTimeOffset.FromUnixTimeMilliseconds(GetUnixMilliseconds());
     }
 
-    public Instant GetInstant(Instant customEpoch)
+    public DateTimeOffset GetInstant(DateTimeOffset customEpoch)
     {
-        return Instant.ofEpochMilli(getUnixMilliseconds(customEpoch.toEpochMilli()));
+        return DateTimeOffset.FromUnixTimeMilliseconds(this.GetUnixMilliseconds(customEpoch.ToUnixTimeMilliseconds()));
     }
 
     public long GetUnixMilliseconds()
@@ -134,9 +136,9 @@ public class Tsid
         return this.number & randomMask;
     }
 
-    public static boolean IsValid(string s)
+    public static bool IsValid(string s)
     {
-        return s != null && isValidCharArray(string.toCharArray());
+        return s != null && IsValidCharArray(s.ToCharArray());
     }
 
     public int HashCode()
@@ -144,7 +146,7 @@ public class Tsid
         return (int)(number ^ (number >>> 32));
     }
 
-    public boolean Equals(Object other)
+    public bool Equals(object other)
     {
         if (other == null)
         {
@@ -162,9 +164,9 @@ public class Tsid
 
     public int CompareTo(Tsid that)
     {
-        var min = 0x8000000000000000L;
+        var min = unchecked((long)0x8000000000000000L);
         var a = this.number + min;
-        var b = that.number + min;
+        var b = this.number + min;
 
         if (a > b)
         {
@@ -180,7 +182,7 @@ public class Tsid
 
     public string ToString(char[] alphabet)
     {
-        const char[] chars = new char[TsidChars];
+        var chars = new char[TsidChars];
 
         chars[0x00] = alphabet[(int)((number >>> 60) & 0b11111)];
         chars[0x01] = alphabet[(int)((number >>> 55) & 0b11111)];
@@ -201,19 +203,19 @@ public class Tsid
 
     private static char[] ToCharArray(string s)
     {
-        var chars = s == null ? null : string.toCharArray();
+        var chars = s == null ? null : s.ToCharArray();
 
         if (!IsValidCharArray(chars))
         {
-            throw new IllegalArgumentException(string.format("Invalid TSID: \"%s\"", s));
+            throw new ArgumentException(string.Format("Invalid TSID: \"%s\"", s));
         }
 
         return chars;
     }
 
-    private static boolean IsValidCharArray(char[] chars)
+    private static bool IsValidCharArray(char[] chars)
     {
-        if (chars == null || chars.length != TsidChars)
+        if (chars == null || chars.Length != TsidChars)
         {
             return false;
         }
@@ -223,7 +225,7 @@ public class Tsid
             return false;
         }
 
-        for (var i = 0; i < chars.length; i++)
+        for (var i = 0; i < chars.Length; i++)
         {
             if (alphabetLowercase[chars[i]] == -1)
             {
