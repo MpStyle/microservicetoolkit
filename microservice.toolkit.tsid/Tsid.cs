@@ -6,7 +6,6 @@ public class Tsid
 {
     private const long serialVersionUID = -5446820982139116297L;
     private readonly long number;
-    public const int RandomBits = 22;
     internal const int randomMask = 0x003fffff;
     private readonly char[] alphabetUppercase = new char[]
             { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', //
@@ -18,6 +17,7 @@ public class Tsid
 					'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
     private readonly long[] alphabetValues = AlphabetValues.Get();
 
+    public const int RandomBits = 22;
     public readonly static int TsidBytes = 8;
     public readonly static int TsidChars = 13;
     public readonly static long TsidEpoch = DateTimeOffset.Parse("2020-01-01T00:00:00.000Z").ToUnixTimeMilliseconds();
@@ -96,7 +96,7 @@ public class Tsid
         return bytes;
     }
 
-    public string ToString()
+    public override string ToString()
     {
         return ToString(alphabetUppercase);
     }
@@ -126,7 +126,7 @@ public class Tsid
         return this.GetTime() + customEpoch;
     }
 
-    long GetTime()
+    private long GetTime()
     {
         return this.number >>> RandomBits;
     }
@@ -141,12 +141,12 @@ public class Tsid
         return s != null && IsValidCharArray(s.ToCharArray());
     }
 
-    public int HashCode()
+    public override int GetHashCode()
     {
         return (int)(number ^ (number >>> 32));
     }
 
-    public bool Equals(object other)
+    public override bool Equals(object other)
     {
         if (other == null)
         {
