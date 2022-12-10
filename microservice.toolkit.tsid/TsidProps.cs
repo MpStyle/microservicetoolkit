@@ -5,8 +5,6 @@ namespace microservice.toolkit.tsid;
 
 public class TsidProps
 {
-    public static readonly long TsidTimeEpoch = DateTimeOffset.ParseExact("10/12/2022 08.15.00 +01:00", "dd/MM/yyyy HH.mm.ss zzz", CultureInfo.InvariantCulture).ToUnixTimeMilliseconds();
-
     internal const int ByteCount = 8;
     internal const int CharCount = 13;
 

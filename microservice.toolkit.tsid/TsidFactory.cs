@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace microservice.toolkit.tsid;
 
@@ -8,12 +9,13 @@ public class TsidFactory
     private readonly long node;
     private readonly Func<long> nextSequence;
 
-    private const int TimeBitCount = 41;
-    private readonly int NodeBitCount = 10;
-    private readonly int SequenceBitCount = 12;
-
     private long sequence = 0;
     private long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+    public DateTimeOffset TsidTimeEpoch { get; }
+    public int TimeBitCount { get; } = 41;
+    public int NodeBitCount { get; } = 10;
+    public int SequenceBitCount { get; } = 12;
 
     public TsidFactory() : this(new TsidSettings())
     {
@@ -21,6 +23,7 @@ public class TsidFactory
 
     public TsidFactory(TsidSettings settings)
     {
+        this.TsidTimeEpoch = settings.CustomTsidTimeEpoch;
         this.NodeBitCount = settings.TsidLength switch
         {
             TsidLength.Tsid256 => 8,
@@ -57,14 +60,14 @@ public class TsidFactory
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        if (now < this.lastTime || now < TsidProps.TsidTimeEpoch)
+        if (now < this.lastTime || now < this.TsidTimeEpoch.ToUnixTimeMilliseconds())
         {
             throw new Exception("Invalid system clock");
         }
 
         this.lastTime = now;
 
-        return now - TsidProps.TsidTimeEpoch;
+        return now - this.TsidTimeEpoch.ToUnixTimeMilliseconds();
     }
 
     private long NextSequence()
@@ -199,6 +202,7 @@ public class TsidFactory
 public class TsidSettings
 {
     public TsidLength TsidLength { get; set; } = TsidLength.Tsid1024;
+    public DateTimeOffset CustomTsidTimeEpoch { get; set; } = DateTimeOffset.ParseExact("10/12/2022 08.15.00 +01:00", "dd/MM/yyyy HH.mm.ss zzz", CultureInfo.InvariantCulture);
     public long? Node { get; set; }
     public Func<long>? NodeFactory { get; set; }
     public Func<long>? SequenceFactory { get; set; }

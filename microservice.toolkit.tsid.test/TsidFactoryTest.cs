@@ -10,6 +10,25 @@ namespace microservice.toolkit.tsid.test;
 public class TsidFactoryTest
 {
     [Test]
+    public void Create_CustomTsidTimeEpoch()
+    {
+        const long sourceNode = 20;
+        var factory = new TsidFactory(new TsidSettings
+        {
+            Node = sourceNode,
+            TsidLength = TsidLength.Tsid256,
+            CustomTsidTimeEpoch = DateTimeOffset.UtcNow
+        });
+        var tsid = factory.Create();
+
+        var time = GetTime(tsid);
+        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
+
+        var node = GetNode(tsid, 8);
+        var sequence = GetSequence(tsid, 14);
+    }
+
+    [Test]
     public void Create_Tsid256()
     {
         const long sourceNode = 20;
@@ -21,7 +40,7 @@ public class TsidFactoryTest
         var tsid = factory.Create();
 
         var time = GetTime(tsid);
-        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(TsidProps.TsidTimeEpoch + time);
+        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
 
         var node = GetNode(tsid, 8);
         var sequence = GetSequence(tsid, 14);
@@ -38,7 +57,7 @@ public class TsidFactoryTest
         var tsid = factory.Create();
 
         var time = GetTime(tsid);
-        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(TsidProps.TsidTimeEpoch + time);
+        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
 
         var node = GetNode(tsid, 12);
         var sequence = GetSequence(tsid, 10);
@@ -60,7 +79,7 @@ public class TsidFactoryTest
         var end = DateTimeOffset.UtcNow;
 
         var time = GetTime(tsid);
-        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(TsidProps.TsidTimeEpoch + time);
+        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
 
         var node = GetNode(tsid, 10);
         var sequence = GetSequence(tsid, 12);
