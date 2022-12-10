@@ -97,10 +97,95 @@ public class TsidFactory
 
         return Tuple.Create(minValue, maxValue);
     }
+
+    public static Tsid From(long number)
+    {
+        return new Tsid(number);
+    }
+
+    public static Tsid From(byte[] bytes)
+    {
+
+        if (bytes == null || bytes.Length != TsidProps.ByteCount)
+        {
+            throw new ArgumentException("Invalid TSID bytes"); // null or wrong length!
+        }
+
+        long number = 0;
+
+        number |= (bytes[0x0] & 0xffL) << 56;
+        number |= (bytes[0x1] & 0xffL) << 48;
+        number |= (bytes[0x2] & 0xffL) << 40;
+        number |= (bytes[0x3] & 0xffL) << 32;
+        number |= (bytes[0x4] & 0xffL) << 24;
+        number |= (bytes[0x5] & 0xffL) << 16;
+        number |= (bytes[0x6] & 0xffL) << 8;
+        number |= (bytes[0x7] & 0xffL);
+
+        return new Tsid(number);
+    }
+
+    public static Tsid From(string s)
+    {
+        var chars = TsidFactory.ToCharArray(s);
+        long number = 0;
+
+        number |= TsidProps.ALPHABET_VALUES[chars[0x00]] << 60;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x01]] << 55;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x02]] << 50;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x03]] << 45;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x04]] << 40;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x05]] << 35;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x06]] << 30;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x07]] << 25;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x08]] << 20;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x09]] << 15;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x0a]] << 10;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x0b]] << 5;
+        number |= TsidProps.ALPHABET_VALUES[chars[0x0c]];
+
+        return new Tsid(number);
+    }
+
+    private static char[] ToCharArray(string s)
+    {
+        var chars = s == null ? null : s.ToCharArray();
+        if (!TsidFactory.IsValidCharArray(chars))
+        {
+            throw new ArgumentException(string.Format("Invalid TSID: \"%s\"", s));
+        }
+        return chars;
+    }
+
+    private static bool IsValidCharArray(char[] chars)
+    {
+
+        if (chars == null || chars.Length != TsidProps.CharCount)
+        {
+            return false; // null or wrong size!
+        }
+
+        // The extra bit added by base-32 encoding must be zero
+        // As a consequence, the 1st char of the input string must be between 0 and F.
+        if ((TsidProps.ALPHABET_VALUES[chars[0]] & 0b10000) != 0)
+        {
+            return false; // overflow!
+        }
+
+        for (var i = 0; i < chars.Length; i++)
+        {
+            if (TsidProps.ALPHABET_VALUES[chars[i]] == -1)
+            {
+                return false; // invalid character!
+            }
+        }
+        return true; // It seems to be OK.
+    }
 }
 
 public class TsidSettings
 {
+    public int? NodeBitCount { get; set; }
     public long? Node { get; set; }
     public Func<long>? NodeFactory { get; set; }
     public Func<long>? SequenceFactory { get; set; }

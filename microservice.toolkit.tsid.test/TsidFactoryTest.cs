@@ -97,4 +97,52 @@ public class TsidFactoryTest
         Assert.IsTrue(string.Equals(tsid.ToString(), tsid.ToLowerCase(), StringComparison.OrdinalIgnoreCase));
         Assert.IsNotNull(tsid.ToBytes());
     }
+
+    [Test]
+    public void From_string()
+    {
+        const long sourceNode = 21;
+        var factory = new TsidFactory(new TsidSettings
+        {
+            Node = sourceNode
+        });
+        var tsid = factory.Create();
+
+        var fromTsid = TsidFactory.From(tsid.ToString());
+
+        Assert.AreEqual(tsid.Number, fromTsid.Number);
+        Assert.AreNotEqual(tsid, fromTsid);
+    }
+
+    [Test]
+    public void From_bytes()
+    {
+        const long sourceNode = 21;
+        var factory = new TsidFactory(new TsidSettings
+        {
+            Node = sourceNode
+        });
+        var tsid = factory.Create();
+
+        var fromTsid = TsidFactory.From(tsid.ToBytes());
+
+        Assert.AreEqual(tsid.Number, fromTsid.Number);
+        Assert.AreNotEqual(tsid, fromTsid);
+    }
+
+    [Test]
+    public void From_long()
+    {
+        const long sourceNode = 21;
+        var factory = new TsidFactory(new TsidSettings
+        {
+            Node = sourceNode
+        });
+        var tsid = factory.Create();
+
+        var fromTsid = TsidFactory.From(tsid.Number);
+
+        Assert.AreEqual(tsid.Number, fromTsid.Number);
+        Assert.AreNotEqual(tsid, fromTsid);
+    }
 }
