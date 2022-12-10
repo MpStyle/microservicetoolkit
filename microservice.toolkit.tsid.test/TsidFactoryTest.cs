@@ -30,6 +30,9 @@ public class TsidFactoryTest
         var node = tsid.GetNode();
         var sequence = tsid.GetSequence();
 
+        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
+        Assert.AreEqual(13, tsid.ToString().Length);
+
         Assert.AreEqual(sequence, 0);
         Assert.AreEqual(sourceNode, node);
         Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
@@ -54,10 +57,25 @@ public class TsidFactoryTest
         Thread.Sleep(1);
         var fifth = factory.Create();
 
-        Assert.IsTrue(first.Number <= second.Number);
-        Assert.IsTrue(second.Number <= third.Number);
-        Assert.IsTrue(third.Number <= fourth.Number);
-        Assert.IsTrue(fourth.Number <= fifth.Number);
+        Assert.IsTrue(64 >= Convert.ToString(first.Number, 2).Length);
+        Assert.AreEqual(13, first.ToString().Length);
+
+        Assert.IsTrue(64 >= Convert.ToString(second.Number, 2).Length);
+        Assert.AreEqual(13, second.ToString().Length);
+
+        Assert.IsTrue(64 >= Convert.ToString(third.Number, 2).Length);
+        Assert.AreEqual(13, third.ToString().Length);
+
+        Assert.IsTrue(64 >= Convert.ToString(fourth.Number, 2).Length);
+        Assert.AreEqual(13, fourth.ToString().Length);
+
+        Assert.IsTrue(64 >= Convert.ToString(fifth.Number, 2).Length);
+        Assert.AreEqual(13, fifth.ToString().Length);
+
+        Assert.IsTrue(first.Number < second.Number);
+        Assert.IsTrue(second.Number < third.Number);
+        Assert.IsTrue(third.Number < fourth.Number);
+        Assert.IsTrue(fourth.Number < fifth.Number);
     }
 
     [Test]
@@ -69,6 +87,9 @@ public class TsidFactoryTest
             Node = sourceNode
         });
         var tsid = factory.Create();
+
+        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
+        Assert.AreEqual(13, tsid.ToString().Length);
 
         Assert.IsNotNull(tsid.Number);
         Assert.IsNotNull(tsid.ToString());
