@@ -4,27 +4,6 @@ namespace microservice.toolkit.tsid;
 
 public static class TsidExtension
 {
-
-    public static long GetTime(this Tsid tsid)
-    {
-        return tsid.Number >> TsidProps.NodeBitCount >> TsidProps.SequenceBitCount;
-    }
-
-    public static DateTimeOffset GetDateTimeOffset(this Tsid tsid)
-    {
-        return DateTimeOffset.FromUnixTimeMilliseconds(tsid.GetTime());
-    }
-
-    public static long GetNode(this Tsid tsid)
-    {
-        return (tsid.Number >> TsidProps.SequenceBitCount) & (1 << TsidProps.NodeBitCount) - 1;
-    }
-
-    public static long GetSequence(this Tsid tsid)
-    {
-        return tsid.Number & TsidProps.SequenceBitCount;
-    }
-
     public static byte[] ToBytes(this Tsid tsid)
     {
         var number = tsid.Number;

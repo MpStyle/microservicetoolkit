@@ -8,6 +8,10 @@ public class TsidFactory
     private readonly long node;
     private readonly Func<long> nextSequence;
 
+    private const int TimeBitCount = 41;
+    private readonly int NodeBitCount = 10;
+    private readonly int SequenceBitCount = 12;
+
     private long sequence = 0;
     private long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -17,6 +21,15 @@ public class TsidFactory
 
     public TsidFactory(TsidSettings settings)
     {
+        this.NodeBitCount = settings.TsidLength switch
+        {
+            TsidLength.Tsid256 => 8,
+            TsidLength.Tsid1024 => 10,
+            TsidLength.Tsid4096 => 12,
+            _ => throw new Exception("Invalid TSID lenght"),
+        };
+        this.SequenceBitCount = 22 - this.NodeBitCount;
+
         var nodeFactory = settings.NodeFactory ?? this.NodeRandom;
 
         this.node = settings.Node ?? nodeFactory();
@@ -24,7 +37,7 @@ public class TsidFactory
 
         if (this.IsNodeValid(this.node) == false)
         {
-            throw new ArgumentException($"Invalid node value, must be a {TsidProps.NodeBitCount} bits number");
+            throw new ArgumentException($"Invalid node value, must be a {this.NodeBitCount} bits number");
         }
     }
 
@@ -33,8 +46,8 @@ public class TsidFactory
         lock (this)
         {
             var time = this.Time();
-            var timePart = time << TsidProps.NodeBitCount << TsidProps.SequenceBitCount;
-            var nodePart = this.node << TsidProps.SequenceBitCount;
+            var timePart = time << this.NodeBitCount << this.SequenceBitCount;
+            var nodePart = this.node << this.SequenceBitCount;
             var sequencePart = this.nextSequence();
             return new Tsid(timePart | nodePart | sequencePart);
         }
@@ -76,7 +89,7 @@ public class TsidFactory
 
     private Tuple<long, long> SequenceLimits()
     {
-        return this.Limit(TsidProps.SequenceBitCount);
+        return this.Limit(this.SequenceBitCount);
     }
 
     private bool IsNodeValid(long node)
@@ -87,7 +100,7 @@ public class TsidFactory
 
     private Tuple<long, long> NodeLimits()
     {
-        return this.Limit(TsidProps.NodeBitCount);
+        return this.Limit(this.NodeBitCount);
     }
 
     private Tuple<long, long> Limit(int bitCount)
@@ -185,8 +198,15 @@ public class TsidFactory
 
 public class TsidSettings
 {
-    public int? NodeBitCount { get; set; }
+    public TsidLength TsidLength { get; set; } = TsidLength.Tsid1024;
     public long? Node { get; set; }
     public Func<long>? NodeFactory { get; set; }
     public Func<long>? SequenceFactory { get; set; }
+}
+
+public enum TsidLength
+{
+    Tsid256,
+    Tsid1024,
+    Tsid4096,
 }

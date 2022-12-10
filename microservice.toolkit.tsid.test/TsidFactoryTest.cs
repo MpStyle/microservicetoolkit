@@ -10,6 +10,41 @@ namespace microservice.toolkit.tsid.test;
 public class TsidFactoryTest
 {
     [Test]
+    public void Create_Tsid256()
+    {
+        const long sourceNode = 20;
+        var factory = new TsidFactory(new TsidSettings
+        {
+            Node = sourceNode,
+            TsidLength = TsidLength.Tsid256
+        });
+        var tsid = factory.Create();
+
+        var time = GetTime(tsid);
+        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(TsidProps.TsidTimeEpoch + time);
+
+        var node = GetNode(tsid, 8);
+        var sequence = GetSequence(tsid, 14);
+    }
+
+    public void Create_Tsid4096()
+    {
+        const long sourceNode = 20;
+        var factory = new TsidFactory(new TsidSettings
+        {
+            Node = sourceNode,
+            TsidLength = TsidLength.Tsid256
+        });
+        var tsid = factory.Create();
+
+        var time = GetTime(tsid);
+        var datetime = DateTimeOffset.FromUnixTimeMilliseconds(TsidProps.TsidTimeEpoch + time);
+
+        var node = GetNode(tsid, 12);
+        var sequence = GetSequence(tsid, 10);
+    }
+
+    [Test]
     public void Create_ChecksTsidParts()
     {
         const long sourceNode = 20;
@@ -24,11 +59,11 @@ public class TsidFactoryTest
 
         var end = DateTimeOffset.UtcNow;
 
-        var time = tsid.GetTime();
+        var time = GetTime(tsid);
         var datetime = DateTimeOffset.FromUnixTimeMilliseconds(TsidProps.TsidTimeEpoch + time);
 
-        var node = tsid.GetNode();
-        var sequence = tsid.GetSequence();
+        var node = GetNode(tsid, 10);
+        var sequence = GetSequence(tsid, 12);
 
         Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
         Assert.AreEqual(13, tsid.ToString().Length);
@@ -144,5 +179,25 @@ public class TsidFactoryTest
 
         Assert.AreEqual(tsid.Number, fromTsid.Number);
         Assert.AreNotEqual(tsid, fromTsid);
+    }
+
+    public static long GetTime(Tsid tsid)
+    {
+        return tsid.Number >> 22;
+    }
+
+    private static DateTimeOffset GetDateTimeOffset(Tsid tsid, int nodeBitCount)
+    {
+        return DateTimeOffset.FromUnixTimeMilliseconds(GetTime(tsid));
+    }
+
+    private static long GetNode(Tsid tsid, int nodeBitCount)
+    {
+        return (tsid.Number >> (22 - nodeBitCount)) & (1 << nodeBitCount) - 1;
+    }
+
+    private static long GetSequence(Tsid tsid, int sequenceBitCount)
+    {
+        return tsid.Number & sequenceBitCount;
     }
 }

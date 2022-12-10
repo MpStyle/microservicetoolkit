@@ -10,10 +10,6 @@ public class TsidProps
     internal const int ByteCount = 8;
     internal const int CharCount = 13;
 
-    internal const int TimeBitCount = 41;
-    internal const int NodeBitCount = 10;
-    internal const int SequenceBitCount = 12;
-
     internal static readonly char[] ALPHABET_UPPERCASE = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K',
                     'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' };
