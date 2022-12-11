@@ -117,7 +117,7 @@ Or:
 ### Service implementation
 To implement a service, extend the abstract class "_Service<TRequest, TPayload>_", where:
 - "_TRequest_" is the service input (or request)
-- "_TPayload_" is the service output (or payload of the response)
+- "_TPayload_" is the service output (or response payload)
 
 Example code:
 
