@@ -53,11 +53,11 @@ Microservice Toolkit provides some implementations of the message mediator inter
 
 The implementations of __message mediator__ can work in a single instance environment
 
-![Single instance](./docs/mediator_single_instance.png)
+![Single instance](./docs/mediator_single_instance.jpg)
 
 or in a multi instances environment:
 
-![Single instance](./docs/mediator_multi_instances.png)
+![Single instance](./docs/mediator_multi_instances.jpg)
 
 A bus can be a message broker (RabbitMQ or Azure Service bus).
 
