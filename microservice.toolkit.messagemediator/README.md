@@ -45,23 +45,17 @@ Only one of the fields can have a value: if "error" has a value, "payload" doesn
 
 ## Implementations
 
-Microservice Toolkit provides some implementations of the message mediator interface:
-- [Local](#local)
-- [RabbitMQ](#rabbitmq)
-- [Azure Service Bus](#servicebus)
-- [NATS](#nats)
+Microservice Toolkit provides message mediator (IMessageMediator) implementations which can exchange messages in a [single instance environment](#local) and in a multi instances environment using a message broker like [RabbitMQ](#rabbitmq), [Azure Service Bus](#servicebus) or [NATS](#nats).
 
-The implementations of __message mediator__ can work in a single instance environment
+Single instance environment:
 
-![Single instance](./docs/mediator_single_instance.png)
+![Single instance](./docs/mediator_single_instance.jpg)
 
-or in a multi instances environment:
+Multi instances environment:
 
-![Single instance](./docs/mediator_multi_instances.png)
+![Multi instances](./docs/mediator_multi_instances.jpg)
 
-A bus can be a message broker (RabbitMQ or Azure Service bus).
-
-Every implementation requires a "service provider" (a delegate) to link the name (pattern) to the instance of a service.
+Every implementation of message mediator requires a "service factory" which link service name (pattern) to its instance.
 
 ### Local
 
@@ -117,7 +111,7 @@ Or:
 ### Service implementation
 To implement a service, extend the abstract class "_Service<TRequest, TPayload>_", where:
 - "_TRequest_" is the service input (or request)
-- "_TPayload_" is the service output (or payload of the response)
+- "_TPayload_" is the service output (or response payload)
 
 Example code:
 
