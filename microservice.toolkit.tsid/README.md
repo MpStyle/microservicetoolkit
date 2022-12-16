@@ -71,22 +71,21 @@ var tsid = factory.Create().Number;
 Sequence of TSIDs:
 
 ```text
-38352658567418867
-38352658567418868
-38352658567418869
-38352658567418870
-38352658567418871
-38352658567418872
-38352658567418873
-38352658567418874
-38352658573940759 < millisecond changed
-38352658573940760
-38352658573940761
-38352658573940762
-38352658573940763
-38352658573940764
-38352658573940765
-38352658573940766
+2274459083952128
+2274459088146433 < millisecond changed
+2274459088146434
+2274459088146435
+2274459088146436
+2274459088146437
+2274459088146438
+2274459088146439
+2274459088146440
+2274459088146441
+2274459088146442
+2274459088146443
+2274459088146444
+2274459088146445
+2274459088146446
          ^      ^ look
                                    
 |--------|------|
@@ -126,22 +125,21 @@ var tsid = factory.Create().ToString();
 Sequence of TSID strings:
 
 ```text
-01226N0640J7K
-01226N0640J7M
-01226N0640J7N
-01226N0640J7P
-01226N0640J7Q
-01226N0640J7R
-01226N0640J7S
-01226N0640J7T
-01226N0693HDA < millisecond changed
-01226N0693HDB
-01226N0693HDC
-01226N0693HDD
-01226N0693HDE
-01226N0693HDF
-01226N0693HDG
-01226N0693HDH
+0020N58ZC2M00
+0020N58ZG2M01 < millisecond changed
+0020N58ZG2M02
+0020N58ZG2M03
+0020N58ZG2M04
+0020N58ZG2M05
+0020N58ZG2M06
+0020N58ZG2M07
+0020N58ZG2M08
+0020N58ZG2M09
+0020N58ZG2M0A
+0020N58ZG2M0B
+0020N58ZG2M0C
+0020N58ZG2M0D
+0020N58ZG2M0E
         ^   ^ look
                                    
 |-------|---|
@@ -170,7 +168,7 @@ This is the default TSID structure:
                                             adjustable
                                            <---------->
 |------------------------------------------|----------|------------|
-       time (msecs since 2020-01-01)           node       sequence
+       time (msecs since 2021-10-12)           node       sequence
                 42 bits                       10 bits     12 bits
 
 - time:    2^42 = ~139 years (with adjustable epoch)
@@ -261,21 +259,21 @@ var worker = 1;     // max: 2^5-1 = 31
 var node = (datacenter << 5 | worker); // max: 2^10-1 = 1023
 
 // Twitter Epoch is fixed in 1288834974657 (2010-11-04T01:42:54.657Z)
-var customEpoch = Instant.ofEpochMilli(1288834974657L);
+var customEpoch = DateTimeOffset.FromUnixTimeMilliseconds(1288834974657L);
 
-// a function that returns an array with ZEROS, making the factory
-// to RESET the counter to ZERO when the millisecond changes
-var randomFunction = (x) -> new byte[x];
+// RESET the sequence to ZERO when the millisecond changes
+var sequenceResetType = SequenceResetType.OnTimeChange;
 
 // a factory that returns TSIDs similar to Twitter Snowflakes
-var factory = TsidFactory.builder()
-		.withRandomFunction(randomFunction)
-		.withCustomEpoch(customEpoch)
-		.withNode(node)
-		.build();
+var factory = new TsidFactory(new TsidSettings
+{
+    Node = node,
+    CustomTsidTimeEpoch = customEpoch,
+    SequenceResetType = sequenceResetType
+});
 
 // use the factory
-var tsid = factory.create();
+var tsid = factory.Create();
 ```
 
 ---
@@ -289,14 +287,18 @@ var process = 1; // max: 2^5-1 = 31
 var node = (worker << 5 | process); // max: 2^10-1 = 1023
 
 // Discord Epoch starts in the first millisecond of 2015
-var customEpoch = Instant.parse("2015-01-01T00:00:00.000Z");
+var customEpoch = DateTimeOffset.Parse("2015-01-01T00:00:00.000Z");
 
-// a factory that returns TSIDs similar to Discord Snowflakes
-var factory = TsidFactory.builder()
-		.withCustomEpoch(customEpoch)
-		.withNode(node)
-		.build();
+// RESET the sequence to ZERO when the millisecond changes
+var sequenceResetType = SequenceResetType.OnTimeChange;
+
+// a factory that returns TSIDs similar to Twitter Snowflakes
+var factory = new TsidFactory(new TsidSettings
+{
+    Node = node,
+    CustomTsidTimeEpoch = customEpoch
+});
 
 // use the factory
-var tsid = factory.create();
+var tsid = factory.Create();
 ```

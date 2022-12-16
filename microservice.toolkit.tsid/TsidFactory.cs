@@ -22,7 +22,7 @@ public class TsidFactory
 
     public TsidFactory(TsidSettings settings)
     {
-        this.sequenceResetType = settings.SequenceResetType;
+        this.sequenceResetType = settings.sequenceResetType;
         this.TsidTimeEpoch = settings.CustomTsidTimeEpoch;
         this.NodeBitCount = settings.TsidLength switch
         {
@@ -196,7 +196,7 @@ public class TsidSettings
     public TsidLength TsidLength { get; set; } = TsidLength.Tsid1024;
     public DateTimeOffset CustomTsidTimeEpoch { get; set; } = DateTimeOffset.ParseExact("10/12/2022 08.15.00 +01:00", "dd/MM/yyyy HH.mm.ss zzz", CultureInfo.InvariantCulture);
     public long Node { get; set; }
-    public SequenceResetType SequenceResetType;
+    public SequenceResetType sequenceResetType;
 }
 
 public enum TsidLength
