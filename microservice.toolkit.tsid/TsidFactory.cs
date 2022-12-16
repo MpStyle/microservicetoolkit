@@ -5,12 +5,11 @@ namespace microservice.toolkit.tsid;
 
 public class TsidFactory
 {
-    private readonly Random seed = new Random();
     private readonly long node;
-    private readonly Func<long> nextSequence;
+    private readonly SequenceResetType sequenceResetType;
 
     private long sequence = 0;
-    private long lastTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    private long lastTime = TsidFactory.Now();
 
     public DateTimeOffset TsidTimeEpoch { get; }
     public int TimeBitCount { get; } = 41;
@@ -23,6 +22,7 @@ public class TsidFactory
 
     public TsidFactory(TsidSettings settings)
     {
+        this.sequenceResetType = settings.SequenceResetType;
         this.TsidTimeEpoch = settings.CustomTsidTimeEpoch;
         this.NodeBitCount = settings.TsidLength switch
         {
@@ -32,11 +32,7 @@ public class TsidFactory
             _ => throw new Exception("Invalid TSID lenght"),
         };
         this.SequenceBitCount = 22 - this.NodeBitCount;
-
-        var nodeFactory = settings.NodeFactory ?? this.NodeRandom;
-
-        this.node = settings.Node ?? nodeFactory();
-        this.nextSequence = settings.SequenceFactory ?? this.NextSequence;
+        this.node = settings.Node;
 
         if (this.IsNodeValid(this.node) == false)
         {
@@ -51,14 +47,14 @@ public class TsidFactory
             var time = this.Time();
             var timePart = time << this.NodeBitCount << this.SequenceBitCount;
             var nodePart = this.node << this.SequenceBitCount;
-            var sequencePart = this.nextSequence();
+            var sequencePart = this.NextSequence();
             return new Tsid(timePart | nodePart | sequencePart);
         }
     }
 
     private long Time()
     {
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var now = TsidFactory.Now();
 
         if (now < this.lastTime || now < this.TsidTimeEpoch.ToUnixTimeMilliseconds())
         {
@@ -72,22 +68,13 @@ public class TsidFactory
 
     private long NextSequence()
     {
+        if (this.sequenceResetType == SequenceResetType.OnTimeChange && this.lastTime != TsidFactory.Now())
+        {
+            return 0;
+        }
+
         this.sequence %= this.SequenceLimits().Item2;
         return this.sequence++;
-    }
-
-    private long NodeRandom()
-    {
-        var limits = this.NodeLimits();
-        return this.LongRandom(limits.Item1, limits.Item2);
-    }
-
-    private long LongRandom(long min, long max)
-    {
-        long result = seed.Next((Int32)(min >> 32), (Int32)(max >> 32));
-        result = (result << 32);
-        result = result | (long)this.seed.Next((Int32)min, (Int32)max);
-        return result;
     }
 
     private Tuple<long, long> SequenceLimits()
@@ -197,15 +184,19 @@ public class TsidFactory
         }
         return true; // It seems to be OK.
     }
+
+    private static long Now()
+    {
+        return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    }
 }
 
 public class TsidSettings
 {
     public TsidLength TsidLength { get; set; } = TsidLength.Tsid1024;
     public DateTimeOffset CustomTsidTimeEpoch { get; set; } = DateTimeOffset.ParseExact("10/12/2022 08.15.00 +01:00", "dd/MM/yyyy HH.mm.ss zzz", CultureInfo.InvariantCulture);
-    public long? Node { get; set; }
-    public Func<long>? NodeFactory { get; set; }
-    public Func<long>? SequenceFactory { get; set; }
+    public long Node { get; set; }
+    public SequenceResetType SequenceResetType;
 }
 
 public enum TsidLength
@@ -213,4 +204,10 @@ public enum TsidLength
     Tsid256,
     Tsid1024,
     Tsid4096,
+}
+
+public enum SequenceResetType
+{
+    Rollover,
+    OnTimeChange
 }
