@@ -1,6 +1,3 @@
-using System;
-using System.Globalization;
-
 namespace microservice.toolkit.tsid;
 
 public class TsidProps
@@ -21,7 +18,7 @@ public class TsidProps
     private static long[] GetAlphabetValues()
     {
         var alphabetValues = new long[128];
-        for (int i = 0; i < alphabetValues.Length; i++)
+        for (var i = 0; i < alphabetValues.Length; i++)
         {
             alphabetValues[i] = -1;
         }
