@@ -13,6 +13,7 @@ public class TsidFactoryTest
     public void Create_CustomTsidTimeEpoch()
     {
         const long sourceNode = 20;
+        var start = DateTimeOffset.UtcNow;
         var factory = new TsidFactory(new TsidSettings
         {
             Node = sourceNode,
@@ -20,47 +21,76 @@ public class TsidFactoryTest
             CustomTsidTimeEpoch = DateTimeOffset.UtcNow
         });
         var tsid = factory.Create();
+        var end = DateTimeOffset.UtcNow;
 
         var time = GetTime(tsid);
         var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
 
         var node = GetNode(tsid, 8);
         var sequence = GetSequence(tsid, 14);
+
+        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
+        Assert.AreEqual(13, tsid.ToString().Length);
+
+        Assert.AreEqual(sequence, 0);
+        Assert.AreEqual(sourceNode, node);
+        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     [Test]
     public void Create_Tsid256()
     {
         const long sourceNode = 20;
+        var start = DateTimeOffset.UtcNow;
         var factory = new TsidFactory(new TsidSettings
         {
             Node = sourceNode,
             TsidLength = TsidLength.Tsid256
         });
         var tsid = factory.Create();
+        var end = DateTimeOffset.UtcNow;
 
         var time = GetTime(tsid);
         var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
 
         var node = GetNode(tsid, 8);
         var sequence = GetSequence(tsid, 14);
+
+        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
+        Assert.AreEqual(13, tsid.ToString().Length);
+
+        Assert.AreEqual(sequence, 0);
+        Assert.AreEqual(sourceNode, node);
+        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     public void Create_Tsid4096()
     {
         const long sourceNode = 20;
+        var start = DateTimeOffset.UtcNow;
         var factory = new TsidFactory(new TsidSettings
         {
             Node = sourceNode,
             TsidLength = TsidLength.Tsid256
         });
         var tsid = factory.Create();
+        var end = DateTimeOffset.UtcNow;
 
         var time = GetTime(tsid);
         var datetime = DateTimeOffset.FromUnixTimeMilliseconds(factory.TsidTimeEpoch.ToUnixTimeMilliseconds() + time);
 
         var node = GetNode(tsid, 12);
         var sequence = GetSequence(tsid, 10);
+
+        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
+        Assert.AreEqual(13, tsid.ToString().Length);
+
+        Assert.AreEqual(sequence, 0);
+        Assert.AreEqual(sourceNode, node);
+        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     [Test]
@@ -203,11 +233,6 @@ public class TsidFactoryTest
     public static long GetTime(Tsid tsid)
     {
         return tsid.Number >> 22;
-    }
-
-    private static DateTimeOffset GetDateTimeOffset(Tsid tsid, int nodeBitCount)
-    {
-        return DateTimeOffset.FromUnixTimeMilliseconds(GetTime(tsid));
     }
 
     private static long GetNode(Tsid tsid, int nodeBitCount)
