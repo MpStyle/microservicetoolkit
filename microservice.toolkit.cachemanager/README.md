@@ -62,6 +62,7 @@ Removed the entry from the cache provider.
 - [MySql](#mysql)
 - [Memcached](#memcached)
 - [Redis](#redis)
+- [Hazelcast](#hazelcast)
 
 ### In memory
 <a name="inmemory"></a>
@@ -237,4 +238,44 @@ var manager = new RedisCacheManager("localhost:6379", new JsonCacheValueSerializ
 **XML**
 ```C#
 var manager = new RedisCacheManager("localhost:6379", new XmlCacheValueSerializer());
+```
+
+### Hazelcast
+
+<a name="hazelcast"></a>
+To start using Hazelcast cache manager, first install the required package:
+```xml
+<PackageReference Include="Hazelcast.Net" Version="5.1.1" />
+```
+
+How to use:
+
+```C#
+var options = new HazelcastOptionsBuilder()
+                .With(args)
+                .WithConsoleLogger()
+                .Build();
+var manager = new HazelcastCacheManager(options, "my-distributed");
+```
+
+You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
+
+**Newtonsoft JSON**\
+Install Newtonsoft JSON dependency:
+```
+dotnet add package Newtonsoft.Json --version 13.0.2
+```
+And use the serializer:
+```C#
+var manager = new HazelcastCacheManager(options, "my-distributed", new NewtonsoftJsonCacheValueSerializer());
+```
+
+**System.Text.Json**
+```C#
+var manager = new HazelcastCacheManager(options, "my-distributed", new JsonCacheValueSerializer());
+```
+
+**XML**
+```C#
+var manager = new HazelcastCacheManager(options, "my-distributed", new XmlCacheValueSerializer());
 ```

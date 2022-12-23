@@ -30,3 +30,6 @@ docker run -d --name microserviceframework-test-rabbitmq -p 5672:5672 -p 15672:1
 
 **NATS**
 docker run -d --name microserviceframework-test-nats -p 4222:4222 -p 8222:8222 -p 6222:6222 nats:alpine
+
+### Hazelcast 
+docker run --name microserviceframework-test-hazelcast -p 5701:5701 -d hazelcast/hazelcast
