@@ -1,7 +1,5 @@
 ﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
 
-using System;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator
@@ -13,24 +11,6 @@ namespace microservice.toolkit.messagemediator
     /// </summary>
     public partial interface IMessageMediator
     {
-        public async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(Type serviceType, TRequest message)
-        {
-            return await this.Send<TPayload>(serviceType.ToPattern(), message);
-        }
-
-        /// <summary>
-        /// Sends a message.
-        /// </summary>
-        /// <typeparam name="TRequest"></typeparam>
-        /// <typeparam name="TPayload"></typeparam>
-        /// <param name="pattern"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        public async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(string pattern, TRequest message)
-        {
-            return await this.Send<TPayload>(pattern, message);
-        }
-
         /// <summary>
         /// Sends a generic message.
         /// </summary>
