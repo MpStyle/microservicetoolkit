@@ -136,7 +136,7 @@ public static partial class SignalEmitterExtensions
             return false;
         }
 
-        var name = fullname[..fullname.IndexOf('`')];
+        var name = fullname.Substring(0, fullname.IndexOf('`'));
         var currentType = type;
         while (currentType != null)
         {

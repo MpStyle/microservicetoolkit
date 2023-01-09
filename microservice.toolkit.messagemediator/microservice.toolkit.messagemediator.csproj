@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net7.0</TargetFrameworks>
     <AssemblyName>microservice.toolkit.messagemediator</AssemblyName>
     <RootNamespace>microservice.toolkit.messagemediator</RootNamespace>
     <Authors>Michele Pagnin</Authors>
@@ -16,6 +16,7 @@
     <LangVersion>10</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="NATS.Client" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>

@@ -29,8 +29,7 @@ public class MicroserviceCollection
 
     public Type ByPatternOrDefault(string pattern)
     {
-        var service = this.services.FirstOrDefault(ms => ms.Key.Equals(pattern), new KeyValuePair<string, Type>("default", null));
-        return service.Value;
+        return this.ContainsPattern(pattern) ? this.services[pattern] : null;
     }
 
     public Dictionary<string, Type> ToDictionary()
