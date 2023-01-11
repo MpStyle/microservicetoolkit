@@ -1,3 +1,5 @@
+using EvolveDb;
+
 using System;
 using System.Data.Common;
 using System.IO;
@@ -16,7 +18,7 @@ namespace microservice.toolkit.migrationmanager.extension
                     throw new Exception("Migration files not found");
                 }
 
-                var evolve = new Evolve.Evolve(connection, Console.WriteLine)
+                var evolve = new Evolve(connection, Console.WriteLine)
                 {
                     Locations = new[] { migrationsFolder },
                     IsEraseDisabled = true,
