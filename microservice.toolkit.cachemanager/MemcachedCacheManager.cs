@@ -1,7 +1,5 @@
-﻿
-using Enyim.Caching.Memcached;
+﻿using Enyim.Caching;
 
-using microservice.toolkit.cachemanager.serializer;
 using microservice.toolkit.core;
 
 using System;
@@ -11,24 +9,23 @@ namespace microservice.toolkit.cachemanager
 {
     public class MemcachedCacheManager : Disposable, ICacheManager
     {
-        private readonly MemcachedCluster cluster;
         private readonly IMemcachedClient client;
 
-        public MemcachedCacheManager(string servers)
+        public MemcachedCacheManager(IMemcachedClient client)
         {
-            this.cluster = new MemcachedCluster(servers);
-            this.cluster.Start();
-            this.client = cluster.GetClient();
+            this.client = client;
         }
 
         public Task<bool> Delete(string key)
         {
-            return this.client.DeleteAsync(key);
+            return this.client.RemoveAsync(key);
         }
 
         public async Task<TValue> Get<TValue>(string key)
         {
-            return await this.client.GetAsync<TValue>(key);
+            var result = await this.client.GetAsync<TValue>(key);
+
+            return result.HasValue ? result.Value : default;
         }
 
         public Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
@@ -39,20 +36,20 @@ namespace microservice.toolkit.cachemanager
                 return Task.FromResult(false);
             }
 
-            var duration = (uint)((issuedAt - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 1000);
+            var duration = (int)((issuedAt - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 1000);
 
-            return this.client.SetAsync(key, value, new Expiration(duration));
+            return this.client.SetAsync(key, value, duration);
         }
 
         public Task<bool> Set<TValue>(string key, TValue value)
         {
-            return this.client.SetAsync(key, value);
+            return this.Set(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds());
         }
 
         protected override void DisposeManage()
         {
             base.DisposeManage();
-            this.cluster.Dispose();
+            this.client.Dispose();
         }
     }
 }
