@@ -195,7 +195,7 @@ namespace microservice.toolkit.connectionmanager
         public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
             Dictionary<string, object> parameters = null) where T : class, new()
         {
-            return await conn.ExecuteAsync<T>(sql, MapperFunc<T>(), parameters);
+            return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters);
         }
 
         public static async Task<T> ExecuteFirstAsync<T>(this DbConnection conn, string sql,

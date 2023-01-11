@@ -11,12 +11,12 @@ namespace microservice.toolkit.messagemediator.test
     [ExcludeFromCodeCoverage]
     public class RabbitMQEventEmitterTest
     {
-        private readonly RabbitMQSignalEmitterConfiguration configuration = new RabbitMQSignalEmitterConfiguration
+        private readonly RabbitMQSignalEmitterConfiguration configuration = new()
         {
             ConnectionString = "localhost",
             QueueName = "test_queue"
         };
-        private static bool isSignalHandlerRunned = false;
+        private static bool isSignalHandlerRunned;
         private RabbitMQSignalEmitter signalEmitter;
 
         [Test]

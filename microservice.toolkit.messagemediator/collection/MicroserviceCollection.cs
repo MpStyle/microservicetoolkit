@@ -8,7 +8,7 @@ namespace microservice.toolkit.messagemediator.collection;
 
 public class MicroserviceCollection
 {
-    private readonly Dictionary<string, Type> services = new Dictionary<string, Type>();
+    private readonly Dictionary<string, Type> services;
 
     public int Count => this.services.Count;
 

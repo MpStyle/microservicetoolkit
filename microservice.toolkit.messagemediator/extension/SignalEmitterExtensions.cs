@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core.extension;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static partial class SignalEmitterExtensions
+public static class SignalEmitterExtensions
 {
 
     /// <summary>
@@ -20,12 +20,12 @@ public static partial class SignalEmitterExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetHandlers(this Type type)
     {
-        return new Type[] { type }.GetHandlers();
+        return new[] { type }.GetHandlers();
     }
 
     public static MicroserviceCollection GetHandlers(this Type[] types)
     {
-        return types.Select(t => Assembly.GetAssembly(t)).ToArray().GetHandlers();
+        return types.Select(Assembly.GetAssembly).ToArray().GetHandlers();
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public static partial class SignalEmitterExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetHandlers(this Assembly assembly)
     {
-        return new Assembly[] { assembly }.GetHandlers();
+        return new[] { assembly }.GetHandlers();
     }
 
     public static MicroserviceCollection GetHandlers(this Assembly[] assemblies)

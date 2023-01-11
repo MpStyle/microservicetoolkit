@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
+﻿using microservice.toolkit.core;
+
+using Microsoft.Extensions.Logging.Abstractions;
 
 using NUnit.Framework;
 
@@ -10,7 +12,7 @@ namespace microservice.toolkit.messagemediator.test;
 [ExcludeFromCodeCoverage]
 public class LocalSignalEmitterTest
 {
-    private static bool isSignalHandlerRunned = false;
+    private static bool isSignalHandlerRunned;
 
     [Test]
     public async Task Run_Int()

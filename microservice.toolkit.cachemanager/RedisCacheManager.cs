@@ -35,7 +35,7 @@ namespace microservice.toolkit.cachemanager
 
         public async Task<TValue> Get<TValue>(string key)
         {
-            this.logger.LogDebug($"Calling RedisCacheManager#Get({key ?? string.Empty})...");
+            this.logger.LogDebug("Calling RedisCacheManager#Get({Empty})...", key ?? string.Empty);
             var db = this.connection.GetDatabase();
             var result = await db.StringGetWithExpiryAsync(key);
 
@@ -60,7 +60,7 @@ namespace microservice.toolkit.cachemanager
                 return false;
             }
 
-            this.logger.LogDebug($"Calling RedisCacheManager#Set({key ?? string.Empty})...");
+            this.logger.LogDebug("Calling RedisCacheManager#Set({Empty})...", key ?? string.Empty);
             var db = this.connection.GetDatabase();
             var setResult = await db.StringSetAsync(key, this.serializer.Serialize(value), DateTimeOffset.FromUnixTimeMilliseconds(issuedAt).Subtract(DateTime.UtcNow));
 
@@ -69,7 +69,7 @@ namespace microservice.toolkit.cachemanager
 
         public async Task<bool> Set<TValue>(string key, TValue value)
         {
-            this.logger.LogDebug($"Calling RedisCacheManager#Set({key ?? string.Empty})...");
+            this.logger.LogDebug("Calling RedisCacheManager#Set({Empty})...", key ?? string.Empty);
             var db = this.connection.GetDatabase();
             var setResult = await db.StringSetAsync(key, this.serializer.Serialize(value));
             return setResult;

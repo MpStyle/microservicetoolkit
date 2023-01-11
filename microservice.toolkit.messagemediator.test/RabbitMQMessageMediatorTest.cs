@@ -1,5 +1,7 @@
-﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core;
+using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.entity;
+using microservice.toolkit.core.extension;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -14,7 +16,7 @@ namespace microservice.toolkit.messagemediator.test
     [ExcludeFromCodeCoverage]
     public class RabbitMQMessageMediatorTest
     {
-        private readonly RabbitMQMessageMediatorConfiguration configuration = new RabbitMQMessageMediatorConfiguration
+        private readonly RabbitMQMessageMediatorConfiguration configuration = new()
         {
             ConnectionString = "localhost",
             QueueName = $"test_queue_{Guid.NewGuid()}",

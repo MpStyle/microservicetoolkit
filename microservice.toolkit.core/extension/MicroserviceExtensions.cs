@@ -1,11 +1,11 @@
-﻿using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core.attribute;
 
 using System;
 using System.Linq;
 
 namespace microservice.toolkit.core.extension;
 
-public static partial class MicroserviceExtensions
+public static class MicroserviceExtensions
 {
     public static string ToPattern(this Type type)
     {

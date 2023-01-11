@@ -19,7 +19,7 @@ public class MessageMediatorExtensionsTest
     {
         var serviceTypes = Assembly.GetAssembly(typeof(ValidService01)).GetServices();
 
-        Assert.AreEqual(4, serviceTypes.Count);
+        Assert.AreEqual(5, serviceTypes.Count);
 
         Assert.IsTrue(serviceTypes.ContainsPattern(typeof(ValidService01).ToPattern()));
         Assert.IsTrue(serviceTypes[typeof(ValidService01).ToPattern()] == typeof(ValidService01));
@@ -33,7 +33,7 @@ public class MessageMediatorExtensionsTest
     {
         var serviceTypes = typeof(ValidService01).GetServices();
 
-        Assert.AreEqual(4, serviceTypes.Count);
+        Assert.AreEqual(5, serviceTypes.Count);
 
         Assert.IsTrue(serviceTypes.ContainsPattern(typeof(ValidService01).ToPattern()));
         Assert.IsTrue(serviceTypes[typeof(ValidService01).ToPattern()] == typeof(ValidService01));

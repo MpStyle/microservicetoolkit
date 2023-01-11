@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core.extension;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static partial class MessageMediatorExtensions
+public static class MessageMediatorExtensions
 {
 
     /// <summary>
@@ -20,7 +20,7 @@ public static partial class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Type type)
     {
-        return new Type[] { type }.GetServices();
+        return new[] { type }.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Type[] types)
@@ -35,7 +35,7 @@ public static partial class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Assembly assembly)
     {
-        return new Assembly[] { assembly }.GetServices();
+        return new[] { assembly }.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Assembly[] assemblies)

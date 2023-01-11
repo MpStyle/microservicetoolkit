@@ -1,9 +1,7 @@
-﻿using microservice.toolkit.core.extension;
-
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.messagemediator;
+namespace microservice.toolkit.core.extension;
 
 public static class SignalEmitterExtensions
 {

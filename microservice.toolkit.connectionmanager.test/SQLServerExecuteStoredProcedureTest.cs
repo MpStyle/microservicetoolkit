@@ -128,7 +128,7 @@ namespace microservice.toolkit.connectionmanager.test
             var currentAssemblyLocation =
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
 
-            var setupFiles = new string[]
+            var setupFiles = new[]
             {
                 "CreateItemTable.sql",
                 "CreateItemUpsertProcedure.sql",

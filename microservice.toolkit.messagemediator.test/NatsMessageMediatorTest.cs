@@ -1,5 +1,7 @@
-﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core;
+using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.entity;
+using microservice.toolkit.core.extension;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -14,7 +16,7 @@ namespace microservice.toolkit.messagemediator.test
     [ExcludeFromCodeCoverage]
     public class NatsMessageMediatorTest
     {
-        private readonly NatsMessageMediatorConfiguration configuration = new NatsMessageMediatorConfiguration
+        private readonly NatsMessageMediatorConfiguration configuration = new()
         {
             ConnectionString = "localhost:4222",
             Topic = $"test_topic_{Guid.NewGuid()}",

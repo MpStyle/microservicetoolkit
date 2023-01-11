@@ -11,9 +11,9 @@ namespace microservice.toolkit.messagemediator;
 public class LocalSignalEmitter : ISignalEmitter
 {
     private readonly SignalHandlerFactory signalHandlerFactory;
-    private readonly ILogger<ISignalEmitter> logger;
+    private readonly ILogger<LocalSignalEmitter> logger;
 
-    public LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<ISignalEmitter> logger)
+    public LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<LocalSignalEmitter> logger)
     {
         this.signalHandlerFactory = serviceFactory;
         this.logger = logger;

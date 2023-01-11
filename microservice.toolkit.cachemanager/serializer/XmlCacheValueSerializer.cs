@@ -6,7 +6,7 @@ namespace microservice.toolkit.cachemanager.serializer
 {
     public class JsonCacheValueSerializer : ICacheValueSerializer
     {
-        private readonly JsonSerializerOptions jsonSerializerOptions = null;
+        private readonly JsonSerializerOptions jsonSerializerOptions;
 
         public JsonCacheValueSerializer(JsonSerializerOptions jsonSerializerOptions = null)
         {

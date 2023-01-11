@@ -65,7 +65,7 @@ public class InMemoryCacheManager : Disposable, ICacheManager
 
         inMemory.AddOrUpdate(key, newItem, (key, oldValue) => newItem);
 
-        return Task.FromResult(true); ;
+        return Task.FromResult(true); 
     }
 
     internal class InMemoryItem

@@ -63,8 +63,6 @@ namespace microservice.toolkit.messagemediator
         private void OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea)
         {
             var body = ea.Body.ToArray();
-            var props = ea.BasicProperties;
-
             var brokeredEvent = JsonSerializer.Deserialize<BrokeredEvent>(Encoding.UTF8.GetString(body));
 
             // Invalid event from queue

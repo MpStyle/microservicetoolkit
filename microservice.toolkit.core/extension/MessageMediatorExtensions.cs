@@ -1,10 +1,9 @@
 ﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
 
 using System;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.messagemediator;
+namespace microservice.toolkit.core.extension;
 
 public static class MessageMediatorExtensions
 {
@@ -18,6 +17,7 @@ public static class MessageMediatorExtensions
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TPayload"></typeparam>
+    /// <param name="messageMediator"></param>
     /// <param name="pattern"></param>
     /// <param name="message"></param>
     /// <returns></returns>

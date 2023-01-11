@@ -2,14 +2,14 @@
 
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.messagemediator
+namespace microservice.toolkit.core
 {
     /// <summary>
     /// IMessageMediator dispatches request/response messages to a single handler.
     /// It dispatches a message to the correct service using pattern.
     /// The request-response message style is useful when you need to exchange messages between services.
     /// </summary>
-    public partial interface IMessageMediator
+    public interface IMessageMediator
     {
         /// <summary>
         /// Sends a generic message.
