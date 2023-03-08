@@ -1,6 +1,6 @@
 ﻿using microservice.toolkit.entitystoremanager.entity;
 
-namespace entity.sql.tests;
+namespace microservice.toolkit.entitystoremanager.tests;
 
 public class MyItem:IItem 
 {

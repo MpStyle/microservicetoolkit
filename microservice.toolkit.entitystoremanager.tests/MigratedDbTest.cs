@@ -3,10 +3,13 @@
 using System;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 
-namespace entity.sql.tests;
+namespace microservice.toolkit.entitystoremanager.tests;
 
+[ExcludeFromCodeCoverage]
 public class MigratedDbTest
 {
     protected DbConnection DbConnection { get; }
@@ -18,9 +21,19 @@ public class MigratedDbTest
         var rootPassword = Environment.GetEnvironmentVariable("SQLSERVER_ROOT_PASSWORD") ?? "my_root_password123";
         this.DbConnection =
             new SqlConnection($"Server={host},{port};Database=master;User Id=SA;Password={rootPassword}");
-        var migrationsFolder = Path.Combine(".", "migration", "microservice.toolkit.entitystoremanager", "sqlserver");
+        this.ApplyMigrations();
+    }
+
+    private void ApplyMigrations()
+    {
+        var execDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location);
         var result = this.DbConnection.Apply(
-            migrationsFolder,
+            Path.Combine(execDir, "migration", "microservice.toolkit.entitystoremanager", "sqlserver"),
             ".sql");
+
+        if (result.Exception != null)
+        {
+            throw result.Exception;
+        }
     }
 }

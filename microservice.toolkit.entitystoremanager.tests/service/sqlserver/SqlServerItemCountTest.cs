@@ -1,5 +1,3 @@
-using entity.sql.tests;
-
 using microservice.toolkit.connectionmanager;
 using microservice.toolkit.entitystoremanager.entity;
 using microservice.toolkit.entitystoremanager.entity.service;

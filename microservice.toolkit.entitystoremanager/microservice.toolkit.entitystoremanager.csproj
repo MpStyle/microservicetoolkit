@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="migration\sqlserver\*.sql">
+        <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\*.sql">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
