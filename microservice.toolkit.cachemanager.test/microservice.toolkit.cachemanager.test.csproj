@@ -22,7 +22,7 @@
     <PackageReference Include="StackExchange.Redis" Version="2.6.90" />
     <PackageReference Include="Microsoft.Data.SQLite" Version="7.0.2" />
     <PackageReference Include="MySqlConnector" Version="2.2.5" />
-    <PackageReference Include="EnyimMemcachedCore" Version="2.5.7" />
+    <PackageReference Include="EnyimMemcachedCore" Version="2.6.4" />
   </ItemGroup>
 
   <ItemGroup>
