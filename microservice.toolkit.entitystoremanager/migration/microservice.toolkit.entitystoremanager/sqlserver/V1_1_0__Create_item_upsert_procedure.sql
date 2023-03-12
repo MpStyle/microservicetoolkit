@@ -3,6 +3,7 @@ CREATE PROCEDURE ItemUpsert(
     @Type VARCHAR(256),
     @Inserted BIGINT,
     @Updated BIGINT,
+    @Updater VARCHAR(256),
     @Enabled BIT
 )
 AS
@@ -13,11 +14,13 @@ BEGIN TRY
                       [Type],
                       Inserted,
                       Updated,
+                      Updater,
                       Enabled)
     VALUES (@Id,
             @Type,
             @Inserted,
             @Updated,
+            @Updater,
             @Enabled);
 
 END TRY
@@ -28,6 +31,7 @@ BEGIN CATCH
         UPDATE Item
         SET Inserted = @Inserted,
             Updated  = @Updated,
+            Updater  = @Updater,
             Enabled  = @Enabled
         WHERE Id = @Id
           AND Type = @Type;

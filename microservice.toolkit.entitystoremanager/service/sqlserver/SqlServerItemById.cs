@@ -1,16 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Threading.Tasks;
-
-using microservice.toolkit.entitystoremanager.extension;
 using microservice.toolkit.connectionmanager;
 using microservice.toolkit.core.entity;
 using microservice.toolkit.core.extension;
 using microservice.toolkit.entitystoremanager.book;
 using microservice.toolkit.entitystoremanager.entity;
 using microservice.toolkit.entitystoremanager.entity.service;
+using microservice.toolkit.entitystoremanager.extension;
 using microservice.toolkit.messagemediator;
+
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace microservice.toolkit.entitystoremanager.service.sqlserver;
 
@@ -18,19 +18,17 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
     where TSource : IItem, new()
 {
     private readonly DbConnection connectionManager;
-    private readonly ItemBuilder itemBuilder;
 
     public SqlServerItemById(DbConnection connectionManager)
     {
         this.connectionManager = connectionManager;
-        this.itemBuilder = new ItemBuilder();
     }
 
     public override async Task<ServiceResponse<ItemByIdResponse<TSource>>> Run(ItemByIdRequest request)
     {
         if (request.ItemId.IsNullOrEmpty())
         {
-            return this.UnsuccessfulResponse(CoreError.ItemByIdInvalidRequest);
+            return this.UnsuccessfulResponse(EntityError.ItemByIdInvalidRequest);
         }
 
         var objectType = typeof(TSource);
@@ -62,30 +60,12 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
             });
         }
 
-        if (request.Filters.IsNullOrEmpty() == false)
-        {
-            foreach (var filter in request.Filters)
-            {
-                var condition = filter.ToSqlServerCondition(nameof(ItemProperty));
-                where.Add($@"EXISTS(
-                        SELECT 1 
-                        FROM {nameof(ItemProperty)} 
-                        WHERE {nameof(Item)}.{Item.Id} = {nameof(ItemProperty)}.{ItemProperty.ItemId}
-                            AND {condition.Condition}
-                    )");
-                foreach (var param in condition.Parameters)
-                {
-                    parameters.Add(param.Key, param.Value);
-                }
-            }
-        }
-
         var itemSql = $@"SELECT 
                     {string.Join(", ", select)} 
                 FROM {nameof(Item)} 
                 WHERE {string.Join(" AND ", where)}";
 
-        var source = await this.connectionManager.ExecuteFirstAsync(itemSql, reader => this.itemBuilder.Build<TSource>(
+        var source = await this.connectionManager.ExecuteFirstAsync(itemSql, reader => ItemBuilder.Build<TSource>(
             reader.GetString(0),
             request.ReturnOnlyId == false ? reader.GetBoolean(2) : null,
             request.ReturnOnlyId == false ? reader.GetInt64(3) : null,
@@ -117,7 +97,7 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
                                 ?? (reader.IsDBNull(6) ? null : reader.GetBoolean(6));
                     int? order = reader.IsDBNull(7) ? null : reader.GetInt32(7);
 
-                    this.itemBuilder.Build(propertyName, value, order ?? 0, ref source);
+                    source.Build(propertyName, value, order ?? 0);
 
                     return source;
                 },

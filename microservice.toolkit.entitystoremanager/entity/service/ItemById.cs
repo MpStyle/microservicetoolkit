@@ -3,7 +3,6 @@
     public class ItemByIdRequest
     {
         public string ItemId { get; set; }
-        public IWhere[] Filters { get; set; }
         public bool ReturnOnlyId { get; set; }
     }
 

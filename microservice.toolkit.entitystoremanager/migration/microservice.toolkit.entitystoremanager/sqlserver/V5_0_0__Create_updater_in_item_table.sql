@@ -1,1 +1,0 @@
-ALTER TABLE Item ADD Updater VARCHAR(256);

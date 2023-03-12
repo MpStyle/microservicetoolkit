@@ -30,13 +30,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="migration\microservice.toolkit.entitystoremanager"/>
+        <Folder Include="migration\microservice.toolkit.entitystoremanager" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj"/>
-        <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj"/>
-        <ProjectReference Include="..\microservice.toolkit.messagemediator\microservice.toolkit.messagemediator.csproj"/>
+        <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj" />
+        <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+        <ProjectReference Include="..\microservice.toolkit.messagemediator\microservice.toolkit.messagemediator.csproj" />
     </ItemGroup>
 
     <ItemGroup>

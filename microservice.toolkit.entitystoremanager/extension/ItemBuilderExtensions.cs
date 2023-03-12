@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
 using microservice.toolkit.entitystoremanager.entity;
 
-namespace microservice.toolkit.entitystoremanager.book;
+using System;
+using System.Linq;
 
-internal class ItemBuilder
+namespace microservice.toolkit.entitystoremanager.extension;
+
+internal static class ItemBuilder
 {
-    private static readonly Dictionary<Type, PropertyInfo[]> PropertiesInfoCache = new();
-
-    internal TSource Build<TSource>(string id, bool? enabled, long? inserted, long? updated, string updater)
+    internal static TSource Build<TSource>(string id, bool? enabled, long? inserted, long? updated, string updater)
         where TSource : IItem, new()
     {
         var objectType = typeof(TSource);
-        var instance = (TSource) Activator.CreateInstance(objectType);
+        var instance = (TSource)Activator.CreateInstance(objectType);
 
         if (instance == null)
         {
@@ -30,19 +26,15 @@ internal class ItemBuilder
 
         return instance;
     }
+}
 
-    internal void Build<TSource>(string propertyName, object value, int order, ref TSource source)
+internal static class ItemBuilderExtensions
+{
+    internal static void Build<TSource>(this TSource source, string propertyName, object value, int order)
         where TSource : IItem, new()
     {
         var objectType = typeof(TSource);
-
-        if (PropertiesInfoCache.ContainsKey(objectType) == false)
-        {
-            PropertiesInfoCache[objectType] = objectType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        }
-
-        var properties = PropertiesInfoCache[objectType];
-
+        var properties = objectType.GetItemProperties();
         var property = properties.FirstOrDefault(p => p.Name == propertyName);
 
         if (property == default)

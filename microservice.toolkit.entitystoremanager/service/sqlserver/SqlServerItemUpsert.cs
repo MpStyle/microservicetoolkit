@@ -1,3 +1,11 @@
+using microservice.toolkit.connectionmanager;
+using microservice.toolkit.core.entity;
+using microservice.toolkit.entitystoremanager.book;
+using microservice.toolkit.entitystoremanager.entity;
+using microservice.toolkit.entitystoremanager.entity.service;
+using microservice.toolkit.entitystoremanager.extension;
+using microservice.toolkit.messagemediator;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,13 +14,6 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using microservice.toolkit.connectionmanager;
-using microservice.toolkit.core.entity;
-using microservice.toolkit.entitystoremanager.book;
-using microservice.toolkit.entitystoremanager.entity;
-using microservice.toolkit.entitystoremanager.entity.service;
-using microservice.toolkit.messagemediator;
 
 namespace microservice.toolkit.entitystoremanager.service.sqlserver;
 
@@ -30,33 +31,30 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
     {
         if (request.Item?.Updater == null)
         {
-            return this.UnsuccessfulResponse(CoreError.ItemUpsertInvalidRequest);
+            return this.UnsuccessfulResponse(EntityError.ItemUpsertInvalidRequest);
         }
 
         if (this.dbConnection is not SqlConnection sqlServerConnection)
         {
-            return this.UnsuccessfulResponse(CoreError.ItemUpsertInvalidDatabaseConnection);
+            return this.UnsuccessfulResponse(EntityError.ItemUpsertInvalidDatabaseConnection);
         }
 
+        var itemType = typeof(TSource);
         var itemId = request.Item.Id ?? Guid.NewGuid().ToString();
+        var itemPropertyNames = itemType.GetItemProperties().Select(ip => ip.Name).ToArray();
 
+        // Upserts item
         await this.dbConnection.ExecuteStoredProcedureAsync("ItemUpsert", new Dictionary<string, object>
         {
             {"@Id", itemId},
-            {"@Type", typeof(TSource).Name},
+            {"@Type", itemType.Name},
             {"@Inserted", request.Item.Inserted ?? DateTimeOffset.UtcNow.ToUnixTimeSeconds()},
             {"@Updated", request.Item.Updated ?? DateTimeOffset.UtcNow.ToUnixTimeSeconds()},
             {"@Updater", request.Item.Updater},
             {"@Enabled", request.Item.Enabled ?? true},
         });
 
-        await this.dbConnection.ExecuteNonQueryAsync(
-            $"DELETE FROM {nameof(ItemProperty)} WHERE {nameof(ItemProperty)}.{ItemProperty.ItemId} = @ItemId",
-            new Dictionary<string, object>
-            {
-                {"@ItemId", itemId}
-            });
-
+        // Upserts item properties
         var dataTable = this.CreateUpdateRecordsSqlParam(request.Item);
         if (dataTable.Rows.Count > 0)
         {
@@ -77,15 +75,30 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
             await command.ExecuteNonQueryAsync();
         }
 
+        // Deletes unused properties
+        var deleteWhere = new List<string> {$"{nameof(ItemProperty)}.{ItemProperty.ItemId} = @ItemId"};
+        var deleteParameters = new Dictionary<string, object> {{"@ItemId", itemId}};
+        var deleteParameterNames = new List<string>();
+        
+        for (var i = 0; i < itemPropertyNames.Length; i++)
+        {
+            var parameterName = $"@{nameof(itemPropertyNames)}_{i}";
+            deleteParameterNames.Add(parameterName);
+            deleteParameters.Add(parameterName, itemPropertyNames[i]);
+        }
+
+        deleteWhere.Add($"{nameof(ItemProperty)}.[{ItemProperty.Key}] NOT IN ({string.Join(",", deleteParameterNames)})");
+
+        var deleteSql = $"DELETE FROM {nameof(ItemProperty)} WHERE {string.Join(" AND ", deleteWhere)}";
+
+        await this.dbConnection.ExecuteNonQueryAsync(deleteSql, deleteParameters);
+
         if (request.ReturnEmptyResponse)
         {
             return this.SuccessfulResponse(new ItemUpsertResponse());
         }
 
-        return this.SuccessfulResponse(new ItemUpsertResponse
-        {
-            ItemId = itemId
-        });
+        return this.SuccessfulResponse(new ItemUpsertResponse {ItemId = itemId});
     }
 
     private void AddToDataTable(object value, PropertyInfo propertyInfo, string itemId, int order, ref DataTable table)
@@ -100,7 +113,7 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
                     itemId,
                     propertyName,
                     null,
-                    (int) value,
+                    (int)value,
                     null,
                     null,
                     null);
@@ -135,16 +148,7 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
     private DataTable CreateUpdateRecordsSqlParam(TSource item)
     {
         var itemType = typeof(TSource);
-        var itemProperties = itemType.GetProperties()
-            .Where(p => new[]
-            {
-                Item.Inserted,
-                Item.Updated,
-                Item.Updater,
-                Item.Enabled,
-                Item.Id
-            }.Contains(p.Name) == false);
-
+        var itemProperties = itemType.GetItemProperties();
         var table = new DataTable();
 
         table.Columns.Add(ItemProperty.Id, typeof(string));

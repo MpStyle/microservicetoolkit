@@ -19,12 +19,10 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
     where TSource : IItem, new()
 {
     private readonly DbConnection connectionManager;
-    private readonly ItemBuilder itemBuilder;
 
     public SqlServerItemSearch(DbConnection connectionManager)
     {
         this.connectionManager = connectionManager;
-        this.itemBuilder = new ItemBuilder();
     }
 
     public override async Task<ServiceResponse<ItemSearchResponse<TSource>>> Run(ItemSearchRequest request)
@@ -117,7 +115,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
         await this.connectionManager.ExecuteAsync(itemsSql, reader =>
         {
             var id = reader.GetString(0);
-            var source = this.itemBuilder.Build<TSource>(
+            var source = ItemBuilder.Build<TSource>(
                 id,
                 request.ReturnOnlyId == false ? reader.GetBoolean(2) : null,
                 request.ReturnOnlyId == false ? reader.GetInt64(3) : null,
@@ -172,7 +170,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
 
                 var source = sourceByIds[itemId];
 
-                this.itemBuilder.Build(propertyName, value, order ?? 0, ref source);
+                source.Build(propertyName, value, order ?? 0);
 
                 return source;
             }, itemIdsParameters);

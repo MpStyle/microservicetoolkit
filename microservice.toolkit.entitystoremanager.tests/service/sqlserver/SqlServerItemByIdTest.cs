@@ -43,27 +43,6 @@ public class SqlServerItemByIdTest : MigratedDbTest
         Assert.IsNull(response.Payload.Item);
     }
 
-    [Test]
-    public async Task Run_WithFilter()
-    {
-        var response = await this.service.Run(new ItemByIdRequest
-        {
-            ItemId = "my_source_2",
-            ReturnOnlyId = true,
-            Filters = new IWhere[]
-            {
-                new Where
-                {
-                    Key = nameof(MyItem.IntValue),
-                    Value = 0
-                }
-            }
-        });
-
-        Assert.AreEqual("my_source_2", response.Payload.ItemId);
-        Assert.IsNull(response.Payload.Item);
-    }
-
     [SetUp]
     public async Task SetUp()
     {
