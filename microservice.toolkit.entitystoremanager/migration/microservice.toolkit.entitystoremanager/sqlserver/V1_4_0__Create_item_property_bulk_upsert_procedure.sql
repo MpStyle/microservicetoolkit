@@ -3,11 +3,10 @@ AS
 BEGIN
     MERGE INTO ItemProperty AS Target
     USING @UpdateRecords AS Source
-    ON Target.Id = Source.Id
+    ON Target.ItemId = Source.ItemId AND Target.[Key] = Source.[Key] AND Target.[Order] = Source.[Order]
     WHEN MATCHED THEN
         UPDATE
-        SET Target.Id=Source.Id,
-            Target.ItemId=Source.ItemId,
+        SET Target.ItemId=Source.ItemId,
             Target.[Key]=Source.[Key],
             Target.StringValue=Source.StringValue,
             Target.IntValue=Source.IntValue,
@@ -16,8 +15,7 @@ BEGIN
             Target.BoolValue=Source.BoolValue,
             Target.[Order]=Source.[Order]
     WHEN NOT MATCHED THEN
-        INSERT (Id,
-                ItemId,
+        INSERT (ItemId,
                 [Key],
                 StringValue,
                 IntValue,
@@ -25,8 +23,7 @@ BEGIN
                 FloatValue,
                 BoolValue,
                 [Order])
-        VALUES (Source.Id,
-                Source.ItemId,
+        VALUES (Source.ItemId,
                 Source.[Key],
                 Source.StringValue,
                 Source.IntValue,

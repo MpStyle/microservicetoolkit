@@ -76,7 +76,6 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
         if (source != null && request.ReturnOnlyId == false)
         {
             var itemPropertiesSql = $@"SELECT 
-                        {ItemProperty.Id}, 
                         [{ItemProperty.Key}], 
                         {ItemProperty.StringValue}, 
                         {ItemProperty.IntValue}, 
@@ -89,15 +88,15 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
 
             await this.connectionManager.ExecuteAsync(itemPropertiesSql, reader =>
                 {
-                    var propertyName = reader.GetString(1);
-                    var value = (reader.IsDBNull(2) ? null : reader.GetString(2))
-                                ?? (object) (reader.IsDBNull(3) ? null : reader.GetInt32(3))
-                                ?? (object) (reader.IsDBNull(4) ? null : reader.GetInt64(4))
-                                ?? (object) (reader.IsDBNull(5) ? null : Convert.ToSingle(reader.GetDouble(5)))
-                                ?? (reader.IsDBNull(6) ? null : reader.GetBoolean(6));
-                    int? order = reader.IsDBNull(7) ? null : reader.GetInt32(7);
+                    var propertyName = reader.GetString(0);
+                    var value = (reader.IsDBNull(1) ? null : reader.GetString(1))
+                                ?? (object) (reader.IsDBNull(2) ? null : reader.GetInt32(2))
+                                ?? (object) (reader.IsDBNull(3) ? null : reader.GetInt64(3))
+                                ?? (object) (reader.IsDBNull(4) ? null : Convert.ToSingle(reader.GetDouble(4)))
+                                ?? (reader.IsDBNull(5) ? null : reader.GetBoolean(5));
+                    var order = reader.GetInt32(6);
 
-                    source.Build(propertyName, value, order ?? 0);
+                    source.Build(propertyName, value, order);
 
                     return source;
                 },

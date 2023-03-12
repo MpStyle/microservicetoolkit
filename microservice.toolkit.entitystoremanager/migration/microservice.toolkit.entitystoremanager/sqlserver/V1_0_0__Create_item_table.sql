@@ -12,7 +12,6 @@ CREATE INDEX Item_Type ON Item (Type);
 
 CREATE TABLE ItemProperty
 (
-    Id     VARCHAR(256) NOT NULL PRIMARY KEY,
     ItemId VARCHAR(256) NOT NULL, 
     [Key]  VARCHAR(256) NOT NULL,
     StringValue VARCHAR(MAX) ,
@@ -20,7 +19,8 @@ CREATE TABLE ItemProperty
     LongValue   BIGINT       ,
     FloatValue  FLOAT        ,
     BoolValue   BIT          ,
-    [Order]     INT          DEFAULT 1
+    [Order]     INT          DEFAULT 1,
+    CONSTRAINT PK_Person PRIMARY KEY (ItemId, [Key], [Order])
 );
 
 CREATE INDEX ItemProperty_Key ON ItemProperty ([Key]);

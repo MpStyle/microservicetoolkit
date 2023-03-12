@@ -139,8 +139,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
                 itemIdsParameters.Add($"@idd{k}", sourceByIds.Keys.ElementAt(k));
             }
 
-            var itemPropertiesSql = $@"SELECT 
-                        {ItemProperty.Id}, 
+            var itemPropertiesSql = $@"SELECT
                         {ItemProperty.ItemId}, 
                         [{ItemProperty.Key}], 
                         {ItemProperty.StringValue}, 
@@ -154,14 +153,14 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
 
             await this.connectionManager.ExecuteAsync(itemPropertiesSql, reader =>
             {
-                var itemId = reader.GetString(1);
-                var propertyName = reader.GetString(2);
-                var value = (reader.IsDBNull(3) ? null : reader.GetString(3))
-                            ?? (object)(reader.IsDBNull(4) ? null : reader.GetInt32(4))
-                            ?? (object)(reader.IsDBNull(5) ? null : reader.GetInt64(5))
-                            ?? (object)(reader.IsDBNull(6) ? null : Convert.ToSingle(reader.GetDouble(6)))
-                            ?? (reader.IsDBNull(7) ? null : reader.GetBoolean(7));
-                int? order = reader.IsDBNull(8) ? null : reader.GetInt32(8);
+                var itemId = reader.GetString(0);
+                var propertyName = reader.GetString(1);
+                var value = (reader.IsDBNull(2) ? null : reader.GetString(2))
+                            ?? (object)(reader.IsDBNull(3) ? null : reader.GetInt32(3))
+                            ?? (object)(reader.IsDBNull(4) ? null : reader.GetInt64(4))
+                            ?? (object)(reader.IsDBNull(5) ? null : Convert.ToSingle(reader.GetDouble(5)))
+                            ?? (reader.IsDBNull(6) ? null : reader.GetBoolean(6));
+                var order = reader.GetInt32(7);
 
                 if (sourceByIds.ContainsKey(itemId) == false)
                 {
@@ -170,7 +169,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
 
                 var source = sourceByIds[itemId];
 
-                source.Build(propertyName, value, order ?? 0);
+                source.Build(propertyName, value, order);
 
                 return source;
             }, itemIdsParameters);

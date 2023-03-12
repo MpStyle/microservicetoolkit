@@ -1,5 +1,4 @@
 CREATE PROCEDURE ItemPropertyUpsert(
-    @Id VARCHAR(256),
     @ItemId VARCHAR(256),
     @Key VARCHAR(256),
     @StringValue VARCHAR(MAX),
@@ -13,8 +12,7 @@ AS
 
 BEGIN TRY
 
-    INSERT INTO ItemProperty (Id,
-                              ItemId,
+    INSERT INTO ItemProperty (ItemId,
                               [Key],
                               StringValue,
                               IntValue,
@@ -22,8 +20,7 @@ BEGIN TRY
                               FloatValue,
                               BoolValue,
                               [Order])
-    VALUES (@Id,
-            @ItemId,
+    VALUES (@ItemId,
             @Key,
             @StringValue,
             @IntValue,
@@ -38,14 +35,11 @@ BEGIN CATCH
     -- ignore duplicate key errors, throw the rest.
     IF ERROR_NUMBER() IN (2601, 2627)
         UPDATE ItemProperty
-        SET ItemId      = @ItemId,
-            [Key]         = @Key,
-            StringValue = @StringValue,
+        SET StringValue = @StringValue,
             IntValue    = @IntValue,
             LongValue   = @LongValue,
             FloatValue  = @FloatValue,
-            BoolValue   = @BoolValue,
-            [Order]       = @Order
-        WHERE Id = @Id;
+            BoolValue   = @BoolValue
+        WHERE ItemId = @ItemId AND [Key] = @Key AND [Order] = @Order;
 
 END CATCH

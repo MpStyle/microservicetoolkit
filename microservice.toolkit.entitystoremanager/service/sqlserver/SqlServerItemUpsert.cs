@@ -109,14 +109,14 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
         {
             case { } when propertyInfo.PropertyType.IsEnum:
                 table.Rows.Add(
-                    Guid.NewGuid().ToString(),
                     itemId,
                     propertyName,
                     null,
                     (int)value,
                     null,
                     null,
-                    null);
+                    null,
+                    order);
                 break;
             case Array array:
                 var i = 0;
@@ -132,7 +132,6 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
             case int:
             case string:
                 table.Rows.Add(
-                    Guid.NewGuid().ToString(),
                     itemId,
                     propertyName,
                     value as string,
@@ -151,7 +150,6 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
         var itemProperties = itemType.GetItemProperties();
         var table = new DataTable();
 
-        table.Columns.Add(ItemProperty.Id, typeof(string));
         table.Columns.Add(ItemProperty.ItemId, typeof(string));
         table.Columns.Add(ItemProperty.Key, typeof(string));
         table.Columns.Add(ItemProperty.StringValue, typeof(string));

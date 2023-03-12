@@ -2,7 +2,6 @@ namespace microservice.toolkit.entitystoremanager.book;
 
 internal static class ItemProperty
 {
-    internal static string Id => nameof(Id);
     internal static string ItemId => nameof(ItemId);
     internal static string Key => nameof(Key);
     internal static string StringValue => nameof(StringValue);
