@@ -128,7 +128,7 @@ public static class SignalEmitterExtensions
             return false;
         }
 
-        // Checks if is a subclass of "Service<,>"
+        // Checks if is a subclass of "SignalHandler<>"
         var fullname = typeof(SignalHandler<>).FullName;
 
         if (fullname.IsNullOrEmpty())
