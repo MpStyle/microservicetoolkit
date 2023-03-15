@@ -90,7 +90,10 @@ public static class MessageMediatorExtensions
     {
         foreach (var item in mapper.ToDictionary())
         {
-            services.Add(new ServiceDescriptor(item.Value, item.Value, lifeTime));
+            foreach (var type in item.Value)
+            {
+                services.Add(new ServiceDescriptor(type, type, lifeTime));   
+            }
         }
 
         return services;
@@ -100,9 +103,14 @@ public static class MessageMediatorExtensions
     {
         services.AddSingleton(serviceProvider => new ServiceFactory(pattern =>
         {
-            var serviceType = mapper.ByPatternOrDefault(pattern);
+            var serviceTypes = mapper.ByPatternOrDefault(pattern);
 
-            return serviceProvider.GetService(serviceType) as IService;
+            if (serviceTypes.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            return serviceProvider.GetService(serviceTypes.First()) as IService;
         }));
 
         return services;

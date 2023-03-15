@@ -90,7 +90,10 @@ public static class SignalEmitterExtensions
     {
         foreach (var item in mapper.ToDictionary())
         {
-            services.Add(new ServiceDescriptor(item.Value, item.Value, lifeTime));
+            foreach (var type in item.Value)
+            {
+                services.Add(new ServiceDescriptor(type, type, lifeTime));   
+            }
         }
 
         return services;
@@ -100,9 +103,11 @@ public static class SignalEmitterExtensions
     {
         services.AddSingleton(serviceProvider => new SignalHandlerFactory(pattern =>
         {
-            var serviceType = mapper.ByPatternOrDefault(pattern);
+            var serviceType = mapper.ByPatternOrDefault(pattern)
+                .Select(type=> serviceProvider.GetService(type) as ISignalHandler)
+                .ToArray();
 
-            return serviceProvider.GetService(serviceType) as ISignalHandler;
+            return serviceType;
         }));
 
         return services;

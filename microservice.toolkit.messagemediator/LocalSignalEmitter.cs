@@ -1,4 +1,5 @@
 ﻿using microservice.toolkit.core;
+using microservice.toolkit.core.extension;
 
 using Microsoft.Extensions.Logging;
 
@@ -23,14 +24,17 @@ public class LocalSignalEmitter : ISignalEmitter
     {
         try
         {
-            var handler = this.signalHandlerFactory(pattern);
+            var eventHandlers = this.signalHandlerFactory(pattern);
 
-            if (handler == null)
+            if (eventHandlers.IsNullOrEmpty())
             {
                 throw new SignalHandlerNotFoundException(pattern);
             }
 
-            _ = handler.Run(message).ConfigureAwait(false);
+            foreach (var eventHandler in eventHandlers)
+            {
+                _ = eventHandler.Run(message).ConfigureAwait(false);   
+            }
         }
         catch (SignalHandlerNotFoundException ex)
         {

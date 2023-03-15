@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.test.extension;
@@ -22,10 +23,10 @@ public class MessageMediatorExtensionsTest
         Assert.AreEqual(5, serviceTypes.Count);
 
         Assert.IsTrue(serviceTypes.ContainsPattern(typeof(ValidService01).ToPattern()));
-        Assert.IsTrue(serviceTypes[typeof(ValidService01).ToPattern()] == typeof(ValidService01));
+        Assert.IsTrue(serviceTypes[typeof(ValidService01).ToPattern()].First() == typeof(ValidService01));
 
         Assert.IsTrue(serviceTypes.ContainsPattern(typeof(ValidService02).ToPattern()));
-        Assert.IsTrue(serviceTypes[typeof(ValidService02).ToPattern()] == typeof(ValidService02));
+        Assert.IsTrue(serviceTypes[typeof(ValidService02).ToPattern()].First() == typeof(ValidService02));
     }
 
     [Test]
@@ -36,10 +37,10 @@ public class MessageMediatorExtensionsTest
         Assert.AreEqual(5, serviceTypes.Count);
 
         Assert.IsTrue(serviceTypes.ContainsPattern(typeof(ValidService01).ToPattern()));
-        Assert.IsTrue(serviceTypes[typeof(ValidService01).ToPattern()] == typeof(ValidService01));
+        Assert.IsTrue(serviceTypes[typeof(ValidService01).ToPattern()].First() == typeof(ValidService01));
 
         Assert.IsTrue(serviceTypes.ContainsPattern(typeof(ValidService02).ToPattern()));
-        Assert.IsTrue(serviceTypes[typeof(ValidService02).ToPattern()] == typeof(ValidService02));
+        Assert.IsTrue(serviceTypes[typeof(ValidService02).ToPattern()].First() == typeof(ValidService02));
     }
 
     [Test]

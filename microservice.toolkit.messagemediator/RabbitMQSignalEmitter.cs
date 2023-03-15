@@ -73,10 +73,14 @@ namespace microservice.toolkit.messagemediator
 
             try
             {
-                var eventHandler = this.serviceFactory(brokeredEvent.Pattern);
+                var eventHandlers = this.serviceFactory(brokeredEvent.Pattern);
                 var json = ((JsonElement)brokeredEvent.Payload).GetRawText();
                 var request = JsonSerializer.Deserialize(json, Type.GetType(brokeredEvent.RequestType));
-                _ = eventHandler.Run(request).ConfigureAwait(false);
+
+                foreach (var eventHandler in eventHandlers)
+                {
+                    _ = eventHandler.Run(request).ConfigureAwait(false);   
+                }
             }
             catch (Exception ex)
             {
