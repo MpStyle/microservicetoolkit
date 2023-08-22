@@ -6,14 +6,11 @@ BEGIN
     ON Target.ItemId = Source.ItemId AND Target.[Key] = Source.[Key] AND Target.[Order] = Source.[Order]
     WHEN MATCHED THEN
         UPDATE
-        SET Target.ItemId=Source.ItemId,
-            Target.[Key]=Source.[Key],
-            Target.StringValue=Source.StringValue,
+        SET Target.StringValue=Source.StringValue,
             Target.IntValue=Source.IntValue,
             Target.LongValue=Source.LongValue,
             Target.FloatValue=Source.FloatValue,
-            Target.BoolValue=Source.BoolValue,
-            Target.[Order]=Source.[Order]
+            Target.BoolValue=Source.BoolValue
     WHEN NOT MATCHED THEN
         INSERT (ItemId,
                 [Key],

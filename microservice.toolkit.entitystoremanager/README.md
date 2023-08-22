@@ -27,5 +27,11 @@ dotnet add package microservice.toolkit.entitystoremanager --version 0.10.2
 <PackageReference Include="microservice.toolkit.entitystoremanager" Version="0.10.2" />
 ```
 
-## Supported databases:
+## Supported operations
+- Get item by ID
+- Search items
+- Count items
+- Upsert items
+
+## Supported databases
 - Microsoft SQL Server
