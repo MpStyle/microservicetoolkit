@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+    <ProjectReference Include="..\microservice.toolkit.orm\microservice.toolkit.orm.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using microservice.toolkit.core.extension;
+using microservice.toolkit.orm;
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace microservice.toolkit.connectionmanager
 {
     public static class DbConnectionExtension
     {
+        private static Mito mito = new();
         private readonly static Dictionary<Type, DbType> TypeMapper = new(37)
         {
             [typeof(byte)] = DbType.Byte,
@@ -84,19 +86,18 @@ namespace microservice.toolkit.connectionmanager
             Dictionary<string, object> parameters = null)
         {
             conn.SafeOpen();
-            using (var cmd = conn.CreateCommand())
+            
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = storedProcedureName;
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            if (parameters.IsNullOrEmpty() == false)
             {
-                cmd.CommandText = storedProcedureName;
-
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                if (parameters.IsNullOrEmpty() == false)
-                {
-                    cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
-                }
-
-                return cmd.ExecuteNonQuery();
+                cmd.Parameters.AddRange(parameters.ToDbParameter(cmd));
             }
+
+            return cmd.ExecuteNonQuery();
         }
 
         public static T Execute<T>(this DbConnection conn, Func<DbCommand, T> lambda)
@@ -118,17 +119,15 @@ namespace microservice.toolkit.connectionmanager
                     command.Parameters.AddRange(parameters.ToDbParameter(command));
                 }
 
-                using (var reader = command.ExecuteReader())
+                using var reader = command.ExecuteReader();
+                var objects = new List<T>();
+
+                while (reader.Read())
                 {
-                    var objects = new List<T>();
-
-                    while (reader.Read())
-                    {
-                        objects.Add(lambda(reader));
-                    }
-
-                    return objects.ToArray();
+                    objects.Add(lambda(reader));
                 }
+
+                return objects.ToArray();
             });
         }
 
@@ -144,29 +143,27 @@ namespace microservice.toolkit.connectionmanager
             Dictionary<string, object> parameters = null)
         {
             await conn.SafeOpenAsync();
-            using (var cmd = conn.CreateCommand())
+
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = storedProcedureName;
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            if (parameters.IsNullOrEmpty() == false)
             {
-                cmd.CommandText = storedProcedureName;
-
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                if (parameters.IsNullOrEmpty() == false)
-                {
-                    var values = parameters.ToDbParameter(cmd);
-                    cmd.Parameters.AddRange(values);
-                }
-
-                return await cmd.ExecuteNonQueryAsync();
+                var values = parameters.ToDbParameter(cmd);
+                cmd.Parameters.AddRange(values);
             }
+
+            return await cmd.ExecuteNonQueryAsync();
         }
 
         public static async Task<T> ExecuteAsync<T>(this DbConnection conn, Func<DbCommand, Task<T>> lambda)
         {
             await conn.SafeOpenAsync();
-            using (var cmd = conn.CreateCommand())
-            {
-                return await lambda(cmd);
-            }
+
+            using var cmd = conn.CreateCommand();
+            return await lambda(cmd);
         }
 
         public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
@@ -178,24 +175,22 @@ namespace microservice.toolkit.connectionmanager
                 command.CommandText = sql;
                 command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using var reader = await command.ExecuteReaderAsync();
+                var objects = new List<T>();
+
+                while (await reader.ReadAsync())
                 {
-                    var objects = new List<T>();
-
-                    while (await reader.ReadAsync())
-                    {
-                        objects.Add(lambda(reader));
-                    }
-
-                    return objects.ToArray();
+                    objects.Add(lambda(reader));
                 }
+
+                return objects.ToArray();
             });
         }
 
         public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
             Dictionary<string, object> parameters = null) where T : class, new()
         {
-            return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters);
+            return await conn.ExecuteAsync(sql, mito.MapperFunc<T>(), parameters);
         }
 
         public static async Task<T> ExecuteFirstAsync<T>(this DbConnection conn, string sql,
@@ -210,33 +205,31 @@ namespace microservice.toolkit.connectionmanager
         public static async Task<T> ExecuteFirstAsync<T>(this DbConnection conn, string sql,
             Dictionary<string, object> parameters = null) where T : class, new()
         {
-            return await conn.ExecuteFirstAsync(sql, MapperFunc<T>(), parameters);
+            return await conn.ExecuteFirstAsync(sql, mito.MapperFunc<T>(), parameters);
         }
 
         public static int ExecuteNonQuery(this DbConnection conn, string query,
             Dictionary<string, object> parameters = null)
         {
             conn.SafeOpen();
-            using (var command = conn.CreateCommand())
-            {
-                command.CommandText = query;
-                command.Parameters.AddRange(parameters.ToDbParameter(command));
+            
+            using var command = conn.CreateCommand();
+            command.CommandText = query;
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-                return command.ExecuteNonQuery();
-            }
+            return command.ExecuteNonQuery();
         }
 
         public static async Task<int> ExecuteNonQueryAsync(this DbConnection conn, string query,
             Dictionary<string, object> parameters = null)
         {
             await conn.SafeOpenAsync();
-            using (var command = conn.CreateCommand())
-            {
-                command.CommandText = query;
-                command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-                return await command.ExecuteNonQueryAsync();
-            }
+            using var command = conn.CreateCommand();
+            command.CommandText = query;
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+
+            return await command.ExecuteNonQueryAsync();
         }
 
         /// <summary>
@@ -283,7 +276,7 @@ namespace microservice.toolkit.connectionmanager
 
             if (conn.State.HasFlag(ConnectionState.Broken))
             {
-                await conn.SafeCloseAsync();
+                conn.SafeClose();
                 await conn.OpenAsync();
                 return;
             }
@@ -300,58 +293,6 @@ namespace microservice.toolkit.connectionmanager
             }
 
             conn.Close();
-        }
-
-        /// <summary>
-        /// Asynchronously closes the connection to the database.
-        /// </summary>
-        /// <returns>A System.Threading.Tasks.Task representing the asynchronous operation.</returns>
-        public static async Task SafeCloseAsync(this DbConnection conn)
-        {
-            if (conn.State.HasFlag(ConnectionState.Closed))
-            {
-                return;
-            }
-
-            await conn.SafeCloseAsync();
-        }
-
-        public static Func<DbDataReader, T> MapperFunc<T>(
-            Dictionary<string, Func<object, object>> transformations = null,
-            StringComparison fieldsComparison = StringComparison.OrdinalIgnoreCase) where T : class, new()
-        {
-            return reader =>
-            {
-                var accessor = objectmapper.TypeMapper.Map(typeof(T));
-                var members = accessor.TypeTypeProperties;
-                var t = new T();
-
-                for (var i = 0; i < reader.FieldCount; i++)
-                {
-                    if (reader.IsDBNull(i))
-                    {
-                        continue;
-                    }
-
-                    var typeMemberName =
-                        members.FirstOrDefault(m => string.Equals(m.Name, reader.GetName(i), fieldsComparison));
-                    if (typeMemberName == default)
-                    {
-                        continue;
-                    }
-
-                    var ts = transformations ?? new Dictionary<string, Func<object, object>>();
-                    if (ts.TryGetValue(typeMemberName.Name, out var transformation) == false)
-                    {
-                        transformation = obj => obj;
-                    }
-
-
-                    accessor[t, typeMemberName.Name] = transformation(reader.GetValue(i));
-                }
-
-                return t;
-            };
         }
     }
 }

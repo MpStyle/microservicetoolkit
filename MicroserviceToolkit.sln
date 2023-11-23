@@ -56,6 +56,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.entity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.entitystoremanager.tests", "microservice.toolkit.entitystoremanager.tests\microservice.toolkit.entitystoremanager.tests.csproj", "{5272D9EC-0890-47BA-A672-FA3A1A282F13}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.orm", "microservice.toolkit.orm\microservice.toolkit.orm.csproj", "{AB55EBE6-469A-4B7F-98F8-D44332067D2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.orm.test", "microservice.toolkit.orm.test\microservice.toolkit.orm.test.csproj", "{AE59E6BE-ADC8-4FE0-9F66-73B6C9D480AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +122,14 @@ Global
 		{5272D9EC-0890-47BA-A672-FA3A1A282F13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5272D9EC-0890-47BA-A672-FA3A1A282F13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5272D9EC-0890-47BA-A672-FA3A1A282F13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB55EBE6-469A-4B7F-98F8-D44332067D2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB55EBE6-469A-4B7F-98F8-D44332067D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB55EBE6-469A-4B7F-98F8-D44332067D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB55EBE6-469A-4B7F-98F8-D44332067D2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE59E6BE-ADC8-4FE0-9F66-73B6C9D480AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE59E6BE-ADC8-4FE0-9F66-73B6C9D480AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE59E6BE-ADC8-4FE0-9F66-73B6C9D480AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE59E6BE-ADC8-4FE0-9F66-73B6C9D480AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

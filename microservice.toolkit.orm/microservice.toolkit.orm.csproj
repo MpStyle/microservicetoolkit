@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>microservice.toolkit.orm</AssemblyName>
+        <RootNamespace>microservice.toolkit.orm</RootNamespace>
+        <Authors>Michele Pagnin</Authors>
+        <Product>Microservice Toolkit - ORM</Product>
+        <Copyright>MIT License</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Title>Microservice Toolkit - ORM</Title>
+        <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
+        <LangVersion>10</LangVersion>
+        <TargetFrameworks>net7.0;netstandard2.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\image\icon.png">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+        <None Include=".\README.md">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>
+
+</Project>
