@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  microserviceframework-test-mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: microservice_framework_tests
+    ports:
+      - "127.0.0.1:3306:3306"
+    networks:
+      - microservice-network
+
+  microserviceframework-test-postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    networks:
+      - microservice-network
+
+  microserviceframework-test-sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: my_root_password123
+    ports:
+      - "127.0.0.1:1433:1433"
+    networks:
+      - microservice-network
+
+  microserviceframework-test-redis:
+    image: redis:alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+    networks:
+      - microservice-network
+
+  microserviceframework-test-memcached:
+    image: memcached:alpine
+    ports:
+      - "127.0.0.1:11211:11211"
+    networks:
+      - microservice-network
+
+  microserviceframework-test-rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    networks:
+      - microservice-network
+
+  microserviceframework-test-nats:
+    image: nats:alpine
+    ports:
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+      - "127.0.0.1:6222:6222"
+    networks:
+      - microservice-network
+
+networks:
+  microservice-network:
+    driver: bridge
