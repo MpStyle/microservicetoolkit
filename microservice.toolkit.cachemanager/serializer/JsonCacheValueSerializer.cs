@@ -5,50 +5,49 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace microservice.toolkit.cachemanager.serializer
+namespace microservice.toolkit.cachemanager.serializer;
+
+public class XmlCacheValueSerializer : ICacheValueSerializer
 {
-    public class XmlCacheValueSerializer : ICacheValueSerializer
+    private readonly XmlSerializerNamespaces emptyNamespaces
+        = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty, string.Empty) });
+
+    public TValue Deserialize<TValue>(string value)
     {
-        private readonly XmlSerializerNamespaces emptyNamespaces
-            = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty, string.Empty) });
+        TValue instance;
 
-        public TValue Deserialize<TValue>(string value)
+        using (var reader = new StringReader(value))
         {
-            TValue instance;
+            var serializer = XmlSerializer.FromTypes(new[] { typeof(TValue) })[0];
+            instance = (TValue)serializer.Deserialize(reader);
+        }
 
-            using (var reader = new StringReader(value))
+        return instance;
+    }
+
+    public string Serialize<TValue>(TValue value)
+    {
+        var content = string.Empty;
+
+        using (var stream = new MemoryStream())
+        {
+            using (var writer = XmlWriter.Create(stream))
             {
                 var serializer = XmlSerializer.FromTypes(new[] { typeof(TValue) })[0];
-                instance = (TValue)serializer.Deserialize(reader);
+
+                serializer.Serialize(writer, value, emptyNamespaces);
             }
 
-            return instance;
-        }
+            stream.Flush();
 
-        public string Serialize<TValue>(TValue value)
-        {
-            var content = string.Empty;
+            stream.Position = 0;
 
-            using (var stream = new MemoryStream())
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
             {
-                using (var writer = XmlWriter.Create(stream))
-                {
-                    var serializer = XmlSerializer.FromTypes(new[] { typeof(TValue) })[0];
-
-                    serializer.Serialize(writer, value, emptyNamespaces);
-                }
-
-                stream.Flush();
-
-                stream.Position = 0;
-
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    content = reader.ReadToEnd();
-                }
+                content = reader.ReadToEnd();
             }
-
-            return content;
         }
+
+        return content;
     }
 }
