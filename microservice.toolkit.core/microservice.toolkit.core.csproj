@@ -15,7 +15,7 @@
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
 		<Description>Everything you need for your entire micro services development life cycle. </Description>
-		<LangVersion>10</LangVersion>
+		<LangVersion>12</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

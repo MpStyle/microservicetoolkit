@@ -14,7 +14,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>entity store manager, entity manager, entity framework, entity, database</PackageTags>
         <PackageIcon>icon.png</PackageIcon>
-        <LangVersion>10</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
