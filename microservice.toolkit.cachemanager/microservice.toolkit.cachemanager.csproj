@@ -37,7 +37,7 @@
     <PackageReference Include="MySqlConnector" Version="2.3.5">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="EnyimMemcachedCore" Version="3.0.1">
+    <PackageReference Include="EnyimMemcachedCore" Version="2.6.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="System.Text.Json" Version="8.0.1" />
