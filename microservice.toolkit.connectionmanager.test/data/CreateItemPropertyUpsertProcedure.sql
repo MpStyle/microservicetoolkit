@@ -1,4 +1,4 @@
-CREATE PROCEDURE ItemPropertyUpsert(
+CREATE PROCEDURE mt_cm_test_ItemPropertyUpsert(
     @Id VARCHAR(256),
     @ItemId VARCHAR(256),
     @Key VARCHAR(256),
@@ -9,35 +9,37 @@ CREATE PROCEDURE ItemPropertyUpsert(
     @BoolValue BIT,
     @Order INT
 )
-    AS
+AS
 
 BEGIN TRY
 
-INSERT INTO ItemProperty (Id,
-                              ItemId,
-                              [Key],
-                              StringValue,
-                              IntValue,
-                              LongValue,
-                              FloatValue,
-                              BoolValue,
-                              [Order])
-    VALUES (@Id,
-            @ItemId,
-            @Key,
-            @StringValue,
-            @IntValue,
-            @LongValue,
-            @FloatValue,
-            @BoolValue,
-            @Order);
+INSERT INTO mt_cm_test_ItemProperty
+    (Id,
+    ItemId,
+    [Key],
+    StringValue,
+    IntValue,
+    LongValue,
+    FloatValue,
+    BoolValue,
+    [Order])
+VALUES
+    (@Id,
+        @ItemId,
+        @Key,
+        @StringValue,
+        @IntValue,
+        @LongValue,
+        @FloatValue,
+        @BoolValue,
+        @Order);
 
 END TRY
 BEGIN CATCH
 
     -- ignore duplicate key errors, throw the rest.
 IF ERROR_NUMBER() IN (2601, 2627)
-UPDATE ItemProperty
+UPDATE mt_cm_test_ItemProperty
 SET ItemId      = @ItemId,
     [Key]         = @Key,
     StringValue = @StringValue,
