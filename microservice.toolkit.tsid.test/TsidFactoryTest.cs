@@ -10,6 +10,132 @@ namespace microservice.toolkit.tsid.test;
 public class TsidFactoryTest
 {
     [Test]
+    public void CheckNativeSort_Number_1024()
+    {
+        var tsids = new long[1000];
+        var factory = new TsidFactory();
+
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            tsids[i] = factory.Create().Number;
+        }
+        var sortedTsids = Sort(tsids);
+
+        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            Assert.AreEqual(tsids[i], sortedTsids[i]);
+        }
+    }
+
+    [Test]
+    public void CheckNativeSort_Number_256()
+    {
+        var tsids = new long[1000];
+        var factory = new TsidFactory(new TsidSettings
+        {
+            TsidLength = TsidLength.Tsid256
+        });
+
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            tsids[i] = factory.Create().Number;
+        }
+        var sortedTsids = Sort(tsids);
+
+        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            Assert.AreEqual(tsids[i], sortedTsids[i]);
+        }
+    }
+
+    [Test]
+    public void CheckNativeSort_Number_4096()
+    {
+        var tsids = new long[1000];
+        var factory = new TsidFactory(new TsidSettings
+        {
+            TsidLength = TsidLength.Tsid4096
+        });
+
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            tsids[i] = factory.Create().Number;
+        }
+        var sortedTsids = Sort(tsids);
+
+        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            Assert.AreEqual(tsids[i], sortedTsids[i]);
+        }
+    }
+
+    [Test]
+    public void CheckNativeSort_String_1024()
+    {
+        var tsids = new string[1000];
+        var factory = new TsidFactory();
+
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            tsids[i] = factory.Create().ToString();
+        }
+        var sortedTsids = Sort(tsids);
+
+        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            Assert.AreEqual(tsids[i], sortedTsids[i]);
+        }
+    }
+
+    [Test]
+    public void CheckNativeSort_String_256()
+    {
+        var tsids = new string[1000];
+        var factory = new TsidFactory(new TsidSettings
+        {
+            TsidLength = TsidLength.Tsid256
+        });
+
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            tsids[i] = factory.Create().ToString();
+        }
+        var sortedTsids = Sort(tsids);
+
+        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            Assert.AreEqual(tsids[i], sortedTsids[i]);
+        }
+    }
+
+    [Test]
+    public void CheckNativeSort_String_4096()
+    {
+        var tsids = new string[1000];
+        var factory = new TsidFactory(new TsidSettings
+        {
+            TsidLength = TsidLength.Tsid4096
+        });
+
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            tsids[i] = factory.Create().ToString();
+        }
+        var sortedTsids = Sort(tsids);
+
+        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        for (var i = 0; i < tsids.Length; i++)
+        {
+            Assert.AreEqual(tsids[i], sortedTsids[i]);
+        }
+    }
+
+    [Test]
     public void Create_CustomTsidTimeEpoch()
     {
         const long sourceNode = 20;
@@ -243,5 +369,27 @@ public class TsidFactoryTest
     private static long GetSequence(Tsid tsid, int sequenceBitCount)
     {
         return tsid.Number & sequenceBitCount;
+    }
+
+    private static string[] Sort(string[] secondArr)
+    {
+        var sorted = new string[secondArr.Length];
+        for (var i = 0; i < secondArr.Length; i++)
+        {
+            sorted[i] = secondArr[i];
+        }
+        Array.Sort(sorted);
+        return sorted;
+    }
+
+    private static long[] Sort(long[] secondArr)
+    {
+        var sorted = new long[secondArr.Length];
+        for (var i = 0; i < secondArr.Length; i++)
+        {
+            sorted[i] = secondArr[i];
+        }
+        Array.Sort(sorted);
+        return sorted;
     }
 }
