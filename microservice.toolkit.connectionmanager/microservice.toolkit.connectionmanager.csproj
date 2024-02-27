@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <AssemblyName>microservice.toolkit.connectionmanager</AssemblyName>
     <RootNamespace>microservice.toolkit.connectionmanager</RootNamespace>
     <Authors>Michele Pagnin</Authors>
@@ -15,7 +15,7 @@
     <PackageTags>microservice, database, sql, connection, mysql, postgresql, sqlserver</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <Description>Common interface to simplify the access to a SQL database.</Description>
-    <LangVersion>10</LangVersion>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

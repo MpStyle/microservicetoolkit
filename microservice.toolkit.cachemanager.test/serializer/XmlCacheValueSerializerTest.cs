@@ -20,7 +20,7 @@ namespace microservice.toolkit.cachemanager.test.serializer
 
         public class MyGreetings
         {
-            public string Greetings { get; set; }
+            public string Greetings { get; init; }
         }
     }
 }

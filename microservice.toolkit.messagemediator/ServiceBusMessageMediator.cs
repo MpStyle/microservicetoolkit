@@ -46,7 +46,12 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
 
         // Sending the message
         var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
-        var applicationMessage = new BrokeredMessage { Pattern = pattern, Payload = message, };
+        var applicationMessage = new BrokeredMessage
+        {
+            Pattern = pattern, 
+            Payload = message, 
+            RequestType = message.GetType().FullName
+        };
         var serviceBusMessage = new ServiceBusMessage(JsonSerializer.SerializeToUtf8Bytes(applicationMessage))
         {
             ContentType = "application/json", ReplyTo = replyQueueName,
@@ -100,7 +105,10 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
                         throw new ServiceNotFoundException(brokeredMessage.Pattern);
                     }
 
-                    response = await service.Run(brokeredMessage.Payload);
+                    var json = ((JsonElement)brokeredMessage.Payload).GetRawText();
+                    var request = JsonSerializer.Deserialize(json, Type.GetType(brokeredMessage.RequestType));
+
+                    response = await service.Run(request);
                 }
                 catch (ServiceNotFoundException ex)
                 {

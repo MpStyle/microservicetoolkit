@@ -11,19 +11,20 @@ namespace microservice.toolkit.messagemediator.test
     [ExcludeFromCodeCoverage]
     public class RabbitMQEventEmitterTest
     {
-        private readonly RabbitMQSignalEmitterConfiguration configuration = new RabbitMQSignalEmitterConfiguration
+        private readonly RabbitMQSignalEmitterConfiguration configuration = new()
         {
-            ConnectionString = "localhost",
-            QueueName = "test_queue"
+            ConnectionString = "localhost", QueueName = "test_queue"
         };
-        private static bool isSignalHandlerRunned = false;
+
+        private static bool isSignalHandlerRunned;
         private RabbitMQSignalEmitter signalEmitter;
 
         [Test]
         public async Task Run_Int()
         {
             this.signalEmitter = new RabbitMQSignalEmitter(configuration,
-                name => nameof(SquarePow).Equals(name) ? new SquarePow() : null, new NullLogger<RabbitMQSignalEmitter>());
+                name => nameof(SquarePow).Equals(name) ? new ISignalHandler[] { new SquarePow() } : null,
+                new NullLogger<RabbitMQSignalEmitter>());
 
             await signalEmitter.Emit(nameof(SquarePow), 2);
 

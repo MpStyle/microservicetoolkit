@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core.extension;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static partial class MessageMediatorExtensions
+public static class MessageMediatorExtensions
 {
 
     /// <summary>
@@ -20,7 +20,7 @@ public static partial class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Type type)
     {
-        return new Type[] { type }.GetServices();
+        return new[] { type }.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Type[] types)
@@ -35,7 +35,7 @@ public static partial class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Assembly assembly)
     {
-        return new Assembly[] { assembly }.GetServices();
+        return new[] { assembly }.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Assembly[] assemblies)
@@ -90,7 +90,10 @@ public static partial class MessageMediatorExtensions
     {
         foreach (var item in mapper.ToDictionary())
         {
-            services.Add(new ServiceDescriptor(item.Value, item.Value, lifeTime));
+            foreach (var type in item.Value)
+            {
+                services.Add(new ServiceDescriptor(type, type, lifeTime));   
+            }
         }
 
         return services;
@@ -100,9 +103,14 @@ public static partial class MessageMediatorExtensions
     {
         services.AddSingleton(serviceProvider => new ServiceFactory(pattern =>
         {
-            var serviceType = mapper.ByPatternOrDefault(pattern);
+            var serviceTypes = mapper.ByPatternOrDefault(pattern);
 
-            return serviceProvider.GetService(serviceType) as IService;
+            if (serviceTypes.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            return serviceProvider.GetService(serviceTypes.First()) as IService;
         }));
 
         return services;
@@ -136,7 +144,7 @@ public static partial class MessageMediatorExtensions
             return false;
         }
 
-        var name = fullname[..fullname.IndexOf('`')];
+        var name = fullname.Substring(0, fullname.IndexOf('`'));
         var currentType = type;
         while (currentType != null)
         {

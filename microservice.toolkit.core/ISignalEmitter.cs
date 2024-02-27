@@ -1,16 +1,8 @@
-﻿using microservice.toolkit.core.extension;
+﻿using System.Threading.Tasks;
 
-using System;
-using System.Threading.Tasks;
-
-namespace microservice.toolkit.messagemediator;
+namespace microservice.toolkit.core;
 
 public interface ISignalEmitter
 {
-    public Task Emit<TEvent>(Type signalEmitterType, TEvent message)
-    {
-        return this.Emit(signalEmitterType.ToPattern(), message);
-    }
-
     Task Emit<TEvent>(string pattern, TEvent message);
 }

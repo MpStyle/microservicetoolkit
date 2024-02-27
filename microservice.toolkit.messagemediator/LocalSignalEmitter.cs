@@ -1,4 +1,5 @@
 ﻿using microservice.toolkit.core;
+using microservice.toolkit.core.extension;
 
 using Microsoft.Extensions.Logging;
 
@@ -11,9 +12,9 @@ namespace microservice.toolkit.messagemediator;
 public class LocalSignalEmitter : ISignalEmitter
 {
     private readonly SignalHandlerFactory signalHandlerFactory;
-    private readonly ILogger<ISignalEmitter> logger;
+    private readonly ILogger<LocalSignalEmitter> logger;
 
-    public LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<ISignalEmitter> logger)
+    public LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<LocalSignalEmitter> logger)
     {
         this.signalHandlerFactory = serviceFactory;
         this.logger = logger;
@@ -23,14 +24,17 @@ public class LocalSignalEmitter : ISignalEmitter
     {
         try
         {
-            var handler = this.signalHandlerFactory(pattern);
+            var eventHandlers = this.signalHandlerFactory(pattern);
 
-            if (handler == null)
+            if (eventHandlers.IsNullOrEmpty())
             {
                 throw new SignalHandlerNotFoundException(pattern);
             }
 
-            _ = handler.Run(message).ConfigureAwait(false);
+            foreach (var eventHandler in eventHandlers)
+            {
+                _ = eventHandler.Run(message).ConfigureAwait(false);   
+            }
         }
         catch (SignalHandlerNotFoundException ex)
         {

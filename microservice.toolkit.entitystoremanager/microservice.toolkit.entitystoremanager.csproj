@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+        <AssemblyName>microservice.toolkit.entitystoremanager</AssemblyName>
+        <RootNamespace>microservice.toolkit.entitystoremanager</RootNamespace>
+        <Authors>Michele Pagnin</Authors>
+        <Product>Microservice Toolkit - Entity Store Manager</Product>
+        <Copyright>MIT License</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Title>Microservice Toolkit - Entity Store Manager</Title>
+        <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>entity store manager, entity manager, entity framework, entity, database</PackageTags>
+        <PackageIcon>icon.png</PackageIcon>
+        <LangVersion>12</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.6">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\*.sql">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\V1_5_0__Create_item_type.sql">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\V1_6_0__Create_item_bulk_upsert_procedure.sql">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="migration\microservice.toolkit.entitystoremanager" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj" />
+        <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+        <ProjectReference Include="..\microservice.toolkit.messagemediator\microservice.toolkit.messagemediator.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\image\icon.png">
+            <Pack>True</Pack>
+            <PackagePath />
+        </None>
+        <None Include=".\README.md">
+            <Pack>True</Pack>
+            <PackagePath />
+        </None>
+    </ItemGroup>
+
+</Project>

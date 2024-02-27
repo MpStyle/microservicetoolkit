@@ -19,7 +19,7 @@ namespace microservice.toolkit.connectionmanager.test
         public async Task ExecuteStoredProcedureAsync()
         {
             var itemId = Guid.NewGuid().ToString();
-            await this.dbConnection.ExecuteStoredProcedureAsync("ItemUpsert",
+            await this.dbConnection.ExecuteStoredProcedureAsync("mt_cm_test_ItemUpsert",
                 new Dictionary<string, object>
                 {
                     {"@Id", itemId},
@@ -31,7 +31,7 @@ namespace microservice.toolkit.connectionmanager.test
 
             var itemIds = this.dbConnection.Execute(cmd =>
             {
-                cmd.CommandText = "SELECT * FROM Item";
+                cmd.CommandText = "SELECT * FROM mt_cm_test_Item";
                 using var reader = cmd.ExecuteReader();
                 var objects = new List<string>();
 
@@ -45,12 +45,12 @@ namespace microservice.toolkit.connectionmanager.test
 
             Assert.AreEqual(itemId, itemIds[0]);
         }
-        
+
         [Test]
         public async Task ExecuteStoredProcedureAsync_NullValue()
         {
             var itemPropertyId = Guid.NewGuid().ToString();
-            await this.dbConnection.ExecuteStoredProcedureAsync("ItemPropertyUpsert",
+            await this.dbConnection.ExecuteStoredProcedureAsync("mt_cm_test_ItemPropertyUpsert",
                 new Dictionary<string, object>
                 {
                     {"@Id", itemPropertyId},
@@ -63,10 +63,10 @@ namespace microservice.toolkit.connectionmanager.test
                     {"@BoolValue", null},
                     {"@Order", null},
                 });
-            
+
             var itemPropertyIds = this.dbConnection.Execute(cmd =>
             {
-                cmd.CommandText = "SELECT * FROM ItemProperty";
+                cmd.CommandText = "SELECT * FROM mt_cm_test_ItemProperty";
                 using var reader = cmd.ExecuteReader();
                 var objects = new List<string>();
 
@@ -80,12 +80,12 @@ namespace microservice.toolkit.connectionmanager.test
 
             Assert.AreEqual(itemPropertyId, itemPropertyIds[0]);
         }
-        
+
         [Test]
         public void ExecuteStoredProcedure_NullValue()
         {
             var itemPropertyId = Guid.NewGuid().ToString();
-            this.dbConnection.ExecuteStoredProcedure("ItemPropertyUpsert",
+            this.dbConnection.ExecuteStoredProcedure("mt_cm_test_ItemPropertyUpsert",
                 new Dictionary<string, object>
                 {
                     {"@Id", itemPropertyId},
@@ -98,10 +98,10 @@ namespace microservice.toolkit.connectionmanager.test
                     {"@BoolValue", null},
                     {"@Order", null},
                 });
-            
+
             var itemPropertyIds = this.dbConnection.Execute(cmd =>
             {
-                cmd.CommandText = "SELECT * FROM ItemProperty";
+                cmd.CommandText = "SELECT * FROM mt_cm_test_ItemProperty";
                 using var reader = cmd.ExecuteReader();
                 var objects = new List<string>();
 
@@ -128,7 +128,7 @@ namespace microservice.toolkit.connectionmanager.test
             var currentAssemblyLocation =
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
 
-            var setupFiles = new string[]
+            var setupFiles = new[]
             {
                 "CreateItemTable.sql",
                 "CreateItemUpsertProcedure.sql",
@@ -152,7 +152,12 @@ namespace microservice.toolkit.connectionmanager.test
         {
             this.dbConnection.Execute(cmd =>
             {
-                cmd.CommandText = "DROP TABLE Item; DROP PROCEDURE ItemUpsert;DROP TABLE ItemProperty; DROP PROCEDURE ItemPropertyUpsert;";
+                cmd.CommandText = @"
+                DROP TABLE mt_cm_test_Item; 
+                DROP PROCEDURE mt_cm_test_ItemUpsert;
+                DROP TABLE mt_cm_test_ItemProperty; 
+                DROP PROCEDURE mt_cm_test_ItemPropertyUpsert;
+                ";
                 return cmd.ExecuteNonQuery();
             });
         }

@@ -24,15 +24,13 @@ namespace microservice.toolkit.connectionmanager.test
 
                 var objects = new List<Film>();
 
-                using (var reader = await command.ExecuteReaderAsync())
+                await using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        objects.Add(new Film { Code = reader.GetInt16(0), Title = reader.GetString(1), });
-                    }
-
-                    return objects;
+                    objects.Add(new Film { Code = reader.GetInt16(0), Title = reader.GetString(1), });
                 }
+
+                return objects;
             });
 
             Assert.AreEqual(4, result.Count);
@@ -64,7 +62,7 @@ namespace microservice.toolkit.connectionmanager.test
         [Test]
         public async Task ExecuteAsync_Query_AutoMapping_Transformations()
         {
-            var result = await this.connectionManager.ExecuteAsync<Film>(
+            var result = await this.connectionManager.ExecuteAsync(
                 "SELECT * FROM films WHERE code < @code",
                 DbConnectionExtension.MapperFunc<Film>(new Dictionary<string, Func<object, object>>
                 {

@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core.extension;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static partial class SignalEmitterExtensions
+public static class SignalEmitterExtensions
 {
 
     /// <summary>
@@ -20,12 +20,12 @@ public static partial class SignalEmitterExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetHandlers(this Type type)
     {
-        return new Type[] { type }.GetHandlers();
+        return new[] { type }.GetHandlers();
     }
 
     public static MicroserviceCollection GetHandlers(this Type[] types)
     {
-        return types.Select(t => Assembly.GetAssembly(t)).ToArray().GetHandlers();
+        return types.Select(Assembly.GetAssembly).ToArray().GetHandlers();
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public static partial class SignalEmitterExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetHandlers(this Assembly assembly)
     {
-        return new Assembly[] { assembly }.GetHandlers();
+        return new[] { assembly }.GetHandlers();
     }
 
     public static MicroserviceCollection GetHandlers(this Assembly[] assemblies)
@@ -90,7 +90,10 @@ public static partial class SignalEmitterExtensions
     {
         foreach (var item in mapper.ToDictionary())
         {
-            services.Add(new ServiceDescriptor(item.Value, item.Value, lifeTime));
+            foreach (var type in item.Value)
+            {
+                services.Add(new ServiceDescriptor(type, type, lifeTime));   
+            }
         }
 
         return services;
@@ -100,9 +103,11 @@ public static partial class SignalEmitterExtensions
     {
         services.AddSingleton(serviceProvider => new SignalHandlerFactory(pattern =>
         {
-            var serviceType = mapper.ByPatternOrDefault(pattern);
+            var serviceType = mapper.ByPatternOrDefault(pattern)
+                .Select(type=> serviceProvider.GetService(type) as ISignalHandler)
+                .ToArray();
 
-            return serviceProvider.GetService(serviceType) as ISignalHandler;
+            return serviceType;
         }));
 
         return services;
@@ -128,7 +133,7 @@ public static partial class SignalEmitterExtensions
             return false;
         }
 
-        // Checks if is a subclass of "Service<,>"
+        // Checks if is a subclass of "SignalHandler<>"
         var fullname = typeof(SignalHandler<>).FullName;
 
         if (fullname.IsNullOrEmpty())
@@ -136,7 +141,7 @@ public static partial class SignalEmitterExtensions
             return false;
         }
 
-        var name = fullname[..fullname.IndexOf('`')];
+        var name = fullname.Substring(0, fullname.IndexOf('`'));
         var currentType = type;
         while (currentType != null)
         {

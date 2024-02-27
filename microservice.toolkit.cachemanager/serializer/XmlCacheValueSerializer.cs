@@ -2,25 +2,24 @@ using microservice.toolkit.core;
 
 using System.Text.Json;
 
-namespace microservice.toolkit.cachemanager.serializer
+namespace microservice.toolkit.cachemanager.serializer;
+
+public class JsonCacheValueSerializer : ICacheValueSerializer
 {
-    public class JsonCacheValueSerializer : ICacheValueSerializer
+    private readonly JsonSerializerOptions jsonSerializerOptions;
+
+    public JsonCacheValueSerializer(JsonSerializerOptions jsonSerializerOptions = null)
     {
-        private readonly JsonSerializerOptions jsonSerializerOptions = null;
+        this.jsonSerializerOptions = jsonSerializerOptions;
+    }
 
-        public JsonCacheValueSerializer(JsonSerializerOptions jsonSerializerOptions = null)
-        {
-            this.jsonSerializerOptions = jsonSerializerOptions;
-        }
+    public TValue Deserialize<TValue>(string value)
+    {
+        return JsonSerializer.Deserialize<TValue>(value, this.jsonSerializerOptions);
+    }
 
-        public TValue Deserialize<TValue>(string value)
-        {
-            return JsonSerializer.Deserialize<TValue>(value, this.jsonSerializerOptions);
-        }
-
-        public string Serialize<TValue>(TValue value)
-        {
-            return JsonSerializer.Serialize(value, this.jsonSerializerOptions);
-        }
+    public string Serialize<TValue>(TValue value)
+    {
+        return JsonSerializer.Serialize(value, this.jsonSerializerOptions);
     }
 }

@@ -4,7 +4,7 @@ namespace microservice.toolkit.core
 {
     public abstract class Disposable : IDisposable
     {
-        private bool disposedValue = false; // To detect redundant calls
+        private bool disposedValue; // To detect redundant calls
 
         public virtual void Dispose(bool disposing)
         {

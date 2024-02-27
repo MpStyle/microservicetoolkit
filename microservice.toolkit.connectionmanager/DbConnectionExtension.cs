@@ -195,7 +195,7 @@ namespace microservice.toolkit.connectionmanager
         public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
             Dictionary<string, object> parameters = null) where T : class, new()
         {
-            return await conn.ExecuteAsync<T>(sql, MapperFunc<T>(), parameters);
+            return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters);
         }
 
         public static async Task<T> ExecuteFirstAsync<T>(this DbConnection conn, string sql,
@@ -283,7 +283,7 @@ namespace microservice.toolkit.connectionmanager
 
             if (conn.State.HasFlag(ConnectionState.Broken))
             {
-                await conn.CloseAsync();
+                await conn.SafeCloseAsync();
                 await conn.OpenAsync();
                 return;
             }
@@ -313,7 +313,7 @@ namespace microservice.toolkit.connectionmanager
                 return;
             }
 
-            await conn.CloseAsync();
+            await conn.SafeCloseAsync();
         }
 
         public static Func<DbDataReader, T> MapperFunc<T>(
@@ -341,7 +341,12 @@ namespace microservice.toolkit.connectionmanager
                     }
 
                     var ts = transformations ?? new Dictionary<string, Func<object, object>>();
-                    var transformation = ts.GetValueOrDefault(typeMemberName.Name, obj => obj);
+                    if (ts.TryGetValue(typeMemberName.Name, out var transformation) == false)
+                    {
+                        transformation = obj => obj;
+                    }
+
+
                     accessor[t, typeMemberName.Name] = transformation(reader.GetValue(i));
                 }
 

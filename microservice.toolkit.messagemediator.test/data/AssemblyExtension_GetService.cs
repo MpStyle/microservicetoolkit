@@ -1,5 +1,5 @@
-﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator.attribute;
+﻿using microservice.toolkit.core.attribute;
+using microservice.toolkit.core.entity;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -43,7 +43,7 @@ namespace microservice.toolkit.messagemediator.test.data
 
     [ExcludeFromCodeCoverage]
     [Microservice]
-    public class InvalidGenericService<T> : Service<int, int>
+    public class InvalidGenericService : Service<int, int>
     {
         public override Task<ServiceResponse<int>> Run(int request)
         {

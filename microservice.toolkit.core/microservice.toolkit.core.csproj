@@ -1,36 +1,37 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>microservice.toolkit.core</AssemblyName>
-    <RootNamespace>microservice.toolkit.core</RootNamespace>
-    <Authors>Michele Pagnin</Authors>
-    <Product>Microservice Toolkit - Core</Product>
-    <Copyright>MIT License</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Title>Microservice Toolkit - Core</Title>
-    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
-    <Description>Everything you need for your entire micro services development life cycle. </Description>
-    <LangVersion>10</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+		<AssemblyName>microservice.toolkit.core</AssemblyName>
+		<RootNamespace>microservice.toolkit.core</RootNamespace>
+		<Authors>Michele Pagnin</Authors>
+		<Product>Microservice Toolkit - Core</Product>
+		<Copyright>MIT License</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Title>Microservice Toolkit - Core</Title>
+		<PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
+		<Description>Everything you need for your entire micro services development life cycle. </Description>
+		<LangVersion>12</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\image\icon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\image\icon.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
 </Project>

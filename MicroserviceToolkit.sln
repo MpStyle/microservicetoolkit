@@ -56,6 +56,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.tsid",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.tsid.test", "microservice.toolkit.tsid.test\microservice.toolkit.tsid.test.csproj", "{F7255488-3F44-4382-A3CB-60900FE507CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.entitystoremanager", "microservice.toolkit.entitystoremanager\microservice.toolkit.entitystoremanager.csproj", "{6B6ECC0A-2A1F-4511-9898-D3274F7D4964}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.entitystoremanager.tests", "microservice.toolkit.entitystoremanager.tests\microservice.toolkit.entitystoremanager.tests.csproj", "{5272D9EC-0890-47BA-A672-FA3A1A282F13}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
