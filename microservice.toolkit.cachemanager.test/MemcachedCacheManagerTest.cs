@@ -26,7 +26,7 @@ public class MemcachedCacheManagerTest
 
         var getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
     }
 
     [Test]
@@ -38,7 +38,7 @@ public class MemcachedCacheManagerTest
 
         var getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
     }
 
     [Test]
@@ -66,7 +66,7 @@ public class MemcachedCacheManagerTest
 
         var getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
 
         setResponse = await this.manager.Set("my_key", "my_value",
             DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds());
@@ -87,7 +87,7 @@ public class MemcachedCacheManagerTest
 
         var getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
 
         var deleteResponse = await this.manager.Delete("my_key");
 
