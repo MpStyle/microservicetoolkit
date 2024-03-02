@@ -10,7 +10,7 @@ namespace microservice.toolkit.cachemanager.serializer;
 public class XmlCacheValueSerializer : ICacheValueSerializer
 {
     private readonly XmlSerializerNamespaces emptyNamespaces
-        = new XmlSerializerNamespaces(new[] { new XmlQualifiedName(string.Empty, string.Empty) });
+        = new XmlSerializerNamespaces([new XmlQualifiedName(string.Empty, string.Empty)]);
 
     public TValue Deserialize<TValue>(string value)
     {
@@ -18,7 +18,7 @@ public class XmlCacheValueSerializer : ICacheValueSerializer
 
         using (var reader = new StringReader(value))
         {
-            var serializer = XmlSerializer.FromTypes(new[] { typeof(TValue) })[0];
+            var serializer = XmlSerializer.FromTypes([typeof(TValue)])[0];
             instance = (TValue)serializer.Deserialize(reader);
         }
 
@@ -33,7 +33,7 @@ public class XmlCacheValueSerializer : ICacheValueSerializer
         {
             using (var writer = XmlWriter.Create(stream))
             {
-                var serializer = XmlSerializer.FromTypes(new[] { typeof(TValue) })[0];
+                var serializer = XmlSerializer.FromTypes([typeof(TValue)])[0];
 
                 serializer.Serialize(writer, value, emptyNamespaces);
             }
