@@ -16,7 +16,7 @@ public class InMemoryCacheManagerTest
     {
         var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds());
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
         var getResponse = await this.manager.Get<string>("my_key");
 
@@ -28,7 +28,7 @@ public class InMemoryCacheManagerTest
     {
         var setResponse = await this.manager.Set("my_key", "my_value");
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
         var getResponse = await this.manager.Get<string>("my_key");
 
@@ -40,13 +40,13 @@ public class InMemoryCacheManagerTest
     {
         var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
         await Task.Delay(5000);
 
         var getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.IsNull(getResponse);
+        Assert.That(getResponse, Is.Null);
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class InMemoryCacheManagerTest
     {
         var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
         var getResponse = await this.manager.Get<string>("my_key");
 
@@ -62,11 +62,11 @@ public class InMemoryCacheManagerTest
 
         setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds());
 
-        Assert.IsFalse(setResponse);
+        Assert.That(setResponse, Is.False);
 
         getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.IsNull(getResponse);
+        Assert.That(getResponse, Is.Null);
     }
 
     [Test]
@@ -74,7 +74,7 @@ public class InMemoryCacheManagerTest
     {
         var setResponse = await this.manager.Set("my_key", "my_value");
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
         var getResponse = await this.manager.Get<string>("my_key");
 
@@ -82,11 +82,11 @@ public class InMemoryCacheManagerTest
 
         var deleteResponse = await this.manager.Delete("my_key");
 
-        Assert.IsTrue(deleteResponse);
+        Assert.That(deleteResponse, Is.True);
 
         getResponse = await this.manager.Get<string>("my_key");
 
-        Assert.IsNull(getResponse);
+        Assert.That(getResponse, Is.Null);
     }
 
     #region SetUp & TearDown
