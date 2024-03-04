@@ -26,7 +26,7 @@ namespace microservice.toolkit.connectionmanager.test
                 return await cmd.ExecuteNonQueryAsync();
             });
 
-            Assert.AreEqual(-1, result);
+            Assert.That(-1, Is.EqualTo(result));
         }
 
         [Test]
@@ -43,8 +43,8 @@ namespace microservice.toolkit.connectionmanager.test
                 return await cmd.ExecuteNonQueryAsync();
             });
 
-            Assert.AreEqual(1,
-                await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('12345', 'my_title');"));
+            Assert.That(1,
+                Is.EqualTo(await connectionManager.ExecuteNonQueryAsync("INSERT INTO films VALUES ('12345', 'my_title');")));
         }
 
         [SetUp]

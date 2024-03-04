@@ -33,12 +33,12 @@ namespace microservice.toolkit.connectionmanager.test
                 return objects;
             });
 
-            Assert.AreEqual(4, result.Count);
+            Assert.That(4, Is.EqualTo(result.Count));
 
             for (var i = 0; i < result.Count; i++)
             {
-                Assert.AreEqual(i + 1, result[i].Code);
-                Assert.AreEqual($"my_title {i + 1}", result[i].Title);
+                Assert.That(i + 1, Is.EqualTo(result[i].Code));
+                Assert.That($"my_title {i + 1}", Is.EqualTo(result[i].Title));
             }
         }
 
@@ -50,12 +50,12 @@ namespace microservice.toolkit.connectionmanager.test
                 reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(2, result.Length);
+            Assert.That(2, Is.EqualTo(result.Length));
 
             for (var i = 0; i < result.Length; i++)
             {
-                Assert.AreEqual(i + 1, result[i].Code);
-                Assert.AreEqual($"my_title {i + 1}", result[i].Title);
+                Assert.That(i + 1, Is.EqualTo(result[i].Code));
+                Assert.That($"my_title {i + 1}", Is.EqualTo(result[i].Title));
             }
         }
 
@@ -73,12 +73,12 @@ namespace microservice.toolkit.connectionmanager.test
                 }),
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(2, result.Length);
+            Assert.That(2, Is.EqualTo(result.Length));
 
             for (var i = 0; i < result.Length; i++)
             {
-                Assert.AreEqual(i + 1, result[i].Code);
-                Assert.AreEqual($"my_title {i + 1}", result[i].Title);
+                Assert.That(i + 1, Is.EqualTo(result[i].Code));
+                Assert.That($"my_title {i + 1}", Is.EqualTo(result[i].Title));
             }
         }
 
@@ -89,12 +89,12 @@ namespace microservice.toolkit.connectionmanager.test
                 "SELECT code, title FROM films WHERE code < @code",
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(2, result.Length);
+            Assert.That(2, Is.EqualTo(result.Length));
 
             for (var i = 0; i < result.Length; i++)
             {
-                Assert.AreEqual(i + 1, result[i].Code);
-                Assert.AreEqual($"my_title {i + 1}", result[i].Title);
+                Assert.That(i + 1, Is.EqualTo(result[i].Code));
+                Assert.That($"my_title {i + 1}", Is.EqualTo(result[i].Title));
             }
         }
 
@@ -106,8 +106,8 @@ namespace microservice.toolkit.connectionmanager.test
                 reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(1, result.Code);
-            Assert.AreEqual("my_title 1", result.Title);
+            Assert.That(1, Is.EqualTo(result.Code));
+            Assert.That("my_title 1", Is.EqualTo(result.Title));
         }
 
         [Test]
@@ -124,10 +124,10 @@ namespace microservice.toolkit.connectionmanager.test
                 }),
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(1, result.Code);
-            Assert.AreEqual("my_title 1", result.Title);
-            Assert.AreEqual(FilmGenre.Action, result.Genres[0]);
-            Assert.AreEqual(FilmGenre.Comedy, result.Genres[1]);
+            Assert.That(1, Is.EqualTo(result.Code));
+            Assert.That("my_title 1", Is.EqualTo(result.Title));
+            Assert.That(FilmGenre.Action, Is.EqualTo(result.Genres[0]));
+            Assert.That(FilmGenre.Comedy, Is.EqualTo(result.Genres[1]));
         }
 
         [Test]
@@ -138,20 +138,20 @@ namespace microservice.toolkit.connectionmanager.test
                 reader => new { Code = reader.GetInt16(0), Title = reader.GetString(1), },
                 new Dictionary<string, object> { { "@code", 3 } });
 
-            Assert.AreEqual(1, result.Code);
-            Assert.AreEqual("my_title 1", result.Title);
+            Assert.That(1, Is.EqualTo(result.Code));
+            Assert.That("my_title 1", Is.EqualTo(result.Title));
         }
 
         [Test]
         public async Task ExecuteNonQueryAsync()
         {
-            Assert.AreEqual(1,
-                await connectionManager.ExecuteNonQueryAsync(
+            Assert.That(1,
+                Is.EqualTo(await connectionManager.ExecuteNonQueryAsync(
                     "INSERT INTO films VALUES (@code, @title, @genre);",
                     new Dictionary<string, object>
                     {
                         {"@code", 5}, {"@title", "my_title 5"}, {"@genre", FilmGenre.Action},
-                    }));
+                    })));
         }
 
         [SetUp]

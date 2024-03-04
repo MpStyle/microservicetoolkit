@@ -43,7 +43,7 @@ namespace microservice.toolkit.connectionmanager.test
                 return objects;
             });
 
-            Assert.AreEqual(itemId, itemIds[0]);
+            Assert.That(itemId, Is.EqualTo(itemIds[0]));
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace microservice.toolkit.connectionmanager.test
                 return objects;
             });
 
-            Assert.AreEqual(itemPropertyId, itemPropertyIds[0]);
+            Assert.That(itemPropertyId, Is.EqualTo(itemPropertyIds[0]));
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace microservice.toolkit.connectionmanager.test
                 return objects;
             });
 
-            Assert.AreEqual(itemPropertyId, itemPropertyIds[0]);
+            Assert.That(itemPropertyId, Is.EqualTo(itemPropertyIds[0]));
         }
 
         [SetUp]

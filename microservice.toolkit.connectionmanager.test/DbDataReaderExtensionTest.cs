@@ -47,21 +47,21 @@ public class DbDataReaderExtensionTest
             };
         });
 
-        Assert.AreEqual(1, result.myInt);
-        Assert.AreEqual(1647860184000, result.myLong);
-        Assert.AreEqual(32767, result.myShort);
-        Assert.AreEqual(true, result.myBool);
-        Assert.AreEqual(999.99, result.myDecimal);
-        Assert.AreEqual(10.9998, result.myDouble);
-        Assert.AreEqual(10.9997997f, result.myFloat);
-        Assert.AreEqual("0f8fad5b-d9cb-469f-a165-70867728950e", result.myGuid.ToString());
-        Assert.AreEqual("0f8fad5b-d9cb-469f-a165-70867728950e", result.myString);
+        Assert.That(1, Is.EqualTo(result.myInt));
+        Assert.That(1647860184000, Is.EqualTo(result.myLong));
+        Assert.That(32767, Is.EqualTo(result.myShort));
+        Assert.That(true, Is.EqualTo(result.myBool));
+        Assert.That(999.99, Is.EqualTo(result.myDecimal));
+        Assert.That(10.9998, Is.EqualTo(result.myDouble));
+        Assert.That(10.9997997f, Is.EqualTo(result.myFloat));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myGuid.ToString()));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myString));
 
-        Assert.IsFalse(result.invalidPosition.invalidPositionResult);
-        Assert.AreEqual(default(int), result.invalidPosition.invalidPositionValue);
+        Assert.That(result.invalidPosition.invalidPositionResult, Is.False);
+        Assert.That(default(int), Is.EqualTo(result.invalidPosition.invalidPositionValue));
 
-        Assert.IsFalse(result.nullValue.nullResult);
-        Assert.AreEqual(default(long), result.nullValue.nullValue);
+        Assert.That(result.nullValue.nullResult, Is.False);
+        Assert.That(default(long), Is.EqualTo(result.nullValue.nullValue));
     }
 
     [SetUp]
