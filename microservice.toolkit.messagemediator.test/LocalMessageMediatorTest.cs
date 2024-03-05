@@ -22,7 +22,7 @@ namespace microservice.toolkit.messagemediator.test
                 new LocalMessageMediator(name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
 
-            Assert.AreEqual(4, (await mediator.Send<int>(nameof(SquarePow), 2)).Payload);
+            Assert.That(4, Is.EqualTo((await mediator.Send<int>(nameof(SquarePow), 2)).Payload));
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace microservice.toolkit.messagemediator.test
                 new LocalMessageMediator(name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
 
-            Assert.AreEqual(4, (await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload);
+            Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload));
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace microservice.toolkit.messagemediator.test
                 new LocalMessageMediator(name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
                     new NullLogger<LocalMessageMediator>());
 
-            Assert.AreEqual(-1, (await mediator.Send<int>(nameof(SquarePowError), 2)).Error);
+            Assert.That(-1, Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
         }
 
         [Microservice]

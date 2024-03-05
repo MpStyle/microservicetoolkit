@@ -18,16 +18,16 @@ public class LocalSignalEmitterTest
     public async Task Run_Int()
     {
         ISignalEmitter signalEmitter =
-            new LocalSignalEmitter(name => nameof(SquarePow).Equals(name) ? new ISignalHandler[] { new SquarePow() } : null,
+            new LocalSignalEmitter(name => nameof(SquarePow).Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<LocalSignalEmitter>());
 
         await signalEmitter.Emit(nameof(SquarePow), 2);
 
-        Assert.IsFalse(isSignalHandlerRunned);
+        Assert.That(isSignalHandlerRunned, Is.False);
 
         await Task.Delay(5000);
 
-        Assert.IsTrue(isSignalHandlerRunned);
+        Assert.That(isSignalHandlerRunned, Is.True);
     }
 
     [SetUp]
