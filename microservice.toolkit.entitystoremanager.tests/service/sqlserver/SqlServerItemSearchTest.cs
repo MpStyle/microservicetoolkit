@@ -22,20 +22,20 @@ public class SqlServerItemSearchTest : MigratedDbTest
         {
             Filters = new AndWhere
             {
-                Conditions = new IWhere[]
-                {
+                Conditions =
+                [
                     new Where { Key = nameof(MyItem.IntValue), Value = 1 },
                     new Where { Key = nameof(MyItem.LongValue), Value = 1L },
-                }
+                ]
             }
         });
 
-        Assert.AreEqual(5, response.Payload.Items.Length);
-        Assert.AreEqual("my_source_10", response.Payload.Items[0].Id);
-        Assert.AreEqual("my_source_14", response.Payload.Items[1].Id);
-        Assert.AreEqual("my_source_18", response.Payload.Items[2].Id);
-        Assert.AreEqual("my_source_2", response.Payload.Items[3].Id);
-        Assert.AreEqual("my_source_6", response.Payload.Items[4].Id);
+        Assert.That(5, Is.EqualTo(response.Payload.Items.Length));
+        Assert.That("my_source_10", Is.EqualTo(response.Payload.Items[0].Id));
+        Assert.That("my_source_14", Is.EqualTo(response.Payload.Items[1].Id));
+        Assert.That("my_source_18", Is.EqualTo(response.Payload.Items[2].Id));
+        Assert.That("my_source_2", Is.EqualTo(response.Payload.Items[3].Id));
+        Assert.That("my_source_6", Is.EqualTo(response.Payload.Items[4].Id));
     }
 
     [Test]
@@ -45,27 +45,27 @@ public class SqlServerItemSearchTest : MigratedDbTest
         {
             Filters = new AndWhere
             {
-                Conditions = new IWhere[]
-                {
+                Conditions =
+                [
                     new Where { Key = nameof(MyItem.IntValue), Value = 1 },
                     new OrWhere
                     {
-                        Conditions = new IWhere[]
-                        {
+                        Conditions =
+                        [
                             new Where { Key = nameof(MyItem.LongValue), Value = 2L },
                             new Where { Key = nameof(MyItem.FloatValue), Value = 2F },
-                        }
+                        ]
                     }
-                }
+                ]
             }
         });
 
-        Assert.IsFalse(response.Error.HasValue, "Error code: {0}", response.Error);
+        Assert.That(response.Error.HasValue, Is.False, "Error code: {0}", response.Error);
 
-        Assert.AreEqual(3, response.Payload.Items.Length);
-        Assert.AreEqual("my_source_12", response.Payload.Items[0].Id);
-        Assert.AreEqual("my_source_18", response.Payload.Items[1].Id);
-        Assert.AreEqual("my_source_6", response.Payload.Items[2].Id);
+        Assert.That(3, Is.EqualTo(response.Payload.Items.Length));
+        Assert.That("my_source_12", Is.EqualTo(response.Payload.Items[0].Id));
+        Assert.That("my_source_18", Is.EqualTo(response.Payload.Items[1].Id));
+        Assert.That("my_source_6", Is.EqualTo(response.Payload.Items[2].Id));
     }
 
     [Test]
@@ -75,14 +75,14 @@ public class SqlServerItemSearchTest : MigratedDbTest
         {
             Filters = new AndWhere
             {
-                Conditions = new IWhere[]
-                {
+                Conditions =
+                [
                     new IsNullWhere { Key = "NotExistingKey" },
-                }
+                ]
             }
         });
 
-        Assert.AreEqual(20, response.Payload.Items.Length);
+        Assert.That(20, Is.EqualTo(response.Payload.Items.Length));
     }
 
     [Test]
@@ -92,15 +92,15 @@ public class SqlServerItemSearchTest : MigratedDbTest
         {
             Filters = new AndWhere
             {
-                Conditions = new IWhere[]
-                {
+                Conditions =
+                [
                     new IsNullWhere { Key = "NotExistingKey" },
                     new Where { Key = nameof(MyItem.IntValue), Value = 1 }
-                }
+                ]
             }
         });
 
-        Assert.AreEqual(10, response.Payload.Items.Length);
+        Assert.That(10, Is.EqualTo(response.Payload.Items.Length));
     }
 
     [SetUp]

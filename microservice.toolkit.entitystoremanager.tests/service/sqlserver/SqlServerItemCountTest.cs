@@ -20,14 +20,14 @@ public class SqlServerItemCountTest : MigratedDbTest
     {
         var response = await this.service.Run(new ItemCountRequest
         {
-            Filters = new IWhere[]
-            {
+            Filters =
+            [
                 new Where {Key = nameof(MyItem.IntValue), Value = 1},
                 new Where {Key = nameof(MyItem.LongValue), Value = 1L},
-            }
+            ]
         });
 
-        Assert.AreEqual(5, response.Payload.Counter);
+        Assert.That(5, Is.EqualTo(response.Payload.Counter));
     }
 
     [Test]
@@ -35,20 +35,20 @@ public class SqlServerItemCountTest : MigratedDbTest
     {
         var response = await this.service.Run(new ItemCountRequest
         {
-            Filters = new IWhere[]
-            {
+            Filters =
+            [
                 new OrWhere
                 {
-                    Conditions = new IWhere[]
-                    {
+                    Conditions =
+                    [
                         new Where {Key = nameof(MyItem.IntValue), Value = 1},
                         new Where {Key = nameof(MyItem.FloatValue), Value = 2F},
-                    }
+                    ]
                 }
-            }
+            ]
         });
 
-        Assert.AreEqual(13, response.Payload.Counter);
+        Assert.That(13, Is.EqualTo(response.Payload.Counter));
     }
 
     [SetUp]

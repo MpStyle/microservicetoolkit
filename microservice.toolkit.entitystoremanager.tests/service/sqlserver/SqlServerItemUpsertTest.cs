@@ -26,27 +26,27 @@ public class SqlServerItemUpsertTest : MigratedDbTest
             Updater = "me",
             Role = UserRole.SystemAdministrator,
             StringValue = "my_string_value",
-            StringsValue = new[] {"my_string_value_01", "my_string_value_02"},
+            StringsValue = ["my_string_value_01", "my_string_value_02"],
             LongValue = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            LongsValue = new[]
-            {
+            LongsValue =
+            [
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-            },
+            ],
             BoolValue = true,
-            BooleansValue = new[] {true, false, true},
+            BooleansValue = [true, false, true],
             FloatValue = 7312.427F,
-            FloatsValue = new[]
-            {
+            FloatsValue =
+            [
                 7312.427F,
                 7312.428F
-            },
+            ],
             IntValue = 392817,
-            IntsValue = new[]
-            {
+            IntsValue =
+            [
                 392817,
                 392818
-            },
+            ],
             Inserted = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
         };
@@ -60,25 +60,25 @@ public class SqlServerItemUpsertTest : MigratedDbTest
             ItemId = itemId
         });
 
-        Assert.AreEqual(user.Updater, byIdResponse.Payload.Item.Updater);
-        Assert.AreEqual(user.Role, byIdResponse.Payload.Item.Role);
-        Assert.AreEqual(user.StringValue, byIdResponse.Payload.Item.StringValue);
-        Assert.AreEqual(user.StringsValue[0], byIdResponse.Payload.Item.StringsValue[0]);
-        Assert.AreEqual(user.StringsValue[1], byIdResponse.Payload.Item.StringsValue[1]);
-        Assert.AreEqual(user.LongValue, byIdResponse.Payload.Item.LongValue);
-        Assert.AreEqual(user.LongsValue[0], byIdResponse.Payload.Item.LongsValue[0]);
-        Assert.AreEqual(user.LongsValue[1], byIdResponse.Payload.Item.LongsValue[1]);
-        Assert.AreEqual(user.BoolValue, byIdResponse.Payload.Item.BoolValue);
-        Assert.AreEqual(user.BooleansValue[0], byIdResponse.Payload.Item.BooleansValue[0]);
-        Assert.AreEqual(user.BooleansValue[1], byIdResponse.Payload.Item.BooleansValue[1]);
-        Assert.AreEqual(user.FloatValue, byIdResponse.Payload.Item.FloatValue);
-        Assert.AreEqual(user.FloatsValue[0], byIdResponse.Payload.Item.FloatsValue[0]);
-        Assert.AreEqual(user.FloatsValue[1], byIdResponse.Payload.Item.FloatsValue[1]);
-        Assert.AreEqual(user.IntValue, byIdResponse.Payload.Item.IntValue);
-        Assert.AreEqual(user.IntsValue[0], byIdResponse.Payload.Item.IntsValue[0]);
-        Assert.AreEqual(user.IntsValue[1], byIdResponse.Payload.Item.IntsValue[1]);
-        Assert.AreEqual(user.Inserted, byIdResponse.Payload.Item.Inserted);
-        Assert.AreEqual(user.Updated, byIdResponse.Payload.Item.Updated);
+        Assert.That(user.Updater, Is.EqualTo(byIdResponse.Payload.Item.Updater));
+        Assert.That(user.Role, Is.EqualTo(byIdResponse.Payload.Item.Role));
+        Assert.That(user.StringValue, Is.EqualTo(byIdResponse.Payload.Item.StringValue));
+        Assert.That(user.StringsValue[0], Is.EqualTo(byIdResponse.Payload.Item.StringsValue[0]));
+        Assert.That(user.StringsValue[1], Is.EqualTo(byIdResponse.Payload.Item.StringsValue[1]));
+        Assert.That(user.LongValue, Is.EqualTo(byIdResponse.Payload.Item.LongValue));
+        Assert.That(user.LongsValue[0], Is.EqualTo(byIdResponse.Payload.Item.LongsValue[0]));
+        Assert.That(user.LongsValue[1], Is.EqualTo(byIdResponse.Payload.Item.LongsValue[1]));
+        Assert.That(user.BoolValue, Is.EqualTo(byIdResponse.Payload.Item.BoolValue));
+        Assert.That(user.BooleansValue[0], Is.EqualTo(byIdResponse.Payload.Item.BooleansValue[0]));
+        Assert.That(user.BooleansValue[1], Is.EqualTo(byIdResponse.Payload.Item.BooleansValue[1]));
+        Assert.That(user.FloatValue, Is.EqualTo(byIdResponse.Payload.Item.FloatValue));
+        Assert.That(user.FloatsValue[0], Is.EqualTo(byIdResponse.Payload.Item.FloatsValue[0]));
+        Assert.That(user.FloatsValue[1], Is.EqualTo(byIdResponse.Payload.Item.FloatsValue[1]));
+        Assert.That(user.IntValue, Is.EqualTo(byIdResponse.Payload.Item.IntValue));
+        Assert.That(user.IntsValue[0], Is.EqualTo(byIdResponse.Payload.Item.IntsValue[0]));
+        Assert.That(user.IntsValue[1], Is.EqualTo(byIdResponse.Payload.Item.IntsValue[1]));
+        Assert.That(user.Inserted, Is.EqualTo(byIdResponse.Payload.Item.Inserted));
+        Assert.That(user.Updated, Is.EqualTo(byIdResponse.Payload.Item.Updated));
     }
 
     [SetUp]
