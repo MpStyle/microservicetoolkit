@@ -18,7 +18,7 @@ namespace microservice.toolkit.configurationmanager.test
         public void GetString()
         {
             var stringValue = this.configurationManager.GetString("stringValue");
-            Assert.AreEqual("Hello World!", stringValue);
+            Assert.That("Hello World!", Is.EqualTo(stringValue));
         }
 
         [Test]
@@ -26,74 +26,74 @@ namespace microservice.toolkit.configurationmanager.test
         {
             const string defaultValue = "Ciao Mondo!";
             var stringValue = this.configurationManager.GetString("stringDefaultValue", defaultValue);
-            Assert.AreEqual(defaultValue, stringValue);
+            Assert.That(defaultValue, Is.EqualTo(stringValue));
         }
 
         [Test]
         public void GetInt()
         {
             var intValue = this.configurationManager.GetInt("intValue");
-            Assert.AreEqual(666, intValue);
+            Assert.That(666, Is.EqualTo(intValue));
         }
 
         [Test]
         public void GetInt_Default()
         {
             var intValue = this.configurationManager.GetInt("intDefaultValue", 69);
-            Assert.AreEqual(69, intValue);
+            Assert.That(69, Is.EqualTo(intValue));
         }
 
         [Test]
         public void GetBool()
         {
             var boolValue = this.configurationManager.GetBool("boolValue");
-            Assert.IsTrue(boolValue);
+            Assert.That(boolValue, Is.True);
         }
 
         [Test]
         public void GetBool_Default()
         {
             var boolValue = this.configurationManager.GetBool("boolDefaultValue", true);
-            Assert.IsTrue(boolValue);
+            Assert.That(boolValue, Is.True);
         }
 
         [Test]
         public void GetStringArray()
         {
             var stringArrayValue = this.configurationManager.GetStringArray("stringArrayValue");
-            Assert.AreEqual("Hello", stringArrayValue[0]);
-            Assert.AreEqual("World", stringArrayValue[1]);
-            Assert.AreEqual("!", stringArrayValue[2]);
+            Assert.That("Hello", Is.EqualTo(stringArrayValue[0]));
+            Assert.That("World", Is.EqualTo(stringArrayValue[1]));
+            Assert.That("!", Is.EqualTo(stringArrayValue[2]));
         }
 
         [Test]
         public void GetStringArray_Default()
         {
             var stringArrayValue =
-                this.configurationManager.GetStringArray("stringArrayDefaultValue", new[] { "Ciao", "Mondo", "!" });
-            Assert.AreEqual("Ciao", stringArrayValue[0]);
-            Assert.AreEqual("Mondo", stringArrayValue[1]);
-            Assert.AreEqual("!", stringArrayValue[2]);
+                this.configurationManager.GetStringArray("stringArrayDefaultValue", ["Ciao", "Mondo", "!"]);
+            Assert.That("Ciao", Is.EqualTo(stringArrayValue[0]));
+            Assert.That("Mondo", Is.EqualTo(stringArrayValue[1]));
+            Assert.That("!", Is.EqualTo(stringArrayValue[2]));
         }
 
         [Test]
         public void GetIntArray()
         {
             var intArrayValue = this.configurationManager.GetIntArray("intArrayValue");
-            Assert.AreEqual(1, intArrayValue[0]);
-            Assert.AreEqual(2, intArrayValue[1]);
-            Assert.AreEqual(3, intArrayValue[2]);
-            Assert.AreEqual(4, intArrayValue[3]);
+            Assert.That(1, Is.EqualTo(intArrayValue[0]));
+            Assert.That(2, Is.EqualTo(intArrayValue[1]));
+            Assert.That(3, Is.EqualTo(intArrayValue[2]));
+            Assert.That(4, Is.EqualTo(intArrayValue[3]));
         }
 
         [Test]
         public void GetIntArray_Default()
         {
-            var intArrayValue = this.configurationManager.GetIntArray("intArrayDefaultValue", new[] { 0, 9, 8, 7 });
-            Assert.AreEqual(0, intArrayValue[0]);
-            Assert.AreEqual(9, intArrayValue[1]);
-            Assert.AreEqual(8, intArrayValue[2]);
-            Assert.AreEqual(7, intArrayValue[3]);
+            var intArrayValue = this.configurationManager.GetIntArray("intArrayDefaultValue", [0, 9, 8, 7]);
+            Assert.That(0, Is.EqualTo(intArrayValue[0]));
+            Assert.That(9, Is.EqualTo(intArrayValue[1]));
+            Assert.That(8, Is.EqualTo(intArrayValue[2]));
+            Assert.That(7, Is.EqualTo(intArrayValue[3]));
         }
 
         #region SetUp & TearDown
