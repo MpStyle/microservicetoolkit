@@ -10,9 +10,9 @@ namespace microservice.toolkit.entitystoremanager.extension;
 internal static class TypeExtensions
 {
     private static readonly string[] ExcludedPropertyNames =
-    {
+    [
         Item.Inserted, Item.Updated, Item.Updater, Item.Enabled, Item.Id
-    };
+    ];
 
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> Cache = new();
 
