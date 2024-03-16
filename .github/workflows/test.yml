@@ -94,7 +94,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
       env:
           POSTGRES_HOST: 127.0.0.1
           POSTGRES_PORT: 5432
@@ -109,5 +109,8 @@ jobs:
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v4.0.1
       with:
+        files: ./**/coverage.cobertura.xml
+        flags: unittests
+        name: microservice-toolkit-codecov
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: MpStyle/microservicetoolkit
