@@ -2,7 +2,8 @@
 
 __The library is a work in progress. It is not yet considered production-ready.__
 
-[![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
+[![Test](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/MpStyle/microservicetoolkit/graph/badge.svg?token=RIQ04SSL4N)](https://codecov.io/gh/MpStyle/microservicetoolkit)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.core)

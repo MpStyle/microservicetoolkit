@@ -106,3 +106,8 @@ jobs:
           SQLSERVER_HOST: 127.0.0.1
           SQLSERVER_PORT: 1433
           SQLSERVER_ROOT_PASSWORD: my_root_password123
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        slug: MpStyle/microservicetoolkit
