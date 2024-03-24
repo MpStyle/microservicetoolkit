@@ -60,7 +60,7 @@ public class SqlServerItemSearchTest : MigratedDbTest
             }
         });
 
-        Assert.That(response.Error.HasValue, Is.False, "Error code: {0}", response.Error);
+        Assert.That(response.Error.HasValue, Is.False);
 
         Assert.That(3, Is.EqualTo(response.Payload.Items.Length));
         Assert.That("my_source_12", Is.EqualTo(response.Payload.Items[0].Id));

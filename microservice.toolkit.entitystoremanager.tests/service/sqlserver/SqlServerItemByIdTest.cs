@@ -23,7 +23,7 @@ public class SqlServerItemByIdTest : MigratedDbTest
             ItemId = "my_source_2"
         });
 
-        Assert.That(response.Error.HasValue, Is.False, "Error code: {0}", response.Error);
+        Assert.That(response.Error.HasValue, Is.False);
 
         Assert.That("my_string_2_value", Is.EqualTo(response.Payload.Item.StringValue));
     }
@@ -37,7 +37,7 @@ public class SqlServerItemByIdTest : MigratedDbTest
             ReturnOnlyId = true
         });
 
-        Assert.That(response.Error.HasValue, Is.False, "Error code: {0}", response.Error);
+        Assert.That(response.Error.HasValue, Is.False);
 
         Assert.That("my_source_2", Is.EqualTo(response.Payload.ItemId));
         Assert.That(response.Payload.Item, Is.Null);
