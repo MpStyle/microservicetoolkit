@@ -8,6 +8,8 @@ __The library is a work in progress. It is not yet considered production-ready._
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.core)
 
+__Designed by humans, enhanced by AI.__
+
 Everything you need for your entire micro services development life cycle. 
 
 __Microservice Toolkit__ is progressive/modular .NET and ASP.NET toolkit for coding fast, reliable and scalable cloud and desktop applications.
