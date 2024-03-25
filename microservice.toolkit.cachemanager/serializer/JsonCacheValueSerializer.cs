@@ -1,53 +1,44 @@
 using microservice.toolkit.core;
 
-using System.IO;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
+using System.Text.Json;
 
 namespace microservice.toolkit.cachemanager.serializer;
 
-public class XmlCacheValueSerializer : ICacheValueSerializer
+/// <summary>
+/// Represents a cache value serializer that uses JSON serialization.
+/// </summary>
+public class JsonCacheValueSerializer : ICacheValueSerializer
 {
-    private readonly XmlSerializerNamespaces emptyNamespaces
-        = new XmlSerializerNamespaces([new XmlQualifiedName(string.Empty, string.Empty)]);
+    private readonly JsonSerializerOptions jsonSerializerOptions;
 
-    public TValue Deserialize<TValue>(string value)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonCacheValueSerializer"/> class.
+    /// </summary>
+    /// <param name="jsonSerializerOptions">The JSON serializer options.</param>
+    public JsonCacheValueSerializer(JsonSerializerOptions jsonSerializerOptions = null)
     {
-        TValue instance;
-
-        using (var reader = new StringReader(value))
-        {
-            var serializer = XmlSerializer.FromTypes([typeof(TValue)])[0];
-            instance = (TValue)serializer.Deserialize(reader);
-        }
-
-        return instance;
+        this.jsonSerializerOptions = jsonSerializerOptions;
     }
 
+    /// <summary>
+    /// Deserializes the specified value into an object of type <typeparamref name="TValue"/>.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the object to deserialize.</typeparam>
+    /// <param name="value">The serialized value to deserialize.</param>
+    /// <returns>The deserialized object.</returns>
+    public TValue Deserialize<TValue>(string value)
+    {
+        return JsonSerializer.Deserialize<TValue>(value, this.jsonSerializerOptions);
+    }
+
+    /// <summary>
+    /// Serializes the specified value into a JSON string.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the object to serialize.</typeparam>
+    /// <param name="value">The value to serialize.</param>
+    /// <returns>The serialized JSON string.</returns>
     public string Serialize<TValue>(TValue value)
     {
-        var content = string.Empty;
-
-        using (var stream = new MemoryStream())
-        {
-            using (var writer = XmlWriter.Create(stream))
-            {
-                var serializer = XmlSerializer.FromTypes([typeof(TValue)])[0];
-
-                serializer.Serialize(writer, value, emptyNamespaces);
-            }
-
-            stream.Flush();
-
-            stream.Position = 0;
-
-            using (var reader = new StreamReader(stream, Encoding.UTF8))
-            {
-                content = reader.ReadToEnd();
-            }
-        }
-
-        return content;
+        return JsonSerializer.Serialize(value, this.jsonSerializerOptions);
     }
 }
