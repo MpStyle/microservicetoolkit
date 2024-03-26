@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager;
 
+/// <summary>
+/// Represents a cache manager that uses Redis as the underlying cache storage.
+/// </summary>
 public class RedisCacheManager : Disposable, ICacheManager
 {
     private readonly ILogger<RedisCacheManager> logger;
@@ -27,12 +30,26 @@ public class RedisCacheManager : Disposable, ICacheManager
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Deletes a cache entry with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the cache entry to delete.</param>
+    /// <returns>A task that represents the asynchronous delete operation. The task result contains a boolean value indicating whether the cache entry was successfully deleted.</returns>
     public Task<bool> Delete(string key)
     {
         var db = this.connection.GetDatabase();
         return db.KeyDeleteAsync(new RedisKey(key));
     }
 
+    /// <summary>
+    /// Retrieves the value associated with the specified key from the Redis cache.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to retrieve.</typeparam>
+    /// <param name="key">The key of the value to retrieve.</param>
+    /// <returns>The value associated with the specified key, or the default value of <typeparamref name="TValue"/> if the key is not found or the value is expired.</returns>
+    /// <remarks>
+    /// This method retrieves the value associated with the specified key from the Redis cache. If the value is found and not expired, it is deserialized and returned. If the value is expired or not found, the default value of <typeparamref name="TValue"/> is returned.
+    /// </remarks>
     public async Task<TValue> Get<TValue>(string key)
     {
         this.logger.LogDebug("Calling RedisCacheManager#Get({Empty})...", key ?? string.Empty);
@@ -49,9 +66,17 @@ public class RedisCacheManager : Disposable, ICacheManager
             return this.serializer.Deserialize<TValue>(result.Value.ToString());
         }
 
-        return default(TValue);
+        return default;
     }
 
+    /// <summary>
+    /// Sets a value in the Redis cache with the specified key and expiration time.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to be stored in the cache.</typeparam>
+    /// <param name="key">The key of the value to be stored in the cache.</param>
+    /// <param name="value">The value to be stored in the cache.</param>
+    /// <param name="issuedAt">The expiration time of the value in Unix timestamp format.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a boolean value indicating whether the value was successfully set in the cache.</returns>
     public async Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
@@ -67,6 +92,13 @@ public class RedisCacheManager : Disposable, ICacheManager
         return setResult;
     }
 
+    /// <summary>
+    /// Sets a value in the Redis cache with the specified key.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to be stored in the cache.</typeparam>
+    /// <param name="key">The key of the cache entry.</param>
+    /// <param name="value">The value to be stored in the cache.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a boolean value indicating whether the operation was successful.</returns>
     public async Task<bool> Set<TValue>(string key, TValue value)
     {
         this.logger.LogDebug("Calling RedisCacheManager#Set({Empty})...", key ?? string.Empty);

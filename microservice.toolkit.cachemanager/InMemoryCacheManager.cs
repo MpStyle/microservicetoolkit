@@ -7,18 +7,15 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager;
 
+/// <summary>
+/// Represents an in-memory cache manager that implements the <see cref="ICacheManager"/> interface.
+/// </summary>
 public class InMemoryCacheManager : Disposable, ICacheManager
 {
     private readonly ConcurrentDictionary<string, InMemoryItem> inMemory = new();
-    private readonly ICacheValueSerializer serializer;
 
-    public InMemoryCacheManager() : this(new JsonCacheValueSerializer())
+    public InMemoryCacheManager()
     {
-    }
-
-    public InMemoryCacheManager(ICacheValueSerializer serializer)
-    {
-        this.serializer = serializer;
     }
 
     public Task<bool> Delete(string key)
@@ -28,9 +25,11 @@ public class InMemoryCacheManager : Disposable, ICacheManager
 
     public Task<TValue> Get<TValue>(string key)
     {
-        if (inMemory.TryGetValue(key, out var item) && item.IssuedAt > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        if (inMemory.TryGetValue(key, out var item)
+            && item.IssuedAt > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            && item.Value is TValue typedValue)
         {
-            return Task.FromResult(this.serializer.Deserialize<TValue>(item.Value));
+            return Task.FromResult(typedValue);
         }
 
         return Task.FromResult(default(TValue));
@@ -46,7 +45,7 @@ public class InMemoryCacheManager : Disposable, ICacheManager
 
         var newItem = new InMemoryItem
         {
-            Value = this.serializer.Serialize(value),
+            Value = value,
             IssuedAt = issuedAt
         };
 
@@ -59,18 +58,18 @@ public class InMemoryCacheManager : Disposable, ICacheManager
     {
         var newItem = new InMemoryItem
         {
-            Value = this.serializer.Serialize(value),
+            Value = value,
             IssuedAt = DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds()
         };
 
         inMemory.AddOrUpdate(key, newItem, (key, oldValue) => newItem);
 
-        return Task.FromResult(true); 
+        return Task.FromResult(true);
     }
 
     internal class InMemoryItem
     {
-        public string Value { get; set; }
+        public object Value { get; set; }
         public long IssuedAt { get; set; }
     }
 }

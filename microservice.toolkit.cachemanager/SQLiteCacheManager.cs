@@ -35,6 +35,12 @@ public class SQLiteCacheManager : ICacheManager
         this.connectionManager = connectionManager;
     }
 
+    /// <summary>
+    /// Retrieves the value associated with the specified key from the cache.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to retrieve.</typeparam>
+    /// <param name="key">The key of the value to retrieve.</param>
+    /// <returns>The value associated with the specified key, or the default value of <typeparamref name="TValue"/> if the key is not found in the cache.</returns>
     public async Task<TValue> Get<TValue>(string key)
     {
         var parameters = new Dictionary<string, object>(){
@@ -97,11 +103,23 @@ public class SQLiteCacheManager : ICacheManager
         return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
     }
 
+    /// <summary>
+    /// Sets the value associated with the specified key in the cache.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to be stored in the cache.</typeparam>
+    /// <param name="key">The key of the value to be stored in the cache.</param>
+    /// <param name="value">The value to be stored in the cache.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean value indicating whether the operation was successful.</returns>
     public Task<bool> Set<TValue>(string key, TValue value)
     {
         return this.Set(key, value, 0);
     }
 
+    /// <summary>
+    /// Deletes a cache entry with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the cache entry to delete.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a boolean value indicating whether the cache entry was successfully deleted.</returns>
     public async Task<bool> Delete(string key)
     {
         const string query = @"
