@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator
 {
+    /// <summary>
+    /// Represents a signal emitter for RabbitMQ.
+    /// </summary>
     public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
     {
         private readonly ILogger<RabbitMQSignalEmitter> logger;
@@ -45,6 +48,13 @@ namespace microservice.toolkit.messagemediator
             this.producerChannel = connection.CreateModel();
         }
 
+        /// <summary>
+        /// Emits a message to a RabbitMQ exchange.
+        /// </summary>
+        /// <typeparam name="TEvent">The type of the event being emitted.</typeparam>
+        /// <param name="pattern">The pattern for routing the message.</param>
+        /// <param name="myEvent">The event to be emitted.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
         public Task Emit<TEvent>(string pattern, TEvent myEvent)
         {
             var brokeredEvent = new BrokeredEvent
@@ -79,7 +89,7 @@ namespace microservice.toolkit.messagemediator
 
                 foreach (var eventHandler in eventHandlers)
                 {
-                    _ = eventHandler.Run(request).ConfigureAwait(false);   
+                    _ = eventHandler.Run(request).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -100,9 +110,9 @@ namespace microservice.toolkit.messagemediator
         }
     }
 
-    public class RabbitMQSignalEmitterConfiguration
-    {
-        public string QueueName { get; init; }
-        public string ConnectionString { get; init; }
-    }
+    /// <summary>
+    /// Represents the configuration for a RabbitMQ signal emitter.
+    /// </summary>
+    public record RabbitMQSignalEmitterConfiguration(string QueueName, string ConnectionString);
+
 }

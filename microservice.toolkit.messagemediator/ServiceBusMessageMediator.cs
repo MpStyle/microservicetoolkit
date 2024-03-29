@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
+/// <summary>
+/// Represents a message mediator for sending and receiving messages using Azure Service Bus.
+/// </summary>
 public class ServiceBusMessageMediator : IMessageMediator, IDisposable
 {
     private readonly ServiceFactory serviceFactory;
@@ -35,6 +38,13 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         this.RegisterConsumer();
     }
 
+    /// <summary>
+    /// Sends a message to a service bus queue and waits for a response.
+    /// </summary>
+    /// <typeparam name="TPayload">The type of the payload in the message.</typeparam>
+    /// <param name="pattern">The pattern of the message.</param>
+    /// <param name="message">The message to send.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response from the service bus.</returns>
     public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
     {
         // Temporary Queue for Receiver to send their replies into
@@ -48,13 +58,14 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
         var applicationMessage = new BrokeredMessage
         {
-            Pattern = pattern, 
-            Payload = message, 
+            Pattern = pattern,
+            Payload = message,
             RequestType = message.GetType().FullName
         };
         var serviceBusMessage = new ServiceBusMessage(JsonSerializer.SerializeToUtf8Bytes(applicationMessage))
         {
-            ContentType = "application/json", ReplyTo = replyQueueName,
+            ContentType = "application/json",
+            ReplyTo = replyQueueName,
         };
 
         await serviceBusSender.SendMessageAsync(serviceBusMessage);
@@ -79,6 +90,10 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         return response;
     }
 
+    /// <summary>
+    /// Shuts down the service bus message mediator.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous shutdown operation.</returns>
     public async Task Shutdown()
     {
         await this.producerClient.DisposeAsync();
@@ -129,14 +144,18 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         };
     }
 
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.
+    /// </summary>
     public async void Dispose()
     {
         await this.Shutdown();
     }
 
-    public class Configuration
-    {
-        public string QueueName { get; init; }
-        public string ConnectionString { get; init; }
-    }
+    /// <summary>
+    /// Represents the configuration settings for the Service Bus message mediator.
+    /// </summary>
+    /// <param name="QueueName"> Gets or sets the name of the queue. </param>
+    /// <param name="ConnectionString"> Gets or sets the connection string for the Service Bus. </param>
+    public record Configuration(string QueueName, string ConnectionString);
 }
