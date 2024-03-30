@@ -4,7 +4,6 @@ using microservice.toolkit.core.entity;
 using Microsoft.Extensions.Logging;
 
 using System;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator
@@ -32,6 +31,8 @@ namespace microservice.toolkit.messagemediator
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{TPayload}"/> object.</returns>
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
+            var response = new ServiceResponse<TPayload>();
+            
             try
             {
                 var service = this.serviceFactory(pattern);
@@ -41,29 +42,22 @@ namespace microservice.toolkit.messagemediator
                     throw new ServiceNotFoundException(pattern);
                 }
 
-                var response = await service.Run(message);
-                return new ServiceResponse<TPayload>
-                {
-                    Error = response.Error,
-                    Payload = (TPayload)response.Payload
-                };
+                var serviceResponse = await service.Run(message);
+                response.Payload = (TPayload)serviceResponse.Payload;
+                response.Error = serviceResponse.Error;
             }
             catch (ServiceNotFoundException ex)
             {
                 this.logger.LogDebug("Service not found: {Message}", ex.ToString());
-                return new ServiceResponse<TPayload>
-                {
-                    Error = ErrorCode.ServiceNotFound
-                };
+                response.Error = ErrorCode.ServiceNotFound;
             }
             catch (Exception ex)
             {
                 this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                return new ServiceResponse<TPayload>
-                {
-                    Error = ErrorCode.Unknown
-                };
+                response.Error = ErrorCode.Unknown;
             }
+
+            return response;
         }
 
         /// <summary>
@@ -82,6 +76,11 @@ namespace microservice.toolkit.messagemediator
         private readonly string pattern;
 
         /// <summary>
+        /// Gets a message that describes the current exception.
+        /// </summary>
+        public override string Message => $"Service \"{pattern}\" not found";
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ServiceNotFoundException"/> class with a specified pattern.
         /// </summary>
         /// <param name="pattern">The pattern used to search for the service.</param>
@@ -89,37 +88,5 @@ namespace microservice.toolkit.messagemediator
         {
             this.pattern = pattern;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceNotFoundException"/> class.
-        /// </summary>
-        public ServiceNotFoundException()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceNotFoundException"/> class with a specified message and inner exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public ServiceNotFoundException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServiceNotFoundException"/> class with serialized data.
-        /// </summary>
-        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
-        protected ServiceNotFoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-        /// <summary>
-        /// Gets a message that describes the current exception.
-        /// </summary>
-        public override string Message => $"Service \"{pattern}\" not found";
     }
 }
