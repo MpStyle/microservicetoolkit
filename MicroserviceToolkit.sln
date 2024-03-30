@@ -39,8 +39,8 @@ EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{21F4632F-39C1-4ECF-B71D-B49F87D98771}"
 ProjectSection(SolutionItems) = preProject
-	.github\workflows\build.yml = .github\workflows\build.yml
-	.github\workflows\release.yml = .github\workflows\release.yml
+	.github\workflows\test.yml = .github\workflows\test.yml
+	.github\workflows\publish.yml = .github\workflows\publish.yml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.core.test", "microservice.toolkit.core.test\microservice.toolkit.core.test.csproj", "{B0991DC5-2799-45C2-A9BB-D36258ADB022}"
