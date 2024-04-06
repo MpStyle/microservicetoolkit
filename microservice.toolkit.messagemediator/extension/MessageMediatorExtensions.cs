@@ -129,12 +129,12 @@ public static class MessageMediatorExtensions
         }
 
         // Check for "MicroService" attribute
-        var attrs = Attribute.GetCustomAttributes(type);
-
-        if (attrs.Any(a => a is Microservice) == false)
-        {
-            return false;
-        }
+        // var attrs = Attribute.GetCustomAttributes(type);
+        //
+        // if (attrs.Any(a => a is Microservice) == false)
+        // {
+        //     return false;
+        // }
 
         // Checks if is a subclass of "Service<,>"
         var fullname = typeof(Service<,>).FullName;
