@@ -14,17 +14,17 @@ Store any entities (data models) in a database without write a query.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.entitystoremanager -Version 0.11.1
+Install-Package microservice.toolkit.entitystoremanager -Version 0.11.2
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.entitystoremanager --version 0.11.1
+dotnet add package microservice.toolkit.entitystoremanager --version 0.11.2
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.entitystoremanager" Version="0.11.1" />
+<PackageReference Include="microservice.toolkit.entitystoremanager" Version="0.11.2" />
 ```
 
 ## Supported operations
