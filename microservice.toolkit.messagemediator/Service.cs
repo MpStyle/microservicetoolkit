@@ -110,10 +110,17 @@ namespace microservice.toolkit.messagemediator
         /// <returns>A new instance of <see cref="ServiceResponse{TPayload}"/> with the specified payload and error.</returns>
         protected ServiceResponse<TPayload> Response(TPayload payload, int? error)
         {
-            return new ServiceResponse<TPayload>()
+            if (error.HasValue)
             {
-                Payload = payload,
-                Error = error
+                return new ServiceResponse<TPayload>
+                {
+                    Error = error
+                };
+            }
+            
+            return new ServiceResponse<TPayload>
+            {
+                Payload = payload
             };
         }
     }
