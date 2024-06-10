@@ -1,6 +1,6 @@
 namespace microservice.toolkit.core.entity
 {
-    public class ServiceResponse<TPayload>
+    public record ServiceResponse<TPayload>
     {
         public TPayload Payload { get; set; }
 
