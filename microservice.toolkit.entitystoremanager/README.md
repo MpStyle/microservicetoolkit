@@ -1,7 +1,5 @@
 ﻿# Entity Store Manager
 
-__The library is a work in progress. It is not yet considered production-ready.__
-
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,17 +12,17 @@ Store any entities (data models) in a database without write a query.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.entitystoremanager -Version 0.11.2
+Install-Package microservice.toolkit.entitystoremanager -Version 1.0.0
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.entitystoremanager --version 0.11.2
+dotnet add package microservice.toolkit.entitystoremanager --version 1.0.0
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.entitystoremanager" Version="0.11.2" />
+<PackageReference Include="microservice.toolkit.entitystoremanager" Version="1.0.0" />
 ```
 
 ## Supported operations

@@ -1,7 +1,5 @@
 # Microservice Toolkit
 
-__The library is a work in progress. It is not yet considered production-ready.__
-
 [![Test](https://github.com/MpStyle/microservicetoolkit/actions/workflows/test.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/MpStyle/microservicetoolkit/graph/badge.svg?token=RIQ04SSL4N)](https://codecov.io/gh/MpStyle/microservicetoolkit)
 [![Publish](https://github.com/MpStyle/microservicetoolkit/actions/workflows/publish.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/publish.yml)
@@ -33,7 +31,7 @@ The __Microservice Toolkit__ libraries collects and enriches the already powerfu
 
 ## License :bookmark_tabs:
 
-[MIT License](https://opensource.org/licenses/MIT)
+[MIT License](https://opensource.org/licenses/MIT)~~~~
 
 ## How to contribute :rocket:
 

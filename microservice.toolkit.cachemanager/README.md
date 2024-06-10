@@ -1,7 +1,5 @@
 ﻿# Cache manager
 
-__The library is a work in progress. It is not yet considered production-ready.__
-
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,17 +12,17 @@ Common interface to manage cache using different providers.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.cachemanager -Version 0.11.2
+Install-Package microservice.toolkit.cachemanager -Version 1.0.0
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.cachemanager --version 0.11.2
+dotnet add package microservice.toolkit.cachemanager --version 1.0.0
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.cachemanager" Version="0.11.2" />
+<PackageReference Include="microservice.toolkit.cachemanager" Version="1.0.0" />
 ```
 
 ## ICacheManager interface
