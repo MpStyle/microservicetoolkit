@@ -26,14 +26,25 @@ public class MigratedDbTest
 
     private void ApplyMigrations()
     {
-        var execDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location);
-        var result = this.DbConnection.Apply(
-            Path.Combine(execDir, "migration", "microservice.toolkit.entitystoremanager", "sqlserver"),
+        var execDir01 = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location);
+        var result01 = this.DbConnection.Apply(
+            Path.Combine(execDir01, "migration", "microservice.toolkit.entitystoremanager", "sqlserver"),
             ".sql");
 
-        if (result.Exception != null)
+        if (result01.Exception != null)
         {
-            throw result.Exception;
+            throw result01.Exception;
+        }
+        
+        
+        var execDir02 = Path.GetDirectoryName(Assembly.GetExecutingAssembly()?.Location);
+        var result02 = this.DbConnection.Apply(
+            Path.Combine(execDir02, "migration", "microservice.toolkit.entitystoremanager.test", "sqlserver"),
+            ".sql");
+
+        if (result02.Exception != null)
+        {
+            throw result02.Exception;
         }
     }
 }

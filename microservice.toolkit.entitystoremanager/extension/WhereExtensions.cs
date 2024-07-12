@@ -19,17 +19,18 @@ internal static class WhereExtensions
     {
         return value switch
         {
-            string => ItemProperty.StringValue,
-            bool => ItemProperty.BoolValue,
-            float => ItemProperty.FloatValue,
-            int => ItemProperty.IntValue,
-            long => ItemProperty.LongValue,
+            string => TableFieldName.ItemProperty.StringValue,
+            bool => TableFieldName.ItemProperty.BoolValue,
+            float => TableFieldName.ItemProperty.FloatValue,
+            int => TableFieldName.ItemProperty.IntValue,
+            long => TableFieldName.ItemProperty.LongValue,
             _ => string.Empty
         };
     }
 
-    internal static DbFilter ToSqlServerCondition(this IWhere where, string tableName)
+    internal static DbFilter ToSqlServerCondition<TSource>(this IWhere where, string tableName)
     {
+        var itemType = typeof(TSource);
         var condition = string.Empty;
         var parameters = new Dictionary<string, object>();
         var placeholderKey = GenerateUniqueParamName();
@@ -39,20 +40,20 @@ internal static class WhereExtensions
             case IsNullWhere isw:
                 condition = $@"(
                     (
-                        {tableName}.[{ItemProperty.Key}] = {placeholderKey} 
-                        AND {tableName}.{ItemProperty.StringValue} IS NULL
-                        AND {tableName}.{ItemProperty.BoolValue} IS NULL
-                        AND {tableName}.{ItemProperty.FloatValue} IS NULL
-                        AND {tableName}.{ItemProperty.IntValue} IS NULL
-                        AND {tableName}.{ItemProperty.LongValue} IS NULL
+                        {tableName}.[{TableFieldName.ItemProperty.Key}] = {placeholderKey} 
+                        AND {tableName}.{TableFieldName.ItemProperty.StringValue} IS NULL
+                        AND {tableName}.{TableFieldName.ItemProperty.BoolValue} IS NULL
+                        AND {tableName}.{TableFieldName.ItemProperty.FloatValue} IS NULL
+                        AND {tableName}.{TableFieldName.ItemProperty.IntValue} IS NULL
+                        AND {tableName}.{TableFieldName.ItemProperty.LongValue} IS NULL
                     )
                     OR 
                     (
                         NOT EXISTS (
                             SELECT 1 
-                            FROM {nameof(ItemProperty)} 
-                            WHERE {nameof(Item)}.{Item.Id} = {nameof(ItemProperty)}.{ItemProperty.ItemId}
-                                AND {tableName}.[{ItemProperty.Key}] = {placeholderKey} 
+                            FROM {tableName} 
+                            WHERE {itemType.GetItemSqlTable()}.{nameof(IItem.Id)} = {tableName}.{TableFieldName.ItemProperty.ItemId}
+                                AND {tableName}.[{TableFieldName.ItemProperty.Key}] = {placeholderKey} 
                         ) 
                     )
                 )";
@@ -65,13 +66,13 @@ internal static class WhereExtensions
                 condition = w.Operator switch
                 {
                     Operator.Like =>
-                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} CONCAT('%', {placeholderNameValue}, '%') AND {tableName}.[{ItemProperty.Key}] = {placeholderKey}",
+                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} CONCAT('%', {placeholderNameValue}, '%') AND {tableName}.[{TableFieldName.ItemProperty.Key}] = {placeholderKey}",
                     Operator.StartingLike =>
-                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} CONCAT({placeholderNameValue}, '%') AND {tableName}.[{ItemProperty.Key}] = {placeholderKey}",
+                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} CONCAT({placeholderNameValue}, '%') AND {tableName}.[{TableFieldName.ItemProperty.Key}] = {placeholderKey}",
                     Operator.EndingLike =>
-                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} CONCAT('%', {placeholderNameValue}) AND {tableName}.[{ItemProperty.Key}] = {placeholderKey}",
+                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} CONCAT('%', {placeholderNameValue}) AND {tableName}.[{TableFieldName.ItemProperty.Key}] = {placeholderKey}",
                     _ =>
-                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} {placeholderNameValue} AND {tableName}.[{ItemProperty.Key}] = {placeholderKey}"
+                        $"{tableName}.{whereFieldName} {w.Operator.ToSqlServerOperatorString()} {placeholderNameValue} AND {tableName}.[{TableFieldName.ItemProperty.Key}] = {placeholderKey}"
                 };
 
                 parameters.Add(placeholderNameValue, w.Value);
@@ -83,14 +84,14 @@ internal static class WhereExtensions
 
                 var innerConditions = ow.Conditions.Select(c =>
                 {
-                    var innerCondition = c.ToSqlServerCondition(tableName);
+                    var innerCondition = c.ToSqlServerCondition<TSource>(tableName);
                     foreach (var param in innerCondition.Parameters)
                     {
                         parameters.Add(param.Key, param.Value);
                     }
 
                     return
-                        $"EXISTS (SELECT 1 FROM {nameof(ItemProperty)} WHERE {nameof(Item)}.{Item.Id} = {nameof(ItemProperty)}.{ItemProperty.ItemId} AND {innerCondition.Condition})";
+                        $"EXISTS (SELECT 1 FROM {tableName} WHERE {itemType.GetItemSqlTable()}.{nameof(IItem.Id)} = {tableName}.{TableFieldName.ItemProperty.ItemId} AND {innerCondition.Condition})";
                 });
                 condition = $"({string.Join($" {ow.Op.ToSqlServerOperatorString()} ", innerConditions)})";
 
@@ -108,7 +109,7 @@ internal static class WhereExtensions
                 var inWhereFieldName = FieldName(inw.Values.First());
 
                 condition =
-                    $"{tableName}.{ItemProperty.Key} = {placeholderKey} AND {tableName}.{inWhereFieldName} IN ({string.Join(",", parameterNames)})";
+                    $"{tableName}.{TableFieldName.ItemProperty.Key} = {placeholderKey} AND {tableName}.{inWhereFieldName} IN ({string.Join(",", parameterNames)})";
 
                 break;
         }

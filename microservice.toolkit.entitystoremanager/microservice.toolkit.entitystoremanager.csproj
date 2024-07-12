@@ -30,9 +30,6 @@
         <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\V1_5_0__Create_item_type.sql">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\V1_6_0__Create_item_bulk_upsert_procedure.sql">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>

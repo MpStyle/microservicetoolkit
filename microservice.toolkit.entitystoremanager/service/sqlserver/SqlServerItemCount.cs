@@ -25,24 +25,25 @@ public class SqlServerItemCount<TSource> : Service<ItemCountRequest, ItemCountRe
 
     public override async Task<ServiceResponse<ItemCountResponse>> Run(ItemCountRequest request)
     {
+        var itemType = typeof(TSource);
         var where = new List<string>();
         var parameters = new Dictionary<string, object>();
 
         if (request.IncludeDisabled == false)
         {
-            where.Add($"{nameof(Item)}.{Item.Enabled} = 1");
+            where.Add($"{itemType.GetItemSqlTable()}.{nameof(IItem.Enabled)} = 1");
         }
 
         if (request.Filters.IsNullOrEmpty() == false)
         {
             foreach (var filter in request.Filters)
             {
-                var condition = filter.ToSqlServerCondition(nameof(ItemProperty));
+                var condition = filter.ToSqlServerCondition<TSource>(itemType.GetItemPropertySqlTable());
 
                 where.Add($@"EXISTS(
                         SELECT 1 
-                        FROM {nameof(ItemProperty)} 
-                        WHERE {nameof(Item)}.{Item.Id} = {nameof(ItemProperty)}.{ItemProperty.ItemId}
+                        FROM {itemType.GetItemPropertySqlTable()} 
+                        WHERE {itemType.GetItemSqlTable()}.{nameof(IItem.Id)} = {itemType.GetItemPropertySqlTable()}.{TableFieldName.ItemProperty.ItemId}
                             AND {condition.Condition}
                     )");
 
@@ -55,7 +56,7 @@ public class SqlServerItemCount<TSource> : Service<ItemCountRequest, ItemCountRe
 
         if (request.Id.IsNullOrEmpty() == false)
         {
-            where.Add($"id = @Id");
+            where.Add($"{nameof(IItem.Id)} = @Id");
             parameters.Add("@Id", request.Id);
         }
 
@@ -70,14 +71,14 @@ public class SqlServerItemCount<TSource> : Service<ItemCountRequest, ItemCountRe
                 parameters.Add(parameterName, request.Ids[i]);
             }
 
-            where.Add($"{nameof(Item)}.{Item.Id} IN ({string.Join(",", parameterNames)})");
+            where.Add($"{itemType.GetItemSqlTable()}.{nameof(IItem.Id)} IN ({string.Join(",", parameterNames)})");
         }
 
-        where.Add($"{Item.Type} = @Type");
-        parameters.Add("@Type", typeof(TSource).GetItemName());
+        where.Add($"{TableFieldName.Item.Type} = @Type");
+        parameters.Add("@Type", itemType.GetItemName());
 
         var itemsSql =
-            $"SELECT COUNT({Item.Id}) AS Counter FROM {nameof(Item)} WHERE {string.Join(" AND ", where)}";
+            $"SELECT COUNT({nameof(IItem.Id)}) AS Counter FROM {itemType.GetItemSqlTable()} WHERE {string.Join(" AND ", where)}";
 
         var itemCount =
             await this.connectionManager.ExecuteFirstAsync(itemsSql, reader => reader.GetInt32(0), parameters);

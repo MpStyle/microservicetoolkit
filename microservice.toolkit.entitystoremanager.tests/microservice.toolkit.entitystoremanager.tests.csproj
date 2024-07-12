@@ -29,4 +29,13 @@
       <ProjectReference Include="..\microservice.toolkit.migrationmanager\microservice.toolkit.migrationmanager.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="migration\microservice.toolkit.entitystoremanager.test\sqlserver\V1_0_0__Create_item_table.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="migration\microservice.toolkit.entitystoremanager.test\sqlserver\V2_0_0__Create_item_table.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

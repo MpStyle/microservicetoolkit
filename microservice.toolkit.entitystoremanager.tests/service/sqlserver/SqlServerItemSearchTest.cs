@@ -243,5 +243,6 @@ public class SqlServerItemSearchTest : MigratedDbTest
     public async Task TearDown()
     {
         await this.DbConnection.ExecuteNonQueryAsync("TRUNCATE TABLE ItemProperty; TRUNCATE TABLE Item;");
+        await this.DbConnection.ExecuteNonQueryAsync("TRUNCATE TABLE MyCustomItemProperty; TRUNCATE TABLE MyCustomItem;");
     }
 }

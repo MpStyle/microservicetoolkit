@@ -3,6 +3,7 @@ using microservice.toolkit.entitystoremanager.entity;
 
 namespace microservice.toolkit.entitystoremanager.tests;
 
+[ItemTable("MyCustom")]
 [Item("my-custom-item")]
 public class MyCustomItem : IItem
 {

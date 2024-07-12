@@ -27,22 +27,23 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
 
     public override async Task<ServiceResponse<ItemSearchResponse<TSource>>> Run(ItemSearchRequest request)
     {
+        var itemType = typeof(TSource);
         var where = new List<string>();
         var parameters = new Dictionary<string, object>();
         var orderBy = new List<string>();
 
         if (request.IncludeDisabled == false)
         {
-            where.Add($"{nameof(Item)}.{Item.Enabled} = 1");
+            where.Add($"{itemType.GetItemSqlTable()}.{nameof(IItem.Enabled)} = 1");
         }
 
         if (request.Filters != null)
         {
-            var condition = request.Filters.ToSqlServerCondition(nameof(ItemProperty));
+            var condition = request.Filters.ToSqlServerCondition<TSource>(itemType.GetItemPropertySqlTable());
             where.Add($@"EXISTS(
                         SELECT 1 
-                        FROM {nameof(ItemProperty)} 
-                        WHERE {nameof(Item)}.{Item.Id} = {nameof(ItemProperty)}.{ItemProperty.ItemId}
+                        FROM {itemType.GetItemPropertySqlTable()} 
+                        WHERE {itemType.GetItemSqlTable()}.{nameof(IItem.Id)} = {itemType.GetItemPropertySqlTable()}.{TableFieldName.ItemProperty.ItemId}
                             AND {condition.Condition}
                     )");
             
@@ -54,13 +55,13 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
 
         if (request.Id.IsNullOrEmpty() == false)
         {
-            where.Add($"id = @{nameof(request.Id)}");
+            where.Add($"{nameof(IItem.Id)} = @{nameof(request.Id)}");
             parameters.Add($"@{nameof(request.Id)}", request.Id);
         }
 
         if (request.ExcludeId.IsNullOrEmpty() == false)
         {
-            where.Add($"id <> @{nameof(request.ExcludeId)}");
+            where.Add($"{nameof(IItem.Id)} <> @{nameof(request.ExcludeId)}");
             parameters.Add($"@{nameof(request.ExcludeId)}", request.ExcludeId);
         }
 
@@ -75,11 +76,11 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
                 parameters.Add(parameterName, request.Ids[i]);
             }
 
-            where.Add($"{nameof(Item)}.{Item.Id} IN ({string.Join(",", parameterNames)})");
+            where.Add($"{itemType.GetItemSqlTable()}.{nameof(IItem.Id)} IN ({string.Join(",", parameterNames)})");
         }
 
-        where.Add($"{Item.Type} = @Type");
-        parameters.Add("@Type", typeof(TSource).GetItemName());
+        where.Add($"{TableFieldName.Item.Type} = @Type");
+        parameters.Add("@Type", itemType.GetItemName());
 
         if (request.OrderBy.IsNullOrEmpty() == false)
         {
@@ -87,13 +88,13 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
         }
 
         var itemsSql = $@"SELECT 
-                    {Item.Id}, 
-                    {Item.Type}, 
-                    {Item.Enabled}, 
-                    {Item.Inserted}, 
-                    {Item.Updated},
-                    {Item.Updater}
-                FROM {nameof(Item)} 
+                    {nameof(IItem.Id)}, 
+                    {TableFieldName.Item.Type}, 
+                    {nameof(IItem.Enabled)}, 
+                    {nameof(IItem.Inserted)}, 
+                    {nameof(IItem.Updated)},
+                    {nameof(IItem.Updater)}
+                FROM {itemType.GetItemSqlTable()} 
                 WHERE {string.Join(" AND ", where)}";
 
         if (orderBy.Any())
@@ -102,7 +103,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
         }
         else
         {
-            itemsSql += $" ORDER BY {Item.Id}";
+            itemsSql += $" ORDER BY {nameof(IItem.Id)}";
         }
 
         if (request.Page.HasValue && request.PageSize.HasValue)
@@ -140,16 +141,16 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
             }
 
             var itemPropertiesSql = $@"SELECT
-                        {ItemProperty.ItemId}, 
-                        [{ItemProperty.Key}], 
-                        {ItemProperty.StringValue}, 
-                        {ItemProperty.IntValue}, 
-                        {ItemProperty.LongValue}, 
-                        {ItemProperty.FloatValue}, 
-                        {ItemProperty.BoolValue}, 
-                        [{ItemProperty.Order}] 
-                    FROM {nameof(ItemProperty)} 
-                    WHERE {ItemProperty.ItemId} IN ({string.Join(",", itemIdKeys)})";
+                        {TableFieldName.ItemProperty.ItemId}, 
+                        [{TableFieldName.ItemProperty.Key}], 
+                        {TableFieldName.ItemProperty.StringValue}, 
+                        {TableFieldName.ItemProperty.IntValue}, 
+                        {TableFieldName.ItemProperty.LongValue}, 
+                        {TableFieldName.ItemProperty.FloatValue}, 
+                        {TableFieldName.ItemProperty.BoolValue}, 
+                        [{TableFieldName.ItemProperty.Order}] 
+                    FROM {itemType.GetItemPropertySqlTable()} 
+                    WHERE {TableFieldName.ItemProperty.ItemId} IN ({string.Join(",", itemIdKeys)})";
 
             await this.connectionManager.ExecuteAsync(itemPropertiesSql, reader =>
             {

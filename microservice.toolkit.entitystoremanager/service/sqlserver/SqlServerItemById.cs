@@ -31,37 +31,38 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
             return this.UnsuccessfulResponse(EntityError.ItemByIdInvalidRequest);
         }
 
+        var itemType = typeof(TSource);
         var where = new List<string>
         {
-            $"{Item.Id} = @{nameof(request.ItemId)}",
-            $"{Item.Type} = @SourceType",
-            $"{Item.Enabled} = 1"
+            $"{nameof(IItem.Id)} = @{nameof(request.ItemId)}",
+            $"{TableFieldName.Item.Type} = @SourceType",
+            $"{nameof(IItem.Enabled)} = 1"
         };
         var parameters = new Dictionary<string, object>
         {
             {$"@{nameof(request.ItemId)}", request.ItemId},
-            {"@SourceType", typeof(TSource).GetItemName()},
+            {"@SourceType", itemType.GetItemName()},
         };
         var select = new List<string>
         {
-            Item.Id
+            nameof(IItem.Id)
         };
 
         if (request.ReturnOnlyId == false)
         {
             select.AddRange(new[]
             {
-                Item.Type,
-                Item.Enabled,
-                Item.Inserted,
-                Item.Updated,
-                Item.Updater
+                TableFieldName.Item.Type,
+                nameof(IItem.Enabled),
+                nameof(IItem.Inserted),
+                nameof(IItem.Updated),
+                nameof(IItem.Updater),
             });
         }
 
         var itemSql = $@"SELECT 
                     {string.Join(", ", select)} 
-                FROM {nameof(Item)} 
+                FROM {itemType.GetItemSqlTable()} 
                 WHERE {string.Join(" AND ", where)}";
 
         var source = await this.connectionManager.ExecuteFirstAsync(itemSql, reader => ItemBuilder.Build<TSource>(
@@ -75,15 +76,15 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
         if (source != null && request.ReturnOnlyId == false)
         {
             var itemPropertiesSql = $@"SELECT 
-                        [{ItemProperty.Key}], 
-                        {ItemProperty.StringValue}, 
-                        {ItemProperty.IntValue}, 
-                        {ItemProperty.LongValue}, 
-                        {ItemProperty.FloatValue}, 
-                        {ItemProperty.BoolValue}, 
-                        [{ItemProperty.Order}] 
-                    FROM {nameof(ItemProperty)} 
-                    WHERE {ItemProperty.ItemId} = @ItemId";
+                        [{TableFieldName.ItemProperty.Key}], 
+                        {TableFieldName.ItemProperty.StringValue}, 
+                        {TableFieldName.ItemProperty.IntValue}, 
+                        {TableFieldName.ItemProperty.LongValue}, 
+                        {TableFieldName.ItemProperty.FloatValue}, 
+                        {TableFieldName.ItemProperty.BoolValue}, 
+                        [{TableFieldName.ItemProperty.Order}] 
+                    FROM {itemType.GetItemPropertySqlTable()} 
+                    WHERE {TableFieldName.ItemProperty.ItemId} = @ItemId";
 
             await this.connectionManager.ExecuteAsync(itemPropertiesSql, reader =>
                 {

@@ -1,10 +1,8 @@
 using microservice.toolkit.entitystoremanager.attribute;
-using microservice.toolkit.entitystoremanager.book;
 using microservice.toolkit.entitystoremanager.entity;
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -12,11 +10,6 @@ namespace microservice.toolkit.entitystoremanager.extension;
 
 internal static class TypeExtensions
 {
-    private static readonly string[] ExcludedPropertyNames =
-    [
-        Item.Inserted, Item.Updated, Item.Updater, Item.Enabled, Item.Id
-    ];
-
     private static readonly ConcurrentDictionary<Type, CacheItem> Cache = new();
 
     private static CacheItem AddToCache(this Type itemType)
@@ -26,7 +19,8 @@ internal static class TypeExtensions
             throw new Exception($"Type {itemType.FullName} does not implement {nameof(IItem)}");
         }
 
-        var pis = itemType.GetCustomAttribute<ItemAttribute>();
+        var itemAttribute = itemType.GetCustomAttribute<ItemAttribute>();
+        var itemTableAttribute = itemType.GetCustomAttribute<ItemTableAttribute>();
 
         // get all properties in itemType
         var propertyInfos = itemType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -46,7 +40,10 @@ internal static class TypeExtensions
 
         var cacheItem = new CacheItem
         {
-            Name = pis?.Name ?? itemType.FullName,
+            Name = itemAttribute?.Name ?? itemType.FullName,
+            SqlPrefix = itemTableAttribute?.Prefix??"",
+            ItemSqlTable = $"{itemTableAttribute?.Prefix??""}Item",
+            ItemPropertySqlTable = $"{itemTableAttribute?.Prefix??""}ItemProperty",
             Properties = new ConcurrentDictionary<string, PropertyInfo>(propertyInfos)
         };
 
@@ -55,6 +52,36 @@ internal static class TypeExtensions
         return cacheItem;
     }
 
+    public static string GetSqlPrefix(this Type itemType)
+    {
+        if (!Cache.TryGetValue(itemType, out var value))
+        {
+            value = itemType.AddToCache();
+        }
+
+        return value.SqlPrefix;
+    }
+
+    public static string GetItemSqlTable(this Type itemType)
+    {
+        if (!Cache.TryGetValue(itemType, out var value))
+        {
+            value = itemType.AddToCache();
+        }
+
+        return value.ItemSqlTable;
+    }
+    
+    public static string GetItemPropertySqlTable(this Type itemType)
+    {
+        if (!Cache.TryGetValue(itemType, out var value))
+        {
+            value = itemType.AddToCache();
+        }
+
+        return value.ItemPropertySqlTable;
+    }
+    
     public static string[] GetItemPropertyNames(this Type itemType)
     {
         if (!Cache.TryGetValue(itemType, out var value))
@@ -109,5 +136,8 @@ internal static class TypeExtensions
 internal class CacheItem
 {
     public string Name { get; set; }
+    public string SqlPrefix { get; set; }
+    public string ItemSqlTable { get; set; }
+    public string ItemPropertySqlTable { get; set; }
     public ConcurrentDictionary<string, PropertyInfo> Properties { get; set; }
 }
