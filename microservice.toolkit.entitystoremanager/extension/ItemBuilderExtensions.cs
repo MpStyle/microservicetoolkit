@@ -30,12 +30,11 @@ internal static class ItemBuilder
 
 internal static class ItemBuilderExtensions
 {
-    internal static void Build<TSource>(this TSource source, string propertyName, object value, int order)
+    internal static void SetValue<TSource>(this TSource source, string propertyName, object value, int order)
         where TSource : IItem, new()
     {
         var objectType = typeof(TSource);
-        var properties = objectType.GetItemProperties();
-        var property = properties.FirstOrDefault(p => p.Name == propertyName);
+        var property = objectType.GetItemProperty(propertyName);
 
         if (property == default)
         {

@@ -31,7 +31,6 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
             return this.UnsuccessfulResponse(EntityError.ItemByIdInvalidRequest);
         }
 
-        var objectType = typeof(TSource);
         var where = new List<string>
         {
             $"{Item.Id} = @{nameof(request.ItemId)}",
@@ -41,7 +40,7 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
         var parameters = new Dictionary<string, object>
         {
             {$"@{nameof(request.ItemId)}", request.ItemId},
-            {"@SourceType", objectType.Name},
+            {"@SourceType", typeof(TSource).GetItemName()},
         };
         var select = new List<string>
         {
@@ -96,7 +95,7 @@ public class SqlServerItemById<TSource> : Service<ItemByIdRequest, ItemByIdRespo
                                 ?? (reader.IsDBNull(5) ? null : reader.GetBoolean(5));
                     var order = reader.GetInt32(6);
 
-                    source.Build(propertyName, value, order);
+                    source.SetValue(propertyName, value, order);
 
                     return source;
                 },

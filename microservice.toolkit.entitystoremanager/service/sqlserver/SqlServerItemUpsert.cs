@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -41,13 +40,13 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
 
         var itemType = typeof(TSource);
         var itemId = request.Item.Id ?? Guid.NewGuid().ToString();
-        var itemPropertyNames = itemType.GetItemProperties().Select(ip => ip.Name).ToArray();
+        var itemPropertyNames = itemType.GetItemPropertyNames();
 
         // Upserts item
         await this.dbConnection.ExecuteStoredProcedureAsync("ItemUpsert", new Dictionary<string, object>
         {
             {"@Id", itemId},
-            {"@Type", itemType.Name},
+            {"@Type", itemType.GetItemName()},
             {"@Inserted", request.Item.Inserted ?? DateTimeOffset.UtcNow.ToUnixTimeSeconds()},
             {"@Updated", request.Item.Updated ?? DateTimeOffset.UtcNow.ToUnixTimeSeconds()},
             {"@Updater", request.Item.Updater},
@@ -76,10 +75,10 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
         }
 
         // Deletes unused properties
-        var deleteWhere = new List<string> {$"{nameof(ItemProperty)}.{ItemProperty.ItemId} = @ItemId"};
-        var deleteParameters = new Dictionary<string, object> {{"@ItemId", itemId}};
+        var deleteWhere = new List<string> { $"{nameof(ItemProperty)}.{ItemProperty.ItemId} = @ItemId" };
+        var deleteParameters = new Dictionary<string, object> { { "@ItemId", itemId } };
         var deleteParameterNames = new List<string>();
-        
+
         for (var i = 0; i < itemPropertyNames.Length; i++)
         {
             var parameterName = $"@{nameof(itemPropertyNames)}_{i}";
@@ -98,16 +97,16 @@ public class SqlServerItemUpsert<TSource> : Service<ItemUpsertRequest<TSource>, 
             return this.SuccessfulResponse(new ItemUpsertResponse());
         }
 
-        return this.SuccessfulResponse(new ItemUpsertResponse {ItemId = itemId});
+        return this.SuccessfulResponse(new ItemUpsertResponse { ItemId = itemId });
     }
 
     private void AddToDataTable(object value, PropertyInfo propertyInfo, string itemId, int order, ref DataTable table)
     {
-        var propertyName = propertyInfo.Name;
+        var propertyName = typeof(TSource).GetItemPropertyName(propertyInfo); // propertyInfo.Name;
 
         switch (value)
         {
-            case { } when propertyInfo.PropertyType.IsEnum:
+            case not null when propertyInfo.PropertyType.IsEnum:
                 table.Rows.Add(
                     itemId,
                     propertyName,

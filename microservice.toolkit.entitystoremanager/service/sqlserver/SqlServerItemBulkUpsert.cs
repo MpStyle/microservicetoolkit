@@ -42,7 +42,7 @@ public class SqlServerItemBulkUpsert<TSource> : Service<ItemBulkUpsertRequest<TS
 
         await sqlServerConnection.SafeOpenAsync();
         var itemType = typeof(TSource);
-        var itemPropertyNames = itemType.GetItemProperties().Select(ip => ip.Name).ToArray();
+        var itemPropertyNames = itemType.GetItemPropertyNames();
 
         // Upserts item
         var itemDataTable = this.CreateItemsDataTable(request.Items);
@@ -128,11 +128,11 @@ public class SqlServerItemBulkUpsert<TSource> : Service<ItemBulkUpsertRequest<TS
 
     private void AddToDataTable(object value, PropertyInfo propertyInfo, string itemId, int order, ref DataTable table)
     {
-        var propertyName = propertyInfo.Name;
+        var propertyName = typeof(TSource).GetItemPropertyName(propertyInfo);
 
         switch (value)
         {
-            case { } when propertyInfo.PropertyType.IsEnum:
+            case not null when propertyInfo.PropertyType.IsEnum:
                 table.Rows.Add(
                     itemId,
                     propertyName,
@@ -198,7 +198,6 @@ public class SqlServerItemBulkUpsert<TSource> : Service<ItemBulkUpsertRequest<TS
 
     private DataTable CreateItemsDataTable(TSource[] items)
     {
-        var itemType = typeof(TSource);
         var table = new DataTable();
 
         table.Columns.Add(Item.Id, typeof(string));
@@ -212,7 +211,7 @@ public class SqlServerItemBulkUpsert<TSource> : Service<ItemBulkUpsertRequest<TS
         {
             table.Rows.Add(
                 item.Id ?? Guid.NewGuid().ToString(),
-                itemType.Name,
+                typeof(TSource).GetItemName(),
                 item.Inserted,
                 item.Updated,
                 item.Updater,

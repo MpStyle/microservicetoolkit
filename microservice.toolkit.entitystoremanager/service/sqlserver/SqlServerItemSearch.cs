@@ -79,7 +79,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
         }
 
         where.Add($"{Item.Type} = @Type");
-        parameters.Add("@Type", typeof(TSource).Name);
+        parameters.Add("@Type", typeof(TSource).GetItemName());
 
         if (request.OrderBy.IsNullOrEmpty() == false)
         {
@@ -169,7 +169,7 @@ public class SqlServerItemSearch<TSource> : Service<ItemSearchRequest, ItemSearc
 
                 var source = sourceByIds[itemId];
 
-                source.Build(propertyName, value, order);
+                source.SetValue(propertyName, value, order);
 
                 return source;
             }, itemIdsParameters);

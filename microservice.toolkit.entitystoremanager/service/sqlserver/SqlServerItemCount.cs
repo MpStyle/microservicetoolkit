@@ -74,7 +74,7 @@ public class SqlServerItemCount<TSource> : Service<ItemCountRequest, ItemCountRe
         }
 
         where.Add($"{Item.Type} = @Type");
-        parameters.Add("@Type", typeof(TSource).Name);
+        parameters.Add("@Type", typeof(TSource).GetItemName());
 
         var itemsSql =
             $"SELECT COUNT({Item.Id}) AS Counter FROM {nameof(Item)} WHERE {string.Join(" AND ", where)}";

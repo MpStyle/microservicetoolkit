@@ -5,6 +5,7 @@ using microservice.toolkit.entitystoremanager.service.sqlserver;
 
 using NUnit.Framework;
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace microservice.toolkit.entitystoremanager.tests.service.sqlserver;
 public class SqlServerItemByIdTest : MigratedDbTest
 {
     private SqlServerItemById<MyItem> service;
+    private SqlServerItemById<MyCustomItem> customService;
 
     [Test]
     public async Task Run()
@@ -25,6 +27,19 @@ public class SqlServerItemByIdTest : MigratedDbTest
 
         Assert.That(response.Error.HasValue, Is.False);
 
+        Assert.That("my_string_2_value", Is.EqualTo(response.Payload.Item.StringValue));
+    }
+    
+    [Test]
+    public async Task Run_Custom()
+    {
+        var response = await this.customService.Run(new ItemByIdRequest
+        {
+            ItemId = "my_custom_source_2"
+        });
+
+        Assert.That(response.Error.HasValue, Is.False);
+        
         Assert.That("my_string_2_value", Is.EqualTo(response.Payload.Item.StringValue));
     }
 
@@ -43,10 +58,26 @@ public class SqlServerItemByIdTest : MigratedDbTest
         Assert.That(response.Payload.Item, Is.Null);
     }
 
+    [Test]
+    public async Task Run_ReturnOnlyId_Custom()
+    {
+        var response = await this.customService.Run(new ItemByIdRequest
+        {
+            ItemId = "my_custom_source_2",
+            ReturnOnlyId = true
+        });
+
+        Assert.That(response.Error.HasValue, Is.False);
+
+        Assert.That("my_custom_source_2", Is.EqualTo(response.Payload.ItemId));
+        Assert.That(response.Payload.Item, Is.Null);
+    }
+
     [SetUp]
     public async Task SetUp()
     {
         this.service = new SqlServerItemById<MyItem>(this.DbConnection);
+        this.customService = new SqlServerItemById<MyCustomItem>(this.DbConnection);
 
         // Test data
         var upsertService = new SqlServerItemUpsert<MyItem>(this.DbConnection);
@@ -58,6 +89,24 @@ public class SqlServerItemByIdTest : MigratedDbTest
                 {
                     Enabled = true,
                     Id = $"my_source_{i + 1}",
+                    Updater = "me",
+                    Role = UserRole.SystemAdministrator,
+                    StringValue = $"my_string_{i + 1}_value",
+                    IntValue = 0 % 2,
+                }
+            });
+        }
+        
+        // Test custom data
+        var upsertCustomService = new SqlServerItemUpsert<MyCustomItem>(this.DbConnection);
+        for (var i = 0; i < 20; i++)
+        {
+            await upsertCustomService.Run(new ItemUpsertRequest<MyCustomItem>
+            {
+                Item = new MyCustomItem
+                {
+                    Enabled = true,
+                    Id = $"my_custom_source_{i + 1}",
                     Updater = "me",
                     Role = UserRole.SystemAdministrator,
                     StringValue = $"my_string_{i + 1}_value",

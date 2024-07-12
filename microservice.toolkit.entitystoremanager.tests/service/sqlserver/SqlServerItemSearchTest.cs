@@ -14,6 +14,7 @@ namespace microservice.toolkit.entitystoremanager.tests.service.sqlserver;
 public class SqlServerItemSearchTest : MigratedDbTest
 {
     private SqlServerItemSearch<MyItem> service;
+    private SqlServerItemSearch<MyCustomItem> customService;
 
     [Test]
     public async Task Run_PropertiesSearch()
@@ -36,6 +37,29 @@ public class SqlServerItemSearchTest : MigratedDbTest
         Assert.That("my_source_18", Is.EqualTo(response.Payload.Items[2].Id));
         Assert.That("my_source_2", Is.EqualTo(response.Payload.Items[3].Id));
         Assert.That("my_source_6", Is.EqualTo(response.Payload.Items[4].Id));
+    }
+
+    [Test]
+    public async Task Run_PropertiesSearch_Custom()
+    {
+        var response = await this.customService.Run(new ItemSearchRequest
+        {
+            Filters = new AndWhere
+            {
+                Conditions =
+                [
+                    new Where { Key = "int_value", Value = 1 },
+                    new Where { Key = "long_value", Value = 1L },
+                ]
+            }
+        });
+
+        Assert.That(5, Is.EqualTo(response.Payload.Items.Length));
+        Assert.That("my_custom_source_10", Is.EqualTo(response.Payload.Items[0].Id));
+        Assert.That("my_custom_source_14", Is.EqualTo(response.Payload.Items[1].Id));
+        Assert.That("my_custom_source_18", Is.EqualTo(response.Payload.Items[2].Id));
+        Assert.That("my_custom_source_2", Is.EqualTo(response.Payload.Items[3].Id));
+        Assert.That("my_custom_source_6", Is.EqualTo(response.Payload.Items[4].Id));
     }
 
     [Test]
@@ -69,9 +93,56 @@ public class SqlServerItemSearchTest : MigratedDbTest
     }
 
     [Test]
+    public async Task Run_PropertiesIns_Custom()
+    {
+        var response = await this.customService.Run(new ItemSearchRequest
+        {
+            Filters = new AndWhere
+            {
+                Conditions =
+                [
+                    new Where { Key = "int_value", Value = 1 },
+                    new OrWhere
+                    {
+                        Conditions =
+                        [
+                            new Where { Key = "long_value", Value = 2L },
+                            new Where { Key = "float_value", Value = 2F },
+                        ]
+                    }
+                ]
+            }
+        });
+
+        Assert.That(response.Error.HasValue, Is.False);
+
+        Assert.That(3, Is.EqualTo(response.Payload.Items.Length));
+        Assert.That("my_custom_source_12", Is.EqualTo(response.Payload.Items[0].Id));
+        Assert.That("my_custom_source_18", Is.EqualTo(response.Payload.Items[1].Id));
+        Assert.That("my_custom_source_6", Is.EqualTo(response.Payload.Items[2].Id));
+    }
+
+    [Test]
     public async Task Run_IsNullWhere()
     {
         var response = await this.service.Run(new ItemSearchRequest
+        {
+            Filters = new AndWhere
+            {
+                Conditions =
+                [
+                    new IsNullWhere { Key = "NotExistingKey" },
+                ]
+            }
+        });
+
+        Assert.That(20, Is.EqualTo(response.Payload.Items.Length));
+    }
+
+    [Test]
+    public async Task Run_IsNullWhere_Custom()
+    {
+        var response = await this.customService.Run(new ItemSearchRequest
         {
             Filters = new AndWhere
             {
@@ -103,10 +174,29 @@ public class SqlServerItemSearchTest : MigratedDbTest
         Assert.That(10, Is.EqualTo(response.Payload.Items.Length));
     }
 
+    [Test]
+    public async Task Run_IsNullWhereAndOtherCondition_Custom()
+    {
+        var response = await this.customService.Run(new ItemSearchRequest
+        {
+            Filters = new AndWhere
+            {
+                Conditions =
+                [
+                    new IsNullWhere { Key = "NotExistingKey" },
+                    new Where { Key = "int_value", Value = 1 }
+                ]
+            }
+        });
+
+        Assert.That(10, Is.EqualTo(response.Payload.Items.Length));
+    }
+
     [SetUp]
     public async Task SetUp()
     {
         this.service = new SqlServerItemSearch<MyItem>(this.DbConnection);
+        this.customService = new SqlServerItemSearch<MyCustomItem>(this.DbConnection);
 
         // Test data
         var upsertService = new SqlServerItemUpsert<MyItem>(this.DbConnection);
@@ -118,6 +208,26 @@ public class SqlServerItemSearchTest : MigratedDbTest
                 {
                     Enabled = true,
                     Id = $"my_source_{i + 1}",
+                    Updater = "me",
+                    Role = UserRole.SystemAdministrator,
+                    StringValue = $"my_string_{i + 1}_value",
+                    IntValue = i % 2,
+                    FloatValue = i % 3,
+                    LongValue = i % 4,
+                }
+            });
+        }
+
+        // Test data
+        var upsertCustomService = new SqlServerItemUpsert<MyCustomItem>(this.DbConnection);
+        for (var i = 0; i < 20; i++)
+        {
+            await upsertCustomService.Run(new ItemUpsertRequest<MyCustomItem>
+            {
+                Item = new MyCustomItem
+                {
+                    Enabled = true,
+                    Id = $"my_custom_source_{i + 1}",
                     Updater = "me",
                     Role = UserRole.SystemAdministrator,
                     StringValue = $"my_string_{i + 1}_value",
