@@ -8,7 +8,7 @@ CREATE TABLE Item
     Enabled  BIT          NOT NULL DEFAULT 1
 );
 
-CREATE INDEX Item_Type ON Item (Type);
+CREATE INDEX Item_Type_Index ON Item (Type);
 
 CREATE TABLE ItemProperty
 (
@@ -20,7 +20,7 @@ CREATE TABLE ItemProperty
     FloatValue  FLOAT        ,
     BoolValue   BIT          ,
     [Order]     INT          DEFAULT 1,
-    CONSTRAINT pk_item_property PRIMARY KEY (ItemId, [Key], [Order])
+    CONSTRAINT ItemProperty_Primary_Key PRIMARY KEY (ItemId, [Key], [Order])
 );
 
-CREATE INDEX ItemProperty_Key ON ItemProperty ([Key]);
+CREATE INDEX ItemProperty_Key_Index ON ItemProperty ([Key]);
