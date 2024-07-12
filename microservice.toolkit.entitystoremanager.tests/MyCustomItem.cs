@@ -6,7 +6,6 @@ namespace microservice.toolkit.entitystoremanager.tests;
 [Item("my-custom-item")]
 public class MyCustomItem : IItem
 {
-    [ItemProperty("id")]
     public string Id { get; set; }
 
     [ItemProperty("role")]
@@ -42,15 +41,11 @@ public class MyCustomItem : IItem
     [ItemProperty("longs_value")]
     public long[] LongsValue { get; set; }
 
-    [ItemProperty("enabled")]
     public bool? Enabled { get; set; }
 
-    [ItemProperty("inserted")]
     public long? Inserted { get; set; }
 
-    [ItemProperty("updated")]
     public long? Updated { get; set; }
 
-    [ItemProperty("updater")]
     public string Updater { get; set; }
 }
