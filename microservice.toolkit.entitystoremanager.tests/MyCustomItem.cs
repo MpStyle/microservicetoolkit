@@ -48,4 +48,7 @@ public class MyCustomItem : IItem
     public long? Updated { get; set; }
 
     public string Updater { get; set; }
+    
+    [ItemPropertyIgnore]
+    public string IgnoredProperty { get; set; } = "ignored property value";
 }

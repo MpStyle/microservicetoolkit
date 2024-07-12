@@ -116,6 +116,7 @@ public class SqlServerItemUpsertTest : MigratedDbTest
             ],
             Inserted = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             Updated = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            IgnoredProperty = "random value"
         };
         await this.customService.Run(new ItemUpsertRequest<MyCustomItem>
         {
@@ -146,6 +147,7 @@ public class SqlServerItemUpsertTest : MigratedDbTest
         Assert.That(user.IntsValue[1], Is.EqualTo(byIdResponse.Payload.Item.IntsValue[1]));
         Assert.That(user.Inserted, Is.EqualTo(byIdResponse.Payload.Item.Inserted));
         Assert.That(user.Updated, Is.EqualTo(byIdResponse.Payload.Item.Updated));
+        Assert.That("ignored property value", Is.EqualTo(byIdResponse.Payload.Item.IgnoredProperty));
     }
 
     [SetUp]

@@ -30,13 +30,14 @@ internal static class TypeExtensions
 
         // get all properties in itemType
         var propertyInfos = itemType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(pis =>
-                pis.Name != nameof(IItem.Id) &&
-                pis.Name != nameof(IItem.Enabled) &&
-                pis.Name != nameof(IItem.Inserted) &&
-                pis.Name != nameof(IItem.Updated) &&
-                pis.Name != nameof(IItem.Updater)
+            .Where(propertyInfo =>
+                propertyInfo.Name != nameof(IItem.Id) &&
+                propertyInfo.Name != nameof(IItem.Enabled) &&
+                propertyInfo.Name != nameof(IItem.Inserted) &&
+                propertyInfo.Name != nameof(IItem.Updated) &&
+                propertyInfo.Name != nameof(IItem.Updater)
             )
+            .Where(propertyInfo => propertyInfo.GetCustomAttribute<ItemPropertyIgnoreAttribute>() == null)
             .ToDictionary(p =>
             {
                 var attribute = p.GetCustomAttribute<ItemPropertyAttribute>();
