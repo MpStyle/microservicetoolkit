@@ -1,3 +1,4 @@
+using microservice.toolkit.core.extension;
 using microservice.toolkit.entitystoremanager.attribute;
 using microservice.toolkit.entitystoremanager.entity;
 
@@ -10,6 +11,8 @@ namespace microservice.toolkit.entitystoremanager.extension;
 
 internal static class TypeExtensions
 {
+    const string DefaultItemTableName = "Item";
+    const string DefaultItemPropertyTableName = "ItemProperty";
     private static readonly ConcurrentDictionary<Type, CacheItem> Cache = new();
 
     private static CacheItem AddToCache(this Type itemType)
@@ -41,9 +44,15 @@ internal static class TypeExtensions
         var cacheItem = new CacheItem
         {
             Name = itemAttribute?.Name ?? itemType.FullName,
-            SqlPrefix = itemTableAttribute?.Prefix??"",
-            ItemSqlTable = $"{itemTableAttribute?.Prefix??""}Item",
-            ItemPropertySqlTable = $"{itemTableAttribute?.Prefix??""}ItemProperty",
+            SqlPrefix = itemTableAttribute?.Prefix ?? "",
+            ItemSqlTable =
+                itemTableAttribute?.Prefix.IsNullOrEmpty() == false
+                    ? $"{itemTableAttribute.Prefix ?? ""}{DefaultItemTableName}"
+                    : itemTableAttribute?.ItemTable ?? DefaultItemTableName,
+            ItemPropertySqlTable =
+                itemTableAttribute?.Prefix.IsNullOrEmpty() == false
+                    ? $"{itemTableAttribute.Prefix ?? ""}{DefaultItemPropertyTableName}"
+                    : itemTableAttribute?.ItemPropertyTable ?? DefaultItemPropertyTableName,
             Properties = new ConcurrentDictionary<string, PropertyInfo>(propertyInfos)
         };
 
@@ -71,7 +80,7 @@ internal static class TypeExtensions
 
         return value.ItemSqlTable;
     }
-    
+
     public static string GetItemPropertySqlTable(this Type itemType)
     {
         if (!Cache.TryGetValue(itemType, out var value))
@@ -81,7 +90,7 @@ internal static class TypeExtensions
 
         return value.ItemPropertySqlTable;
     }
-    
+
     public static string[] GetItemPropertyNames(this Type itemType)
     {
         if (!Cache.TryGetValue(itemType, out var value))
@@ -121,14 +130,14 @@ internal static class TypeExtensions
 
         return value.Properties.FirstOrDefault(p => p.Value == property).Key;
     }
-    
+
     public static PropertyInfo GetItemProperty(this Type itemType, string propertyName)
     {
         if (!Cache.TryGetValue(itemType, out var value))
         {
             value = itemType.AddToCache();
         }
-    
+
         return value.Properties.TryGetValue(propertyName, out var property) ? property : default;
     }
 }
