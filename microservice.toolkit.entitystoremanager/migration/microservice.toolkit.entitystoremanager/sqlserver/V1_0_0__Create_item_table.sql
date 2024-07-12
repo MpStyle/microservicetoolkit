@@ -20,7 +20,7 @@ CREATE TABLE ItemProperty
     FloatValue  FLOAT        ,
     BoolValue   BIT          ,
     [Order]     INT          DEFAULT 1,
-    CONSTRAINT PK_Person PRIMARY KEY (ItemId, [Key], [Order])
+    CONSTRAINT pk_item_property PRIMARY KEY (ItemId, [Key], [Order])
 );
 
 CREATE INDEX ItemProperty_Key ON ItemProperty ([Key]);
