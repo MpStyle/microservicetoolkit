@@ -27,9 +27,6 @@
         <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\*.sql">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="migration\microservice.toolkit.entitystoremanager\sqlserver\V1_5_0__Create_item_type.sql">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
     <ItemGroup>

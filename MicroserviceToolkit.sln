@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project-items", "project-items", "{0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
@@ -55,6 +55,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.entitystoremanager", "microservice.toolkit.entitystoremanager\microservice.toolkit.entitystoremanager.csproj", "{6B6ECC0A-2A1F-4511-9898-D3274F7D4964}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.entitystoremanager.tests", "microservice.toolkit.entitystoremanager.tests\microservice.toolkit.entitystoremanager.tests.csproj", "{5272D9EC-0890-47BA-A672-FA3A1A282F13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{8878952E-88DC-4203-AA0A-CA757835BCEE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "microservice-toolkit-test", "microservice-toolkit-test", "{4A216C31-3EDC-4573-ACFD-9B5FA35067E2}"
+	ProjectSection(SolutionItems) = preProject
+		docker\microservice-toolkit-test\docker-compose.yml = docker\microservice-toolkit-test\docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,5 +136,7 @@ Global
 		{41198E3E-B08B-4D9B-80CE-917C624F4E4B} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 		{21F4632F-39C1-4ECF-B71D-B49F87D98771} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 		{244E9E5D-0A4D-47EF-9D41-A784EDAE119F} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
+		{8878952E-88DC-4203-AA0A-CA757835BCEE} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
+		{4A216C31-3EDC-4573-ACFD-9B5FA35067E2} = {8878952E-88DC-4203-AA0A-CA757835BCEE}
 	EndGlobalSection
 EndGlobal

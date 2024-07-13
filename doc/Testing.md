@@ -38,3 +38,17 @@ docker run -d --name microserviceframework-test-rabbitmq -p 5672:5672 -p 15672:1
 ```bash
 docker run -d --name microserviceframework-test-nats -p 4222:4222 -p 8222:8222 -p 6222:6222 nats:alpine
 ```
+
+## Docker compose
+
+You can also use `docker-compose` to start all the services at once. Run the following command in `docker/microservice-toolkit-test` folder:
+
+```bash
+docker-compose up -d
+```
+
+On MacOS use the following command to start all the services at once:
+
+```bash
+docker compose up -d
+```
