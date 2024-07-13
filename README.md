@@ -8,7 +8,7 @@
 
 __Designed by humans, enhanced by AI.__
 
-Everything you need for your entire micro services development life cycle. 
+Everything you need for your entire microservices development life cycle. 
 
 __Microservice Toolkit__ is progressive/modular .NET and ASP.NET toolkit for coding fast, reliable and scalable cloud and desktop applications.
 
@@ -25,13 +25,14 @@ The __Microservice Toolkit__ libraries collects and enriches the already powerfu
 - [Configuration Manager](./microservice.toolkit.configurationmanager/README.md): strongly typed configuration reader
 - [Database connection manager](./microservice.toolkit.connectionmanager/README.md): enriches the DbConnection object with powerful extension methods
 - [Migration Manager](./microservice.toolkit.migrationmanager/README.md): version control for databases
+- [Entity Store Manager](./microservice.toolkit.entitystoremanager/README.md): no-sql database with the power of a relational database
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
 
 ## License :bookmark_tabs:
 
-[MIT License](https://opensource.org/licenses/MIT)~~~~
+[MIT License](https://opensource.org/licenses/MIT)
 
 ## How to contribute :rocket:
 
@@ -41,4 +42,4 @@ The __Microservice Toolkit__ libraries collects and enriches the already powerfu
 
 To release a new version of the package:
 1. Update version in `Directory.Build.props` file.
-3. Draft a release on [GitHub](https://github.com/MpStyle/microservicetoolkit/releases)
+2. Draft a release on [GitHub](https://github.com/MpStyle/microservicetoolkit/releases)

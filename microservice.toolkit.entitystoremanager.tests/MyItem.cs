@@ -2,7 +2,7 @@
 
 namespace microservice.toolkit.entitystoremanager.tests;
 
-public class MyItem:IItem 
+public class MyItem : IItem 
 {
     public string Id { get; set; }
     public UserRole Role { get; set; }
