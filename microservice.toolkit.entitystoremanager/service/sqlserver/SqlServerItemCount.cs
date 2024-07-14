@@ -81,7 +81,7 @@ public class SqlServerItemCount<TSource> : Service<ItemCountRequest, ItemCountRe
             $"SELECT COUNT({nameof(IItem.Id)}) AS Counter FROM {itemType.GetItemSqlTable()} WHERE {string.Join(" AND ", where)}";
 
         var itemCount =
-            await this.connectionManager.ExecuteFirstAsync(itemsSql, reader => reader.GetInt32(0), parameters);
+            await this.connectionManager.ExecuteScalarAsync<long>(itemsSql, parameters);
 
         return this.SuccessfulResponse(new ItemCountResponse
         {

@@ -54,7 +54,7 @@ public class SQLiteCacheManager : ICacheManager
                 WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
             ";
 
-        var value = await this.connectionManager.ExecuteFirstAsync(query, reader => reader.GetString(0), parameters);
+        var value = await this.connectionManager.ExecuteScalarAsync<string>(query, parameters);
 
         if (value == null)
         {
