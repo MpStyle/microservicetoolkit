@@ -12,17 +12,17 @@ An interface to define how cloud microservices interact each other across multi 
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.messagemediator -Version 1.1.0
+Install-Package microservice.toolkit.messagemediator -Version 1.1.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.messagemediator --version 1.1.0
+dotnet add package microservice.toolkit.messagemediator --version 1.1.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.messagemediator" Version="1.1.0" />
+<PackageReference Include="microservice.toolkit.messagemediator" Version="1.1.1" />
 ```
 
 ## Introduction

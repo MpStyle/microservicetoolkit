@@ -14,17 +14,17 @@ Save, delete, and search any entity (data models) in a database without writing 
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.entitystoremanager -Version 1.1.0
+Install-Package microservice.toolkit.entitystoremanager -Version 1.1.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.entitystoremanager --version 1.1.0
+dotnet add package microservice.toolkit.entitystoremanager --version 1.1.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.entitystoremanager" Version="1.1.0" />
+<PackageReference Include="microservice.toolkit.entitystoremanager" Version="1.1.1" />
 ```
 
 ## Supported databases
