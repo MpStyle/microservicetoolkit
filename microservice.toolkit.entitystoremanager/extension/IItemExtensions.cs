@@ -140,6 +140,16 @@ internal static class TypeExtensions
 
         return value.Properties.TryGetValue(propertyName, out var property) ? property : default;
     }
+    
+    public static string GetItemPropertyName(this Type itemType, string propertyName)
+    {
+        if (!Cache.TryGetValue(itemType, out var value))
+        {
+            value = itemType.AddToCache();
+        }
+
+        return value.Properties.TryGetValue(propertyName, out var property) ? property.Name : default;
+    }
 }
 
 internal class CacheItem
