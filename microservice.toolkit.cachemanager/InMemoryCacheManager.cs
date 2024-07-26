@@ -17,25 +17,47 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
     public InMemoryCacheManager() : this(new InMemoryCacheManagerSettings())
     {
     }
-
-    public Task<bool> Delete(string key)
+    
+    public bool Delete(string key)
     {
-        return Task.FromResult(inMemory.TryRemove(key, out var _));
+        return inMemory.TryRemove(key, out var _);
     }
 
-    public Task<TValue> Get<TValue>(string key)
+    public Task<bool> DeleteAsync(string key)
+    {
+        return Task.FromResult(this.Delete(key));
+    }
+
+    public TValue Get<TValue>(string key)
+    {
+        if (this.TryGet(key, out TValue item))
+        {
+            return item;
+        }
+
+        return default;
+    }
+    
+    public Task<TValue> GetAsync<TValue>(string key)
+    {
+        return Task.FromResult(this.Get<TValue>(key));
+    }
+
+    public bool TryGet<TValue>(string key, out TValue value)
     {
         if (inMemory.TryGetValue(key, out var item)
             && item.IssuedAt > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
             && item.Value is TValue typedValue)
         {
-            return Task.FromResult(typedValue);
+            value = typedValue;
+            return true;
         }
 
-        return Task.FromResult(default(TValue));
+        value = default;
+        return false;
     }
 
-    public async Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
+    public bool Set<TValue>(string key, TValue value, long issuedAt)
     {
         if (this.inMemory.Count >= settings.Capacity)
         {
@@ -44,7 +66,7 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
                 .ToList();
             foreach (var issuedItem in issuedItems)
             {
-                await this.Delete(issuedItem.Key);
+                this.Delete(issuedItem.Key);
             }
 
             if (issuedItems.Count == 0)
@@ -52,26 +74,36 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
                 var oldestItem = this.inMemory
                     .OrderBy(item => item.Value.InsertedAt)
                     .First();
-                await this.Delete(oldestItem.Key);
+                this.Delete(oldestItem.Key);
             }
         }
 
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            await this.Delete(key);
+            this.Delete(key);
             return false;
         }
 
         var newItem = new InMemoryItem {Value = value, IssuedAt = issuedAt};
 
-        inMemory.AddOrUpdate(key, newItem, (key, oldValue) => newItem);
+        inMemory.AddOrUpdate(key, newItem, (_, _) => newItem);
 
         return true;
     }
 
-    public Task<bool> Set<TValue>(string key, TValue value)
+    public Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
+    {
+        return Task.FromResult(this.Set(key, value, issuedAt));
+    }
+
+    public bool Set<TValue>(string key, TValue value)
     {
         return this.Set(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds());
+    }
+
+    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    {
+        return Task.FromResult(this.Set(key, value));
     }
 
     private record InMemoryItem

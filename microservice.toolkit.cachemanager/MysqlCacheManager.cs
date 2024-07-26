@@ -15,7 +15,34 @@ public class MysqlCacheManager : ICacheManager
     private readonly MySqlConnection connectionManager;
     private readonly ICacheValueSerializer serializer;
 
-    public MysqlCacheManager(MySqlConnection connectionManager) : this(connectionManager, new JsonCacheValueSerializer())
+    private const string GetQuery = """
+                                    SELECT value, issuedAt
+                                    FROM cache 
+                                    WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );         
+                                    """;
+
+    private const string UpsertQuery = """
+                                       INSERT INTO `cache` (
+                                           id,
+                                           value, 
+                                           issuedAt
+                                       ) VALUES (
+                                           @id, 
+                                           @value,
+                                           @issuedAt
+                                       )
+                                       ON DUPLICATE KEY UPDATE 
+                                           `value` = @value,
+                                           issuedAt = @issuedAt
+                                       """;
+
+    private const string DeleteQuery = """
+                                       DELETE FROM `cache`
+                                       WHERE id = @id;
+                                       """;
+
+    public MysqlCacheManager(MySqlConnection connectionManager) : this(connectionManager,
+        new JsonCacheValueSerializer())
     {
     }
 
@@ -25,27 +52,47 @@ public class MysqlCacheManager : ICacheManager
         this.connectionManager = connectionManager;
     }
 
-    public async Task<TValue> Get<TValue>(string key)
+    public async Task<TValue> GetAsync<TValue>(string key)
     {
         var parameters = new Dictionary<string, object>()
-            {
-                { "@CacheId", key }, { "@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }
-            };
-
-        const string query = @"
-                SELECT value, issuedAt
-                FROM cache 
-                WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
-            ";
-
-        var value = await this.connectionManager.ExecuteScalarAsync<string>(query, parameters);
-
-        if (value == null)
         {
-            return default;
+            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
+        };
+
+        var value = await this.connectionManager.ExecuteScalarAsync<string>(GetQuery, parameters);
+
+        return value == null ? default : this.serializer.Deserialize<TValue>(value);
+    }
+
+    public bool TryGet<TValue>(string key, out TValue value)
+    {
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
+        };
+
+        var result = this.connectionManager.ExecuteScalar<string>(GetQuery, parameters);
+
+        if (result == null)
+        {
+            value = default;
+            return false;
         }
 
-        return this.serializer.Deserialize<TValue>(value);
+        value = this.serializer.Deserialize<TValue>(result);
+        return true;
+    }
+
+    public TValue Get<TValue>(string key)
+    {
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
+        };
+
+        var value = this.connectionManager.ExecuteScalar<string>(GetQuery, parameters);
+
+        return value == null ? default : this.serializer.Deserialize<TValue>(value);
     }
 
     /// <summary>
@@ -55,52 +102,59 @@ public class MysqlCacheManager : ICacheManager
     /// <param name="value"></param>
     /// <param name="issuedAt"></param>
     /// <returns></returns>
-    public async Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
+    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            await this.Delete(key);
+            await this.DeleteAsync(key);
             return false;
         }
 
-        var query = @"
-                INSERT INTO `cache` (
-                    id,
-                    value, 
-                    issuedAt
-                ) VALUES (
-                    @id, 
-                    @value,
-                    @issuedAt
-                )
-                ON DUPLICATE KEY UPDATE 
-                    `value` = @value,
-                    issuedAt = @issuedAt
-            ";
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@id", key}, {"@value", this.serializer.Serialize(value)}, {"@issuedAt", issuedAt}
+        };
 
-        var parameters = new Dictionary<string, object>() {
-                { "@id", key },
-                { "@value", this.serializer.Serialize(value) },
-                { "@issuedAt", issuedAt }
-            };
-
-        return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
+        return await this.connectionManager.ExecuteNonQueryAsync(UpsertQuery, parameters) != 0;
     }
 
-    public Task<bool> Set<TValue>(string key, TValue value)
+    public bool Set<TValue>(string key, TValue value, long issuedAt)
+    {
+        if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        {
+            this.Delete(key);
+            return false;
+        }
+
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@id", key}, {"@value", this.serializer.Serialize(value)}, {"@issuedAt", issuedAt}
+        };
+
+        return this.connectionManager.ExecuteNonQuery(UpsertQuery, parameters) != 0;   
+    }
+
+    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    {
+        return this.SetAsync(key, value, 0);
+    }
+    
+    public bool Set<TValue>(string key, TValue value)
     {
         return this.Set(key, value, 0);
     }
 
-    public async Task<bool> Delete(string key)
+    public async Task<bool> DeleteAsync(string key)
     {
-        const string query = @"
-                DELETE FROM `cache`
-                WHERE id = @id;
-            ";
+        var parameters = new Dictionary<string, object> {{"@id", key},};
 
-        var parameters = new Dictionary<string, object>() { { "@id", key }, };
+        return await this.connectionManager.ExecuteNonQueryAsync(DeleteQuery, parameters) != 0;
+    }
+    
+    public bool Delete(string key)
+    {
+        var parameters = new Dictionary<string, object> {{"@id", key},};
 
-        return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
+        return this.connectionManager.ExecuteNonQuery(DeleteQuery, parameters) != 0;
     }
 }

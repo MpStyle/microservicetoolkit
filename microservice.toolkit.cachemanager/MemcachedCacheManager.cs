@@ -24,35 +24,70 @@ public class MemcachedCacheManager : Disposable, ICacheManager
     }
 
     /// <inheritdoc/>
-    public Task<bool> Delete(string key)
+    public Task<bool> DeleteAsync(string key)
     {
         return this.client.RemoveAsync(key);
     }
+    
+    public bool Delete(string key)
+    {
+        return this.client.Remove(key);
+    }
 
-    /// <inheritdoc/>
-    public async Task<TValue> Get<TValue>(string key)
+    public async Task<TValue> GetAsync<TValue>(string key)
     {
         var result = await this.client.GetAsync<TValue>(key);
 
         return result.HasValue ? result.Value : default;
     }
+    
+    public TValue Get<TValue>(string key)
+    {
+        return this.client.Get<TValue>(key);
+    }
 
     /// <inheritdoc/>
-    public Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
+    public bool TryGet<TValue>(string key, out TValue value)
+    {
+        value = this.client.Get<TValue>(key);
+
+        return value != null;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            this.Delete(key);
-            return Task.FromResult(false);
+            await this.DeleteAsync(key);
+            return false;
         }
 
         var duration = (int)((issuedAt - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 1000);
 
-        return this.client.SetAsync(key, value, duration);
+        return await this.client.SetAsync(key, value, duration);
+    }
+    
+    public bool Set<TValue>(string key, TValue value, long issuedAt)
+    {
+        if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        {
+            this.Delete(key);
+            return false;
+        }
+
+        var duration = (int)((issuedAt - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) / 1000);
+
+        return this.client.Set(key, value, duration);
     }
 
     /// <inheritdoc/>
-    public Task<bool> Set<TValue>(string key, TValue value)
+    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    {
+        return this.SetAsync(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds());
+    }
+    
+    public bool Set<TValue>(string key, TValue value)
     {
         return this.Set(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds());
     }
