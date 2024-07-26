@@ -25,7 +25,6 @@ The __Microservice Toolkit__ libraries collects and enriches the already powerfu
 - [Configuration Manager](./microservice.toolkit.configurationmanager/README.md): strongly typed configuration reader
 - [Database connection manager](./microservice.toolkit.connectionmanager/README.md): enriches the DbConnection object with powerful extension methods
 - [Migration Manager](./microservice.toolkit.migrationmanager/README.md): version control for databases
-- [Entity Store Manager](./microservice.toolkit.entitystoremanager/README.md): no-sql database with the power of a relational database
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
