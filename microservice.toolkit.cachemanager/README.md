@@ -70,28 +70,6 @@ How to use:
 var manager = new InMemoryCacheManager();
 ```
 
-You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
-
-**Newtonsoft JSON**\
-Install Newtonsoft JSON dependency:
-```
-dotnet add package Newtonsoft.Json --version 13.0.2
-```
-And use the serializer:
-```C#
-var manager = new InMemoryCacheManager(new NewtonsoftJsonCacheValueSerializer());
-```
-
-**System.Text.Json**
-```C#
-var manager = new InMemoryCacheManager(new JsonCacheValueSerializer());
-```
-
-**XML**
-```C#
-var manager = new InMemoryCacheManager(new XmlCacheValueSerializer());
-```
-
 ### SQLite cache manager
 
 <a name="sqlite"></a>
