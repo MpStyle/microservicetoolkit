@@ -51,8 +51,3 @@ jobs:
         run: dotnet pack ./microservice.toolkit.migrationmanager/microservice.toolkit.migrationmanager.csproj -c Release
       - name: Release - Migration Manager
         run: dotnet nuget push ./microservice.toolkit.migrationmanager/bin/Release/microservice.toolkit.migrationmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
-
-      - name: Pack - Entity Store Manager
-        run: dotnet pack ./microservice.toolkit.entitystoremanager/microservice.toolkit.entitystoremanager.csproj -c Release
-      - name: Release - Entity Store Manager
-        run: dotnet nuget push ./microservice.toolkit.entitystoremanager/bin/Release/microservice.toolkit.entitystoremanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
