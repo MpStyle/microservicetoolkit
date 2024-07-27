@@ -20,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.config
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator", "microservice.toolkit.messagemediator\microservice.toolkit.messagemediator.csproj", "{728DF23A-34AE-47DF-9380-6E7E7F630847}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.migrationmanager", "microservice.toolkit.migrationmanager\microservice.toolkit.migrationmanager.csproj", "{A0843292-2582-4743-ACB3-4237A330F793}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.migration.extensions", "microservice.toolkit.migration.extensions\microservice.toolkit.migration.extensions.csproj", "{A0843292-2582-4743-ACB3-4237A330F793}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachemanager.test", "microservice.toolkit.cachemanager.test\microservice.toolkit.cachemanager.test.csproj", "{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}"
 EndProject
@@ -45,7 +45,7 @@ EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.core.test", "microservice.toolkit.core.test\microservice.toolkit.core.test.csproj", "{B0991DC5-2799-45C2-A9BB-D36258ADB022}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.migrationmanager.test", "microservice.toolkit.migrationmanager.test\microservice.toolkit.migrationmanager.test.csproj", "{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.migration.extensions.test", "microservice.toolkit.migration.extensions.test\microservice.toolkit.migration.extensions.test.csproj", "{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{244E9E5D-0A4D-47EF-9D41-A784EDAE119F}"
 ProjectSection(SolutionItems) = preProject

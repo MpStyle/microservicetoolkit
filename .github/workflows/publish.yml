@@ -47,7 +47,7 @@ jobs:
       - name: Release - Message Mediator
         run: dotnet nuget push ./microservice.toolkit.messagemediator/bin/Release/microservice.toolkit.messagemediator.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
-      - name: Pack - Migration Manager
-        run: dotnet pack ./microservice.toolkit.migrationmanager/microservice.toolkit.migrationmanager.csproj -c Release
-      - name: Release - Migration Manager
-        run: dotnet nuget push ./microservice.toolkit.migrationmanager/bin/Release/microservice.toolkit.migrationmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+      - name: Pack - Migration Extensions
+        run: dotnet pack ./microservice.toolkit.migration.extensions/microservice.toolkit.migration.extensions.csproj -c Release
+      - name: Release - Migration Extensions
+        run: dotnet nuget push ./microservice.toolkit.migration.extensions/bin/Release/microservice.toolkit.migration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json

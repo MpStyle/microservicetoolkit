@@ -4,38 +4,38 @@ using System;
 using System.Data.Common;
 using System.IO;
 
-namespace microservice.toolkit.migrationmanager.extension
+namespace microservice.toolkit.migration.extensions
 {
-    public static class MigrationManagerExtensions
+    public static class MigrationExtensions
     {
         public static ApplyResult Apply(this DbConnection connection, string migrationsFolder,
-            string migrationExtension)
+            string migrationFileExtension)
         {
             try
             {
-                if (Directory.GetFiles(migrationsFolder, $"*{migrationExtension}").Length == 0)
+                if (Directory.GetFiles(migrationsFolder, $"*{migrationFileExtension}").Length == 0)
                 {
                     throw new Exception("Migration files not found");
                 }
 
                 var evolve = new Evolve(connection, Console.WriteLine)
                 {
-                    Locations = new[] { migrationsFolder },
+                    Locations = new[] {migrationsFolder},
                     IsEraseDisabled = true,
-                    SqlMigrationSuffix = migrationExtension
+                    SqlMigrationSuffix = migrationFileExtension
                 };
 
                 evolve.Migrate();
             }
             catch (Exception ex)
             {
-                return new ApplyResult { Exception = ex };
+                return new ApplyResult {Exception = ex};
             }
 
-            return new ApplyResult() { Success = true };
+            return new ApplyResult() {Success = true};
         }
     }
-    
+
     public class ApplyResult
     {
         public Exception Exception { get; set; }

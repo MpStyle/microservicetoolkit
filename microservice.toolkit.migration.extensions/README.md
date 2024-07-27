@@ -3,8 +3,8 @@
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.migrationmanager)
-![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.migrationmanager)
+![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.migration.extensions)
+![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.migration.extensions)
 
 A collection of extension methods to manage schema evolution across all your environments.
 
@@ -21,17 +21,17 @@ Supported databases:
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.migrationmanager -Version 1.1.1
+Install-Package microservice.toolkit.migration.extensions -Version 1.1.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.migrationmanager --version 1.1.1
+dotnet add package microservice.toolkit.migration.extensions --version 1.1.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.migrationmanager" Version="1.1.1" />
+<PackageReference Include="microservice.toolkit.migration.extensions" Version="1.1.1" />
 ```
 
 ## How to use

@@ -1,5 +1,4 @@
 using microservice.toolkit.connection.extensions;
-using microservice.toolkit.migrationmanager.extension;
 
 using MySqlConnector;
 
@@ -10,10 +9,10 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.migrationmanager.test
+namespace microservice.toolkit.migration.extensions.test
 {
     [ExcludeFromCodeCoverage]
-    public class MigrationManagerTest
+    public class MigrationExtensionsTest
     {
         private DbConnection dbConnection;
 

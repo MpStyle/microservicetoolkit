@@ -22,9 +22,9 @@ The __Microservice Toolkit__ libraries collects and enriches the already powerfu
 
 - [Message mediator](./microservice.toolkit.messagemediator/README.md): microservices connection on desktop and cloud application
 - [Cache manager](./microservice.toolkit.cachemanager/README.md): warehouse for web and cloud application for frequently requested data
-- [Configuration Extensions](./microservice.toolkit.configuration.extensions/README.md): strongly typed configuration reader with extension methods
+- [Configuration Extensions](./microservice.toolkit.configuration.extensions/README.md): strongly typed configuration reader using extension methods
 - [Database connection Extensions](./microservice.toolkit.connection.extensions/README.md): enriches the DbConnection object with powerful extension methods
-- [Migration Manager](./microservice.toolkit.migrationmanager/README.md): version control for databases
+- [Migration Extensions](./microservice.toolkit.migration.extensions/README.md): version control for databases
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
