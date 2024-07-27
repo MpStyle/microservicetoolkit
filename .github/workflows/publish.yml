@@ -32,10 +32,10 @@ jobs:
       - name: Release - Cache Manager
         run: dotnet nuget push ./microservice.toolkit.cachemanager/bin/Release/microservice.toolkit.cachemanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
-      - name: Pack - Configuration Manager
-        run: dotnet pack ./microservice.toolkit.configurationmanager/microservice.toolkit.configurationmanager.csproj -c Release
-      - name: Release - Configuration Manager
-        run: dotnet nuget push ./microservice.toolkit.configurationmanager/bin/Release/microservice.toolkit.configurationmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+      - name: Pack - Configuration Extensions
+        run: dotnet pack ./microservice.toolkit.configuration.extensions/microservice.toolkit.configuration.extensions.csproj -c Release
+      - name: Release - Configuration Extensions
+        run: dotnet nuget push ./microservice.toolkit.configuration.extensions/bin/Release/microservice.toolkit.configuration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
       - name: Pack - Connection Manager
         run: dotnet pack ./microservice.toolkit.connectionmanager/microservice.toolkit.connectionmanager.csproj -c Release

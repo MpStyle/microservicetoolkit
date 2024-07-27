@@ -16,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager", "microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj", "{C77DFC59-F674-43CC-90C7-FDB12278496E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configurationmanager", "microservice.toolkit.configurationmanager\microservice.toolkit.configurationmanager.csproj", "{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configuration.extensions", "microservice.toolkit.configuration.extensions\microservice.toolkit.configuration.extensions.csproj", "{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator", "microservice.toolkit.messagemediator\microservice.toolkit.messagemediator.csproj", "{728DF23A-34AE-47DF-9380-6E7E7F630847}"
 EndProject
@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.migrat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachemanager.test", "microservice.toolkit.cachemanager.test\microservice.toolkit.cachemanager.test.csproj", "{25BF14A1-D1FE-4E64-81DE-2CBC876CE8E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configurationmanager.test", "microservice.toolkit.configurationmanager.test\microservice.toolkit.configurationmanager.test.csproj", "{D0D497D1-3738-4E79-A2C8-3C4E516614B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configuration.extensions.test", "microservice.toolkit.configuration.extensions.test\microservice.toolkit.configuration.extensions.test.csproj", "{D0D497D1-3738-4E79-A2C8-3C4E516614B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager.test", "microservice.toolkit.connectionmanager.test\microservice.toolkit.connectionmanager.test.csproj", "{B43B1166-BCE4-4BE1-9156-3170E596E842}"
 EndProject

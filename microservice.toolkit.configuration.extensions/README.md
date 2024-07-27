@@ -3,8 +3,8 @@
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.configurationmanager)
-![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.configurationmanager)
+![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.configuration.extensions)
+![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.configuration.extensions)
 
 Common interface to access to configurations value.
 
@@ -12,17 +12,17 @@ Common interface to access to configurations value.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.configurationmanager -Version 1.1.1
+Install-Package microservice.toolkit.configuration.extensions -Version 1.1.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.configurationmanager --version 1.1.1
+dotnet add package microservice.toolkit.configuration.extensions --version 1.1.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.configurationmanager" Version="1.1.1" />
+<PackageReference Include="microservice.toolkit.configuration.extensions" Version="1.1.1" />
 ```
 
 ## Available methods
@@ -74,7 +74,9 @@ Returns _default_ value if not exists.
 
 <a name="msec"></a>
 ```C#
+using microservice.toolkit.configuration.extensions.extension;
+
 IConfiguration configuration = ...;
-var configurationManager = new ConfigurationManager(configuration);
-var stringValue = configurationManager.GetString("stringValue");
+
+var stringValue = configuration.GetString("stringValue");
 ```
