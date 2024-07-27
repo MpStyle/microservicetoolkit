@@ -30,9 +30,11 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
 
     public TValue Get<TValue>(string key)
     {
-        if (this.TryGet(key, out TValue item))
+        if (inMemory.TryGetValue(key, out var item)
+            && item.IssuedAt > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            && item.Value is TValue typedValue)
         {
-            return item;
+            return typedValue;
         }
 
         return default;
