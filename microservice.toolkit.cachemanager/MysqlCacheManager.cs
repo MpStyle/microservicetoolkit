@@ -63,24 +63,11 @@ public class MysqlCacheManager : ICacheManager
 
         return value == null ? default : this.serializer.Deserialize<TValue>(value);
     }
-
+    
     public bool TryGet<TValue>(string key, out TValue value)
     {
-        var parameters = new Dictionary<string, object>()
-        {
-            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
-        };
-
-        var result = this.connectionManager.ExecuteScalar<string>(GetQuery, parameters);
-
-        if (result == null)
-        {
-            value = default;
-            return false;
-        }
-
-        value = this.serializer.Deserialize<TValue>(result);
-        return true;
+        value = this.Get<TValue>(key);
+        return value != null;
     }
 
     public TValue Get<TValue>(string key)

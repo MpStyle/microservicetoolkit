@@ -45,16 +45,8 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
 
     public bool TryGet<TValue>(string key, out TValue value)
     {
-        if (inMemory.TryGetValue(key, out var item)
-            && item.IssuedAt > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
-            && item.Value is TValue typedValue)
-        {
-            value = typedValue;
-            return true;
-        }
-
-        value = default;
-        return false;
+        value = this.Get<TValue>(key);
+        return value != null;
     }
 
     public bool Set<TValue>(string key, TValue value, long issuedAt)

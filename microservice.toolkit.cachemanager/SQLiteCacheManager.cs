@@ -71,24 +71,11 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
 
         return value == null ? default : serializer.Deserialize<TValue>(value);
     }
-
-    public bool TryGet<TValue>(string key, out TValue v)
+    
+    public bool TryGet<TValue>(string key, out TValue value)
     {
-        var parameters = new Dictionary<string, object>()
-        {
-            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
-        };
-
-        var value = connectionManager.ExecuteScalar<string>(SelectQuery, parameters);
-
-        if (value == null)
-        {
-            v = default;
-            return false;
-        }
-
-        v = serializer.Deserialize<TValue>(value);
-        return true;
+        value = this.Get<TValue>(key);
+        return value != null;
     }
 
     public TValue Get<TValue>(string key)

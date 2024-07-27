@@ -74,27 +74,11 @@ public class RedisCacheManager : Disposable, ICacheManager
 
         return default;
     }
-
+    
     public bool TryGet<TValue>(string key, out TValue value)
     {
-        this.logger.LogDebug("Calling RedisCacheManager#Get({Empty})...", key ?? string.Empty);
-        var db = this.connection.GetDatabase();
-        var result = db.StringGetWithExpiry(key);
-
-        if (result.Expiry.HasValue == false && result.Value.HasValue)
-        {
-            value = this.serializer.Deserialize<TValue>(result.Value.ToString());
-            return true;
-        }
-
-        if (result is {Expiry.TotalMilliseconds: > 0, Value.HasValue: true})
-        {
-            value = this.serializer.Deserialize<TValue>(result.Value.ToString());
-            return true;
-        }
-
-        value = default;
-        return false;
+        value = this.Get<TValue>(key);
+        return value != null;
     }
 
     public TValue Get<TValue>(string key)
