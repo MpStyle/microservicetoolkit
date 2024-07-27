@@ -12,17 +12,17 @@ Common interface to manage cache using different providers.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.cachemanager -Version 1.1.1
+Install-Package microservice.toolkit.cachemanager -Version 2.0.0
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.cachemanager --version 1.1.1
+dotnet add package microservice.toolkit.cachemanager --version 2.0.0
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.cachemanager" Version="1.1.1" />
+<PackageReference Include="microservice.toolkit.cachemanager" Version="2.0.0" />
 ```
 
 ## ICacheManager interface
