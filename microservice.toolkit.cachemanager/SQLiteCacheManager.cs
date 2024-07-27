@@ -1,5 +1,5 @@
 ﻿using microservice.toolkit.cachemanager.serializer;
-using microservice.toolkit.connectionmanager;
+using microservice.toolkit.connection.extensions;
 using microservice.toolkit.core;
 
 using Microsoft.Data.Sqlite;
@@ -20,7 +20,7 @@ namespace microservice.toolkit.cachemanager;
 /// );
 /// </code>
 /// </summary>
-public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueSerializer serializer)
+public class SQLiteCacheManager(SqliteConnection dbConnection, ICacheValueSerializer serializer)
     : ICacheManager
 {
     private const string DeleteQuery = """
@@ -49,7 +49,7 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
                                        WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );         
                                        """;
 
-    public SQLiteCacheManager(SqliteConnection connectionManager) : this(connectionManager,
+    public SQLiteCacheManager(SqliteConnection dbConnection) : this(dbConnection,
         new JsonCacheValueSerializer())
     {
     }
@@ -67,7 +67,7 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
             {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
         };
 
-        var value = await connectionManager.ExecuteScalarAsync<string>(SelectQuery, parameters);
+        var value = await dbConnection.ExecuteScalarAsync<string>(SelectQuery, parameters);
 
         return value == null ? default : serializer.Deserialize<TValue>(value);
     }
@@ -85,7 +85,7 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
             {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
         };
 
-        var value = connectionManager.ExecuteScalar<string>(SelectQuery, parameters);
+        var value = dbConnection.ExecuteScalar<string>(SelectQuery, parameters);
 
         return value == null ? default : serializer.Deserialize<TValue>(value);
     }
@@ -110,7 +110,7 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
             {"@id", key}, {"@value", serializer.Serialize(value)}, {"@issuedAt", issuedAt}
         };
 
-        return await connectionManager.ExecuteNonQueryAsync(UpsertQuery, parameters) != 0;
+        return await dbConnection.ExecuteNonQueryAsync(UpsertQuery, parameters) != 0;
     }
 
     public bool Set<TValue>(string key, TValue value, long issuedAt)
@@ -126,7 +126,7 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
             {"@id", key}, {"@value", serializer.Serialize(value)}, {"@issuedAt", issuedAt}
         };
 
-        return connectionManager.ExecuteNonQuery(UpsertQuery, parameters) != 0;
+        return dbConnection.ExecuteNonQuery(UpsertQuery, parameters) != 0;
     }
 
     /// <summary>
@@ -155,13 +155,13 @@ public class SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueS
     {
         var parameters = new Dictionary<string, object> {{"@id", key}};
 
-        return await connectionManager.ExecuteNonQueryAsync(DeleteQuery, parameters) != 0;
+        return await dbConnection.ExecuteNonQueryAsync(DeleteQuery, parameters) != 0;
     }
     
     public bool Delete(string key)
     {
         var parameters = new Dictionary<string, object> {{"@id", key}};
 
-        return connectionManager.ExecuteNonQuery(DeleteQuery, parameters) != 0;
+        return dbConnection.ExecuteNonQuery(DeleteQuery, parameters) != 0;
     }
 }

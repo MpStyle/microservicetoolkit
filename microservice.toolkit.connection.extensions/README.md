@@ -3,8 +3,8 @@
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.connectionmanager)
-![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.connectionmanager)
+![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.connection.extensions)
+![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.connection.extensions)
 
 Common interface to simplify the access to a SQL database.
 
@@ -12,17 +12,17 @@ Common interface to simplify the access to a SQL database.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.connectionmanager -Version 1.1.1
+Install-Package microservice.toolkit.connection.extensions -Version 1.1.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.connectionmanager --version 1.1.1
+dotnet add package microservice.toolkit.connection.extensions --version 1.1.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.connectionmanager" Version="1.1.1" />
+<PackageReference Include="microservice.toolkit.connection.extensions" Version="1.1.1" />
 ```
 
 ## Available extensions methods

@@ -37,10 +37,10 @@ jobs:
       - name: Release - Configuration Extensions
         run: dotnet nuget push ./microservice.toolkit.configuration.extensions/bin/Release/microservice.toolkit.configuration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
-      - name: Pack - Connection Manager
-        run: dotnet pack ./microservice.toolkit.connectionmanager/microservice.toolkit.connectionmanager.csproj -c Release
-      - name: Release - Connection Manager
-        run: dotnet nuget push ./microservice.toolkit.connectionmanager/bin/Release/microservice.toolkit.connectionmanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+      - name: Pack - Connection Extensions
+        run: dotnet pack ./microservice.toolkit.connection.extensions/microservice.toolkit.connection.extensions.csproj -c Release
+      - name: Release - Connection Extensions
+        run: dotnet nuget push ./microservice.toolkit.connection.extensions/bin/Release/microservice.toolkit.connection.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
       - name: Pack - Message Mediator
         run: dotnet pack ./microservice.toolkit.messagemediator/microservice.toolkit.messagemediator.csproj -c Release

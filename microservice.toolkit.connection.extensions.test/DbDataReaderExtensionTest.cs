@@ -6,17 +6,17 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.connectionmanager.test;
+namespace microservice.toolkit.connection.extensions.test;
 
 [ExcludeFromCodeCoverage]
 public class DbDataReaderExtensionTest
 {
-    private MySqlConnection connectionManager;
+    private MySqlConnection dbConnection;
 
     [Test]
     public async Task TryGetValues()
     {
-        var result = await this.connectionManager.ExecuteFirstAsync("SELECT * FROM myTable", reader =>
+        var result = await this.dbConnection.ExecuteFirstAsync("SELECT * FROM myTable", reader =>
         {
             var i = 0;
             reader.TryGetInt32(i++, out var myInt);
@@ -71,11 +71,11 @@ public class DbDataReaderExtensionTest
         var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? "root";
         var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
-        this.connectionManager =
+        this.dbConnection =
             new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
 
         // Creates table
-        await this.connectionManager.ExecuteNonQueryAsync(@"
+        await this.dbConnection.ExecuteNonQueryAsync(@"
             CREATE TABLE myTable ( 
                 myInt INT, 
                 myLong BIGINT,
@@ -93,7 +93,7 @@ public class DbDataReaderExtensionTest
 
 
         // Inserts some rows in table
-        await connectionManager.ExecuteNonQueryAsync(@"
+        await this.dbConnection.ExecuteNonQueryAsync(@"
             INSERT INTO myTable VALUES (
                 1, 
                 1647860184000,
@@ -112,7 +112,7 @@ public class DbDataReaderExtensionTest
     [TearDown]
     public async Task TearDown()
     {
-        await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS myTable");
-        await connectionManager.CloseAsync();
+        await this.dbConnection.ExecuteNonQueryAsync("DROP TABLE IF EXISTS myTable");
+        await this.dbConnection.CloseAsync();
     }
 }

@@ -1,4 +1,4 @@
-using microservice.toolkit.connectionmanager;
+using microservice.toolkit.connection.extensions;
 using microservice.toolkit.migrationmanager.extension;
 
 using MySqlConnector;
@@ -15,14 +15,14 @@ namespace microservice.toolkit.migrationmanager.test
     [ExcludeFromCodeCoverage]
     public class MigrationManagerTest
     {
-        private DbConnection connectionManager;
+        private DbConnection dbConnection;
 
         [Test]
         public void Apply()
         {
-            this.connectionManager.Apply("./data", ".sql");
+            this.dbConnection.Apply("./data", ".sql");
 
-            var result = this.connectionManager.ExecuteFirst(
+            var result = this.dbConnection.ExecuteFirst(
                 "SELECT * FROM t_user WHERE id = \"admin-01\"",
                 reader => new
                 {
@@ -45,15 +45,15 @@ namespace microservice.toolkit.migrationmanager.test
             var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? "root";
             var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
-            this.connectionManager =
+            this.dbConnection =
                 new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};");
         }
 
         [TearDown]
         public async Task TearDown()
         {
-            await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS t_user");
-            await connectionManager.ExecuteNonQueryAsync("DROP TABLE IF EXISTS changelog");
+            await this.dbConnection.ExecuteNonQueryAsync("DROP TABLE IF EXISTS t_user");
+            await this.dbConnection.ExecuteNonQueryAsync("DROP TABLE IF EXISTS changelog");
         }
     }
 }

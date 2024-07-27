@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace microservice.toolkit.connectionmanager.objectmapper;
+namespace microservice.toolkit.connection.extensions.objectmapper;
 
 internal class TypeMap
 {

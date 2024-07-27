@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace microservice.toolkit.connectionmanager.objectmapper;
+namespace microservice.toolkit.connection.extensions.objectmapper;
 
 internal static class TypeMapper
 {

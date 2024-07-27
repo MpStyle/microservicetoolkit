@@ -8,7 +8,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.connectionmanager.test
+namespace microservice.toolkit.connection.extensions.test
 {
     [ExcludeFromCodeCoverage]
     public class SqlServerExecuteStoredProcedureTest

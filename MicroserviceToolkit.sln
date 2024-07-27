@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachemanager", "microservice.toolkit.cachemanager\microservice.toolkit.cachemanager.csproj", "{9AEE48B8-50C7-47AB-AE86-17FD0E3B983F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager", "microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj", "{C77DFC59-F674-43CC-90C7-FDB12278496E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connection.extensions", "microservice.toolkit.connection.extensions\microservice.toolkit.connection.extensions.csproj", "{C77DFC59-F674-43CC-90C7-FDB12278496E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configuration.extensions", "microservice.toolkit.configuration.extensions\microservice.toolkit.configuration.extensions.csproj", "{FE4EE30B-0CC0-486A-8AA2-0F0BFF496319}"
 EndProject
@@ -26,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.cachem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.configuration.extensions.test", "microservice.toolkit.configuration.extensions.test\microservice.toolkit.configuration.extensions.test.csproj", "{D0D497D1-3738-4E79-A2C8-3C4E516614B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connectionmanager.test", "microservice.toolkit.connectionmanager.test\microservice.toolkit.connectionmanager.test.csproj", "{B43B1166-BCE4-4BE1-9156-3170E596E842}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.connection.extensions.test", "microservice.toolkit.connection.extensions.test\microservice.toolkit.connection.extensions.test.csproj", "{B43B1166-BCE4-4BE1-9156-3170E596E842}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator.test", "microservice.toolkit.messagemediator.test\microservice.toolkit.messagemediator.test.csproj", "{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}"
 EndProject

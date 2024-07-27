@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj" />
+    <ProjectReference Include="..\microservice.toolkit.connection.extensions\microservice.toolkit.connection.extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

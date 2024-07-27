@@ -25,7 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj" />
+      <ProjectReference Include="..\microservice.toolkit.connection.extensions\microservice.toolkit.connection.extensions.csproj" />
       <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
       <ProjectReference Include="..\microservice.toolkit.migrationmanager\microservice.toolkit.migrationmanager.csproj" />
     </ItemGroup>

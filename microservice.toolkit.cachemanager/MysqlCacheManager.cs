@@ -1,5 +1,5 @@
 ﻿using microservice.toolkit.cachemanager.serializer;
-using microservice.toolkit.connectionmanager;
+using microservice.toolkit.connection.extensions;
 using microservice.toolkit.core;
 
 using MySqlConnector;
@@ -12,7 +12,7 @@ namespace microservice.toolkit.cachemanager;
 
 public class MysqlCacheManager : ICacheManager
 {
-    private readonly MySqlConnection connectionManager;
+    private readonly MySqlConnection dbConnection;
     private readonly ICacheValueSerializer serializer;
 
     private const string GetQuery = """
@@ -41,15 +41,15 @@ public class MysqlCacheManager : ICacheManager
                                        WHERE id = @id;
                                        """;
 
-    public MysqlCacheManager(MySqlConnection connectionManager) : this(connectionManager,
+    public MysqlCacheManager(MySqlConnection dbConnection) : this(dbConnection,
         new JsonCacheValueSerializer())
     {
     }
 
-    public MysqlCacheManager(MySqlConnection connectionManager, ICacheValueSerializer serializer)
+    public MysqlCacheManager(MySqlConnection dbConnection, ICacheValueSerializer serializer)
     {
         this.serializer = serializer;
-        this.connectionManager = connectionManager;
+        this.dbConnection = dbConnection;
     }
 
     public async Task<TValue> GetAsync<TValue>(string key)
@@ -59,7 +59,7 @@ public class MysqlCacheManager : ICacheManager
             {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
         };
 
-        var value = await this.connectionManager.ExecuteScalarAsync<string>(GetQuery, parameters);
+        var value = await this.dbConnection.ExecuteScalarAsync<string>(GetQuery, parameters);
 
         return value == null ? default : this.serializer.Deserialize<TValue>(value);
     }
@@ -77,7 +77,7 @@ public class MysqlCacheManager : ICacheManager
             {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
         };
 
-        var value = this.connectionManager.ExecuteScalar<string>(GetQuery, parameters);
+        var value = this.dbConnection.ExecuteScalar<string>(GetQuery, parameters);
 
         return value == null ? default : this.serializer.Deserialize<TValue>(value);
     }
@@ -102,7 +102,7 @@ public class MysqlCacheManager : ICacheManager
             {"@id", key}, {"@value", this.serializer.Serialize(value)}, {"@issuedAt", issuedAt}
         };
 
-        return await this.connectionManager.ExecuteNonQueryAsync(UpsertQuery, parameters) != 0;
+        return await this.dbConnection.ExecuteNonQueryAsync(UpsertQuery, parameters) != 0;
     }
 
     public bool Set<TValue>(string key, TValue value, long issuedAt)
@@ -118,7 +118,7 @@ public class MysqlCacheManager : ICacheManager
             {"@id", key}, {"@value", this.serializer.Serialize(value)}, {"@issuedAt", issuedAt}
         };
 
-        return this.connectionManager.ExecuteNonQuery(UpsertQuery, parameters) != 0;   
+        return this.dbConnection.ExecuteNonQuery(UpsertQuery, parameters) != 0;   
     }
 
     public Task<bool> SetAsync<TValue>(string key, TValue value)
@@ -135,13 +135,13 @@ public class MysqlCacheManager : ICacheManager
     {
         var parameters = new Dictionary<string, object> {{"@id", key},};
 
-        return await this.connectionManager.ExecuteNonQueryAsync(DeleteQuery, parameters) != 0;
+        return await this.dbConnection.ExecuteNonQueryAsync(DeleteQuery, parameters) != 0;
     }
     
     public bool Delete(string key)
     {
         var parameters = new Dictionary<string, object> {{"@id", key},};
 
-        return this.connectionManager.ExecuteNonQuery(DeleteQuery, parameters) != 0;
+        return this.dbConnection.ExecuteNonQuery(DeleteQuery, parameters) != 0;
     }
 }

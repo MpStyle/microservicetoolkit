@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 
-namespace microservice.toolkit.connectionmanager;
+namespace microservice.toolkit.connection.extensions;
 
 public static class DbDataReaderExtension
 {

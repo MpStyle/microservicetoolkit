@@ -7,7 +7,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.connectionmanager;
+namespace microservice.toolkit.connection.extensions;
 
 public static class DbConnectionExtension
 {
@@ -250,7 +250,7 @@ public static class DbConnectionExtension
     }
 
     /// <summary>
-    /// An asynchronous version of microservice.toolkit.book.ConnectionManager.Open, which opens
+    /// An asynchronous version of microservice.toolkit.connection.extensions.DbConnectionExtensions.Open, which opens
     /// a database connection.
     /// </summary>
     /// <returns>A task representing the asynchronous operation.</returns>
