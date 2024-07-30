@@ -1,6 +1,4 @@
-﻿using microservice.toolkit.core;
-
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using Microsoft.Extensions.Logging.Abstractions;
 
 using NUnit.Framework;
 
@@ -17,7 +15,7 @@ public class LocalSignalEmitterTest
     [Test]
     public async Task Run_Int()
     {
-        ISignalEmitter signalEmitter =
+        var signalEmitter =
             new LocalSignalEmitter(name => nameof(SquarePow).Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<LocalSignalEmitter>());
 

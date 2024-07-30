@@ -18,7 +18,7 @@ namespace microservice.toolkit.messagemediator.test
         [Test]
         public async Task Run_Object_Int()
         {
-            IMessageMediator mediator =
+            var mediator =
                 new LocalMessageMediator(name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
 
