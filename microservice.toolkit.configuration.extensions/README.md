@@ -12,17 +12,17 @@ Common interface to access to configurations value.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.configuration.extensions -Version 2.0.0
+Install-Package microservice.toolkit.configuration.extensions -Version 2.0.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.configuration.extensions --version 2.0.0
+dotnet add package microservice.toolkit.configuration.extensions --version 2.0.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.configuration.extensions" Version="2.0.0" />
+<PackageReference Include="microservice.toolkit.configuration.extensions" Version="2.0.1" />
 ```
 
 ## Available methods

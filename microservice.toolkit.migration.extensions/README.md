@@ -21,17 +21,17 @@ Supported databases:
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.migration.extensions -Version 2.0.0
+Install-Package microservice.toolkit.migration.extensions -Version 2.0.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.migration.extensions --version 2.0.0
+dotnet add package microservice.toolkit.migration.extensions --version 2.0.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.migration.extensions" Version="2.0.0" />
+<PackageReference Include="microservice.toolkit.migration.extensions" Version="2.0.1" />
 ```
 
 ## How to use
