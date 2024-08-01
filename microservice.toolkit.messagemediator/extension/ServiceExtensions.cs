@@ -2,7 +2,7 @@
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public class ServiceExtensions
+public static class ServiceExtensions
 {
     public static string PatternOf<T>() where T : IService
     {
