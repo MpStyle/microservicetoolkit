@@ -2,9 +2,9 @@
 
 namespace microservice.toolkit.messagemediator.extension;
 
-public static class SignalHandlerExtensions
+public static class ServiceUtils
 {
-    public static string PatternOf<T>() where T : ISignalHandler
+    public static string PatternOf<T>() where T : IService
     {
         return typeof(T).ToPattern();
     }
