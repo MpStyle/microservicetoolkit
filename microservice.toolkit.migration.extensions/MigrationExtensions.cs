@@ -32,7 +32,7 @@ namespace microservice.toolkit.migration.extensions
                 return new ApplyResult {Exception = ex};
             }
 
-            return new ApplyResult() {Success = true};
+            return new ApplyResult {Success = true};
         }
     }
 

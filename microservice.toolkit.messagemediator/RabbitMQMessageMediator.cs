@@ -115,7 +115,7 @@ namespace microservice.toolkit.messagemediator
                 this.logger.LogDebug("Time out error: {Message}", ex.ToString());
                 return new ServiceResponse<TPayload>
                 {
-                    Error = ErrorCode.TimeOut
+                    Error = ServiceError.TimeOut
                 };
             }
         }
@@ -153,7 +153,7 @@ namespace microservice.toolkit.messagemediator
 
                 if (service == null)
                 {
-                    throw new RabbitMQMessageMediatorException(ErrorCode.ServiceNotFound);
+                    throw new RabbitMQMessageMediatorException(ServiceError.ServiceNotFound);
                 }
 
                 var json = ((JsonElement)rpcMessage.Payload).GetRawText();
@@ -167,7 +167,7 @@ namespace microservice.toolkit.messagemediator
             catch (Exception ex)
             {
                 this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                response = new ServiceResponse<object> { Error = ErrorCode.Unknown };
+                response = new ServiceResponse<object> { Error = ServiceError.Unknown };
             }
             finally
             {

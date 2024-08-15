@@ -1,5 +1,4 @@
-﻿using microservice.toolkit.core.attribute;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,7 @@ public static class MessageMediatorExtensions
 
     public static MicroserviceCollection GetServices(this Type[] types)
     {
-        return types.Select(t => Assembly.GetAssembly(t)).ToArray().GetServices();
+        return types.Select(Assembly.GetAssembly).ToArray().GetServices();
     }
 
     /// <summary>
@@ -88,12 +87,9 @@ public static class MessageMediatorExtensions
 
     public static IServiceCollection AddServices(this IServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
-        foreach (var item in mapper.ToDictionary())
+        foreach (var type in mapper.ToDictionary().SelectMany(item => item.Value))
         {
-            foreach (var type in item.Value)
-            {
-                services.Add(new ServiceDescriptor(type, type, lifeTime));   
-            }
+            services.Add(new ServiceDescriptor(type, type, lifeTime));
         }
 
         return services;

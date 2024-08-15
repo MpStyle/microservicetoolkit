@@ -61,7 +61,7 @@ public class NatsMessageMediator : IMessageMediator, IDisposable
 
             if (service == null)
             {
-                throw new NatsMessageMediatorException(ErrorCode.ServiceNotFound);
+                throw new NatsMessageMediatorException(ServiceError.ServiceNotFound);
             }
 
             var json = ((JsonElement)rpcMessage.Payload).GetRawText();
@@ -75,7 +75,7 @@ public class NatsMessageMediator : IMessageMediator, IDisposable
         catch (Exception ex)
         {
             this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-            response = new ServiceResponse<object> { Error = ErrorCode.Unknown };
+            response = new ServiceResponse<object> { Error = ServiceError.Unknown };
         }
         finally
         {

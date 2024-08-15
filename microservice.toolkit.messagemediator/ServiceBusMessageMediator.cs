@@ -77,14 +77,14 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         if (serviceBusReceivedMessage == null)
         {
             this.logger.LogDebug("Error: didn't receive a response");
-            return new ServiceResponse<TPayload> { Error = ErrorCode.ExecutionTimeout };
+            return new ServiceResponse<TPayload> { Error = ServiceError.ExecutionTimeout };
         }
 
         var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(serviceBusReceivedMessage.Body.ToString());
 
         if (response == null)
         {
-            return new ServiceResponse<TPayload> { Error = ErrorCode.EmptyResponse };
+            return new ServiceResponse<TPayload> { Error = ServiceError.EmptyResponse };
         }
 
         return response;
@@ -106,7 +106,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
 
         serviceBusProcessor.ProcessMessageAsync += async args =>
         {
-            var response = new ServiceResponse<object> { Error = ErrorCode.EmptyRequest };
+            var response = new ServiceResponse<object> { Error = ServiceError.EmptyRequest };
             var brokeredMessage = JsonSerializer.Deserialize<BrokeredMessage>(args.Message.Body.ToString());
 
             if (brokeredMessage != null)
@@ -128,12 +128,12 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
                 catch (ServiceNotFoundException ex)
                 {
                     this.logger.LogDebug("Service not found: {Message}", ex.ToString());
-                    response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
+                    response = new ServiceResponse<object> { Error = ServiceError.ServiceNotFound };
                 }
                 catch (Exception ex)
                 {
                     this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                    response = new ServiceResponse<object> { Error = ErrorCode.Unknown };
+                    response = new ServiceResponse<object> { Error = ServiceError.Unknown };
                 }
             }
 

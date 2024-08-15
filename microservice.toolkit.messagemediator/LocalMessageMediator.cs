@@ -49,12 +49,12 @@ namespace microservice.toolkit.messagemediator
             catch (ServiceNotFoundException ex)
             {
                 this.logger.LogDebug("Service not found: {Message}", ex.ToString());
-                response.Error = ErrorCode.ServiceNotFound;
+                response.Error = ServiceError.ServiceNotFound;
             }
             catch (Exception ex)
             {
                 this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                response.Error = ErrorCode.Unknown;
+                response.Error = ServiceError.Unknown;
             }
 
             return response;

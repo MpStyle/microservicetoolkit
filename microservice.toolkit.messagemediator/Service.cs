@@ -40,7 +40,7 @@ namespace microservice.toolkit.messagemediator
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-                return new ServiceResponse<dynamic> { Error = ErrorCode.InvalidServiceExecution };
+                return new ServiceResponse<dynamic> { Error = ServiceError.InvalidServiceExecution };
             }
         }
 
