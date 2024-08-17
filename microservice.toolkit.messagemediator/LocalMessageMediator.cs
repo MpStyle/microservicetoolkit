@@ -32,7 +32,7 @@ namespace microservice.toolkit.messagemediator
         public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
             var response = new ServiceResponse<TPayload>();
-            
+
             try
             {
                 var service = this.serviceFactory(pattern);
@@ -43,8 +43,14 @@ namespace microservice.toolkit.messagemediator
                 }
 
                 var serviceResponse = await service.Run(message);
-                response.Payload = (TPayload)serviceResponse.Payload;
-                response.Error = serviceResponse.Error;
+                if (serviceResponse.Error.HasValue == false)
+                {
+                    response.Payload = (TPayload)serviceResponse.Payload;
+                }
+                else
+                {
+                    response.Error = serviceResponse.Error;
+                }
             }
             catch (ServiceNotFoundException ex)
             {
