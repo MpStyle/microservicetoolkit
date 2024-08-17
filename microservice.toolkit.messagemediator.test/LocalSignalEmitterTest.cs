@@ -5,6 +5,8 @@ using NUnit.Framework;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
+using static microservice.toolkit.messagemediator.extension.SignalHandlerUtils;
+
 namespace microservice.toolkit.messagemediator.test;
 
 [ExcludeFromCodeCoverage]
@@ -16,16 +18,32 @@ public class LocalSignalEmitterTest
     public async Task Run_Int()
     {
         var signalEmitter =
-            new LocalSignalEmitter(name => nameof(SquarePow).Equals(name) ? [new SquarePow()] : null,
+            new LocalSignalEmitter(name => PatternOf<SquarePow>().Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<LocalSignalEmitter>());
 
-        await signalEmitter.Emit(nameof(SquarePow), 2);
+        await signalEmitter.Emit(PatternOf<SquarePow>(), 2);
 
         Assert.That(isSignalHandlerRunned, Is.False);
 
         await Task.Delay(5000);
 
         Assert.That(isSignalHandlerRunned, Is.True);
+    }
+
+    [Test]
+    public async Task Run_Not_found()
+    {
+        var signalEmitter =
+            new LocalSignalEmitter(name => "ServiceNotFound".Equals(name) ? [new SquarePow()] : null,
+                new NullLogger<LocalSignalEmitter>());
+
+        await signalEmitter.Emit(PatternOf<SquarePow>(), 2);
+
+        Assert.That(isSignalHandlerRunned, Is.False);
+
+        await Task.Delay(5000);
+
+        Assert.That(isSignalHandlerRunned, Is.False);
     }
 
     [SetUp]
