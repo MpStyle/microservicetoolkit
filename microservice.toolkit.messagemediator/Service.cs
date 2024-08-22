@@ -1,5 +1,3 @@
-
-using microservice.toolkit.core;
 using microservice.toolkit.core.entity;
 
 using System;
@@ -13,7 +11,7 @@ namespace microservice.toolkit.messagemediator
     /// </summary>
     /// <typeparam name="TRequest">The type of the request.</typeparam>
     /// <typeparam name="TPayload">The type of the response payload.</typeparam>
-    public abstract class Service<TRequest, TPayload> : IService
+    public abstract class Service<TRequest, TPayload> : IService where TPayload : new()
     {
         /// <summary>
         /// Executes the service logic for the specified request.
@@ -54,6 +52,11 @@ namespace microservice.toolkit.messagemediator
         {
             return Task.FromResult(this.SuccessfulResponse(payload));
         }
+        
+        protected Task<ServiceResponse<TPayload>> SuccessfulResponseTask()
+        {
+            return Task.FromResult(this.SuccessfulResponse(new TPayload()));
+        }
 
         /// <summary>
         /// Creates a successful service response with the specified payload.
@@ -64,6 +67,11 @@ namespace microservice.toolkit.messagemediator
         protected ServiceResponse<TPayload> SuccessfulResponse(TPayload payload)
         {
             return this.Response(payload, null);
+        }
+        
+        protected ServiceResponse<TPayload> SuccessfulResponse()
+        {
+            return this.Response(new TPayload(), null);
         }
 
         /// <summary>
@@ -83,10 +91,7 @@ namespace microservice.toolkit.messagemediator
         /// <returns>An instance of <see cref="ServiceResponse{TPayload}"/> representing an unsuccessful response.</returns>
         protected ServiceResponse<TPayload> UnsuccessfulResponse(int error)
         {
-            return new ServiceResponse<TPayload>()
-            {
-                Error = error
-            };
+            return new ServiceResponse<TPayload> { Error = error };
         }
 
         /// <summary>
@@ -112,16 +117,10 @@ namespace microservice.toolkit.messagemediator
         {
             if (error.HasValue)
             {
-                return new ServiceResponse<TPayload>
-                {
-                    Error = error
-                };
+                return new ServiceResponse<TPayload> { Error = error };
             }
-            
-            return new ServiceResponse<TPayload>
-            {
-                Payload = payload
-            };
+
+            return new ServiceResponse<TPayload> { Payload = payload };
         }
     }
 
