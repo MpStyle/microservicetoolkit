@@ -11,12 +11,19 @@ namespace microservice.toolkit.messagemediator
     /// <summary>
     /// Represents a message mediator that handles local message communication.
     /// </summary>
-    public class LocalMessageMediator : IMessageMediator
+    public class LocalMessageMediator : CachedMessageMediator
     {
         private readonly ServiceFactory serviceFactory;
         private readonly ILogger<IMessageMediator> logger;
 
         public LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
+            : this(serviceFactory, null, logger)
+        {
+        }
+
+        public LocalMessageMediator(ServiceFactory serviceFactory, ICacheManager cacheManager,
+            ILogger<LocalMessageMediator> logger)
+            : base(cacheManager)
         {
             this.serviceFactory = serviceFactory;
             this.logger = logger;
@@ -29,8 +36,13 @@ namespace microservice.toolkit.messagemediator
         /// <param name="pattern">The pattern used to identify the service.</param>
         /// <param name="message">The message to send to the service.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{TPayload}"/> object.</returns>
-        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+        public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
+            if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+            {
+                return cachedPayload;
+            }
+
             var response = new ServiceResponse<TPayload>();
 
             try
@@ -63,6 +75,8 @@ namespace microservice.toolkit.messagemediator
                 response.Error = ServiceError.Unknown;
             }
 
+            this.SetCacheResponse(pattern, message, response);
+            
             return response;
         }
 
@@ -70,7 +84,7 @@ namespace microservice.toolkit.messagemediator
         /// Shuts down the local message mediator.
         /// </summary>
         /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-        public Task Shutdown()
+        public override Task Shutdown()
         {
             return Task.CompletedTask;
         }

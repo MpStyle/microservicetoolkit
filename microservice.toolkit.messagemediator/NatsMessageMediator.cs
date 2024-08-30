@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
-public class NatsMessageMediator : IMessageMediator, IDisposable
+public class NatsMessageMediator : CachedMessageMediator, IDisposable
 {
     private readonly ILogger<NatsMessageMediator> logger;
     private readonly NatsMessageMediatorConfiguration configuration;
@@ -22,6 +22,12 @@ public class NatsMessageMediator : IMessageMediator, IDisposable
     private readonly IAsyncSubscription consumerSubscription;
 
     public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<NatsMessageMediator> logger)
+        : this(configuration, serviceFactory, null, logger)
+    {
+    }
+    
+    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ICacheManager cacheManager, ILogger<NatsMessageMediator> logger)
+        : base(cacheManager)
     {
         this.configuration = configuration;
         this.serviceFactory = serviceFactory;
@@ -30,8 +36,13 @@ public class NatsMessageMediator : IMessageMediator, IDisposable
         this.consumerSubscription = this.connection.SubscribeAsync(this.configuration.Topic, this.OnConsumerReceivesRequest);
     }
 
-    public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
     {
+        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        {
+            return cachedPayload;
+        }
+        
         var responseMessage = await this.connection.RequestAsync(this.configuration.Topic, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
         {
             Pattern = pattern,
@@ -40,6 +51,8 @@ public class NatsMessageMediator : IMessageMediator, IDisposable
         })), this.configuration.ResponseTimeout);
         var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
 
+        this.SetCacheResponse(pattern, message, response);
+        
         return response;
     }
 
@@ -89,7 +102,7 @@ public class NatsMessageMediator : IMessageMediator, IDisposable
         this.Shutdown().Wait();
     }
 
-    public async Task Shutdown()
+    public override async Task Shutdown()
     {
         if (this.consumerSubscription != null)
         {

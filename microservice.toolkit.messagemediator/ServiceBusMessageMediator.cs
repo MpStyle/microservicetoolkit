@@ -16,7 +16,7 @@ namespace microservice.toolkit.messagemediator;
 /// <summary>
 /// Represents a message mediator for sending and receiving messages using Azure Service Bus.
 /// </summary>
-public class ServiceBusMessageMediator : IMessageMediator, IDisposable
+public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
 {
     private readonly ServiceFactory serviceFactory;
     private readonly ServiceBusAdministrationClient serviceBusAdministrationClient;
@@ -25,8 +25,14 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
     private readonly ServiceBusClient consumerClient;
     private readonly ILogger<ServiceBusMessageMediator> logger;
 
-    public ServiceBusMessageMediator(ServiceFactory serviceFactory, Configuration configuration,
+    public ServiceBusMessageMediator(ServiceFactory serviceFactory, Configuration configuration, ILogger<ServiceBusMessageMediator> logger)
+        : this(serviceFactory, configuration, null, logger)
+    {
+    }
+    
+    public ServiceBusMessageMediator(ServiceFactory serviceFactory, Configuration configuration, ICacheManager cacheManager,
         ILogger<ServiceBusMessageMediator> logger)
+        : base(cacheManager)
     {
         this.serviceFactory = serviceFactory;
         this.configuration = configuration;
@@ -45,8 +51,13 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
     /// <param name="pattern">The pattern of the message.</param>
     /// <param name="message">The message to send.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response from the service bus.</returns>
-    public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
     {
+        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        {
+            return cachedPayload;
+        }
+        
         // Temporary Queue for Receiver to send their replies into
         var replyQueueName = Guid.NewGuid().ToString();
         await this.serviceBusAdministrationClient.CreateQueueAsync(new CreateQueueOptions(replyQueueName)
@@ -86,6 +97,8 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         {
             return new ServiceResponse<TPayload> { Error = ServiceError.EmptyResponse };
         }
+        
+        this.SetCacheResponse(pattern, message, response);
 
         return response;
     }
@@ -94,7 +107,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
     /// Shuts down the service bus message mediator.
     /// </summary>
     /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-    public async Task Shutdown()
+    public override async Task Shutdown()
     {
         await this.producerClient.DisposeAsync();
         await this.consumerClient.DisposeAsync();
