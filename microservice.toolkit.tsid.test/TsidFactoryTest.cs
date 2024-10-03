@@ -21,10 +21,10 @@ public class TsidFactoryTest
         }
         var sortedTsids = Sort(tsids);
 
-        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        Assert.That(tsids.Length, Is.EqualTo(sortedTsids.Length));
         for (var i = 0; i < tsids.Length; i++)
         {
-            Assert.AreEqual(tsids[i], sortedTsids[i]);
+            Assert.That(tsids[i], Is.EqualTo(sortedTsids[i]));
         }
     }
 
@@ -43,10 +43,10 @@ public class TsidFactoryTest
         }
         var sortedTsids = Sort(tsids);
 
-        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        Assert.That(tsids.Length, Is.EqualTo(sortedTsids.Length));
         for (var i = 0; i < tsids.Length; i++)
         {
-            Assert.AreEqual(tsids[i], sortedTsids[i]);
+            Assert.That(tsids[i], Is.EqualTo(sortedTsids[i]));
         }
     }
 
@@ -65,10 +65,10 @@ public class TsidFactoryTest
         }
         var sortedTsids = Sort(tsids);
 
-        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        Assert.That(tsids.Length, Is.EqualTo(sortedTsids.Length));
         for (var i = 0; i < tsids.Length; i++)
         {
-            Assert.AreEqual(tsids[i], sortedTsids[i]);
+            Assert.That(tsids[i], Is.EqualTo(sortedTsids[i]));
         }
     }
 
@@ -84,10 +84,10 @@ public class TsidFactoryTest
         }
         var sortedTsids = Sort(tsids);
 
-        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        Assert.That(tsids.Length, Is.EqualTo(sortedTsids.Length));
         for (var i = 0; i < tsids.Length; i++)
         {
-            Assert.AreEqual(tsids[i], sortedTsids[i]);
+            Assert.That(tsids[i], Is.EqualTo(sortedTsids[i]));
         }
     }
 
@@ -106,10 +106,10 @@ public class TsidFactoryTest
         }
         var sortedTsids = Sort(tsids);
 
-        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        Assert.That(tsids.Length, Is.EqualTo(sortedTsids.Length));
         for (var i = 0; i < tsids.Length; i++)
         {
-            Assert.AreEqual(tsids[i], sortedTsids[i]);
+            Assert.That(tsids[i], Is.EqualTo(sortedTsids[i]));
         }
     }
 
@@ -128,10 +128,10 @@ public class TsidFactoryTest
         }
         var sortedTsids = Sort(tsids);
 
-        Assert.AreEqual(tsids.Length, sortedTsids.Length);
+        Assert.That(tsids.Length, Is.EqualTo(sortedTsids.Length));
         for (var i = 0; i < tsids.Length; i++)
         {
-            Assert.AreEqual(tsids[i], sortedTsids[i]);
+            Assert.That(tsids[i], Is.EqualTo(sortedTsids[i]));
         }
     }
 
@@ -155,13 +155,13 @@ public class TsidFactoryTest
         var node = GetNode(tsid, 8);
         var sequence = GetSequence(tsid, 14);
 
-        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
-        Assert.AreEqual(13, tsid.ToString().Length);
+        Assert.That(64 >= Convert.ToString(tsid.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(tsid.ToString().Length));
 
-        Assert.AreEqual(sequence, 0);
-        Assert.AreEqual(sourceNode, node);
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
+        Assert.That(sequence, Is.EqualTo(0));
+        Assert.That(sourceNode, Is.EqualTo(node));
+        Assert.That(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.That(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     [Test]
@@ -183,13 +183,13 @@ public class TsidFactoryTest
         var node = GetNode(tsid, 8);
         var sequence = GetSequence(tsid, 14);
 
-        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
-        Assert.AreEqual(13, tsid.ToString().Length);
+        Assert.That(64 >= Convert.ToString(tsid.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(tsid.ToString().Length));
 
-        Assert.AreEqual(sequence, 0);
-        Assert.AreEqual(sourceNode, node);
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
+        Assert.That(sequence, Is.EqualTo(0));
+        Assert.That(sourceNode, Is.EqualTo(node));
+        Assert.That(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.That(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     public void Create_Tsid4096()
@@ -210,13 +210,13 @@ public class TsidFactoryTest
         var node = GetNode(tsid, 12);
         var sequence = GetSequence(tsid, 10);
 
-        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
-        Assert.AreEqual(13, tsid.ToString().Length);
+        Assert.That(64 >= Convert.ToString(tsid.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(tsid.ToString().Length));
 
-        Assert.AreEqual(sequence, 0);
-        Assert.AreEqual(sourceNode, node);
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
+        Assert.That(sequence, Is.EqualTo(0));
+        Assert.That(sourceNode, Is.EqualTo(node));
+        Assert.That(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.That(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     [Test]
@@ -240,13 +240,13 @@ public class TsidFactoryTest
         var node = GetNode(tsid, 10);
         var sequence = GetSequence(tsid, 12);
 
-        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
-        Assert.AreEqual(13, tsid.ToString().Length);
+        Assert.That(64 >= Convert.ToString(tsid.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(tsid.ToString().Length));
 
-        Assert.AreEqual(sequence, 0);
-        Assert.AreEqual(sourceNode, node);
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
-        Assert.IsTrue(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
+        Assert.That(sequence, Is.EqualTo(0));
+        Assert.That(sourceNode, Is.EqualTo(node));
+        Assert.That(datetime.ToUnixTimeMilliseconds() >= start.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}<{start.ToUnixTimeMilliseconds()}");
+        Assert.That(datetime.ToUnixTimeMilliseconds() <= end.ToUnixTimeMilliseconds(), Is.True, $"{datetime.ToUnixTimeMilliseconds()}>{end.ToUnixTimeMilliseconds()}");
     }
 
     [Test]
@@ -267,25 +267,25 @@ public class TsidFactoryTest
         Thread.Sleep(1);
         var fifth = factory.Create();
 
-        Assert.IsTrue(64 >= Convert.ToString(first.Number, 2).Length);
-        Assert.AreEqual(13, first.ToString().Length);
+        Assert.That(64 >= Convert.ToString(first.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(first.ToString().Length));
 
-        Assert.IsTrue(64 >= Convert.ToString(second.Number, 2).Length);
-        Assert.AreEqual(13, second.ToString().Length);
+        Assert.That(64 >= Convert.ToString(second.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(second.ToString().Length));
 
-        Assert.IsTrue(64 >= Convert.ToString(third.Number, 2).Length);
-        Assert.AreEqual(13, third.ToString().Length);
+        Assert.That(64 >= Convert.ToString(third.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(third.ToString().Length));
 
-        Assert.IsTrue(64 >= Convert.ToString(fourth.Number, 2).Length);
-        Assert.AreEqual(13, fourth.ToString().Length);
+        Assert.That(64 >= Convert.ToString(fourth.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(fourth.ToString().Length));
 
-        Assert.IsTrue(64 >= Convert.ToString(fifth.Number, 2).Length);
-        Assert.AreEqual(13, fifth.ToString().Length);
+        Assert.That(64 >= Convert.ToString(fifth.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(fifth.ToString().Length));
 
-        Assert.IsTrue(first.Number < second.Number);
-        Assert.IsTrue(second.Number < third.Number);
-        Assert.IsTrue(third.Number < fourth.Number);
-        Assert.IsTrue(fourth.Number < fifth.Number);
+        Assert.That(first.Number < second.Number, Is.True);
+        Assert.That(second.Number < third.Number, Is.True);
+        Assert.That(third.Number < fourth.Number, Is.True);
+        Assert.That(fourth.Number < fifth.Number, Is.True);
     }
 
     [Test]
@@ -298,14 +298,14 @@ public class TsidFactoryTest
         });
         var tsid = factory.Create();
 
-        Assert.IsTrue(64 >= Convert.ToString(tsid.Number, 2).Length);
-        Assert.AreEqual(13, tsid.ToString().Length);
+        Assert.That(64 >= Convert.ToString(tsid.Number, 2).Length, Is.True);
+        Assert.That(13, Is.EqualTo(tsid.ToString().Length));
 
-        Assert.IsNotNull(tsid.Number);
-        Assert.IsNotNull(tsid.ToString());
-        Assert.IsNotNull(tsid.ToLowerCase());
-        Assert.IsTrue(string.Equals(tsid.ToString(), tsid.ToLowerCase(), StringComparison.OrdinalIgnoreCase));
-        Assert.IsNotNull(tsid.ToBytes());
+        Assert.That(tsid.Number, Is.Not.Null);
+        Assert.That(tsid.ToString(), Is.Not.Null);
+        Assert.That(tsid.ToLowerCase(), Is.Not.Null);
+        Assert.That(string.Equals(tsid.ToString(), tsid.ToLowerCase(), StringComparison.OrdinalIgnoreCase), Is.True);
+        Assert.That(tsid.ToBytes(), Is.Not.Null);
     }
 
     [Test]
@@ -320,8 +320,8 @@ public class TsidFactoryTest
 
         var fromTsid = TsidFactory.From(tsid.ToString());
 
-        Assert.AreEqual(tsid.Number, fromTsid.Number);
-        Assert.AreNotEqual(tsid, fromTsid);
+        Assert.That(tsid.Number, Is.EqualTo(fromTsid.Number));
+        Assert.That(tsid, Is.Not.EqualTo( fromTsid));
     }
 
     [Test]
@@ -336,8 +336,8 @@ public class TsidFactoryTest
 
         var fromTsid = TsidFactory.From(tsid.ToBytes());
 
-        Assert.AreEqual(tsid.Number, fromTsid.Number);
-        Assert.AreNotEqual(tsid, fromTsid);
+        Assert.That(tsid.Number, Is.EqualTo(fromTsid.Number));
+        Assert.That(tsid, Is.Not.EqualTo( fromTsid));
     }
 
     [Test]
@@ -352,8 +352,8 @@ public class TsidFactoryTest
 
         var fromTsid = TsidFactory.From(tsid.Number);
 
-        Assert.AreEqual(tsid.Number, fromTsid.Number);
-        Assert.AreNotEqual(tsid, fromTsid);
+        Assert.That(tsid.Number, Is.EqualTo(fromTsid.Number));
+        Assert.That(tsid, Is.Not.EqualTo( fromTsid));
     }
 
     public static long GetTime(Tsid tsid)
