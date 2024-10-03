@@ -20,6 +20,11 @@ Written in C#, it takes advantage of the power of .NET framework to make possibl
 
 The __Microservice Toolkit__ libraries collects and enriches the already powerful .NET framework and C# libraries. 
 
+### [TSID](./microservice.toolkit.tsid/README.md)
+![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.tsid)
+![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.tsid) \
+Library for generating Time-Sorted Unique Identifiers.
+
 ### [Message mediator](./microservice.toolkit.messagemediator/README.md)
 ![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.messagemediator)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.messagemediator) \

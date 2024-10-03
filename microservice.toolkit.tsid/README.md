@@ -1,5 +1,11 @@
 # TSID Creator
 
+[![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
+[![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.tsid)
+![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.tsid)
+
 This is library for Time Sortable Identifier (TSID). It is a C# porting of Java library [tsid-creator](https://github.com/f4b6a3/tsid-creator) by [f4b6a3](https://github.com/f4b6a3)
 
 It brings together ideas from [Twitter's Snowflake](https://github.com/twitter-archive/snowflake/tree/snowflake-2010) and [ULID Spec](https://github.com/ulid/spec).
