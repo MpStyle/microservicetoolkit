@@ -4,8 +4,8 @@ internal static class AlphabetValues
 {
     internal static long[] Get()
     {
-        long[] alphabetValues = new long[128];
-        for (int i = 0; i < alphabetValues.Length; i++)
+        var alphabetValues = new long[128];
+        for (var i = 0; i < alphabetValues.Length; i++)
         {
             alphabetValues[i] = -1;
         }

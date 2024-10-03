@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
+/// <summary>
+/// Represents a signal emitter that emits signals locally.
+/// </summary>
 public class LocalSignalEmitter : ISignalEmitter
 {
     private readonly SignalHandlerFactory signalHandlerFactory;
@@ -20,6 +23,13 @@ public class LocalSignalEmitter : ISignalEmitter
         this.logger = logger;
     }
 
+    /// <summary>
+    /// Asynchronously emits a message to the specified pattern.
+    /// </summary>
+    /// <typeparam name="TEvent">The type of the message.</typeparam>
+    /// <param name="pattern">The pattern to match the message handlers.</param>
+    /// <param name="message">The message to emit.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task Emit<TEvent>(string pattern, TEvent message)
     {
         try
@@ -33,7 +43,7 @@ public class LocalSignalEmitter : ISignalEmitter
 
             foreach (var eventHandler in eventHandlers)
             {
-                _ = eventHandler.Run(message).ConfigureAwait(false);   
+                _ = eventHandler.Run(message).ConfigureAwait(false);
             }
         }
         catch (SignalHandlerNotFoundException ex)

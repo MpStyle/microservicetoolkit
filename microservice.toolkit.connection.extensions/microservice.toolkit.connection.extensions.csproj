@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <Authors>Michele Pagnin</Authors>
+    <Product>Microservice Toolkit - Connection Manager</Product>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - Connection Manager</Title>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>microservice, database, sql, connection, mysql, postgresql, sqlserver</PackageTags>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>Common interface to simplify the access to a SQL database.</Description>
+    <LangVersion>12</LangVersion>
+    <PackageId>microservice.toolkit.connection.extensions</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\image\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include=".\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

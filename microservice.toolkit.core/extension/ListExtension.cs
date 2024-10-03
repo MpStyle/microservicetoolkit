@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace microservice.toolkit.core.extension
 {
@@ -7,7 +6,7 @@ namespace microservice.toolkit.core.extension
     {
         public static bool IsNullOrEmpty<T>(this List<T> l)
         {
-            return l == null || l.Any() == false;
+            return l == null || l.Count != 0 == false;
         }
     }
 }

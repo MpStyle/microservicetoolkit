@@ -13,7 +13,10 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
-public class ServiceBusMessageMediator : IMessageMediator, IDisposable
+/// <summary>
+/// Represents a message mediator for sending and receiving messages using Azure Service Bus.
+/// </summary>
+public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
 {
     private readonly ServiceFactory serviceFactory;
     private readonly ServiceBusAdministrationClient serviceBusAdministrationClient;
@@ -22,8 +25,14 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
     private readonly ServiceBusClient consumerClient;
     private readonly ILogger<ServiceBusMessageMediator> logger;
 
-    public ServiceBusMessageMediator(ServiceFactory serviceFactory, Configuration configuration,
+    public ServiceBusMessageMediator(ServiceFactory serviceFactory, Configuration configuration, ILogger<ServiceBusMessageMediator> logger)
+        : this(serviceFactory, configuration, null, logger)
+    {
+    }
+    
+    public ServiceBusMessageMediator(ServiceFactory serviceFactory, Configuration configuration, ICacheManager cacheManager,
         ILogger<ServiceBusMessageMediator> logger)
+        : base(cacheManager)
     {
         this.serviceFactory = serviceFactory;
         this.configuration = configuration;
@@ -35,8 +44,20 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         this.RegisterConsumer();
     }
 
-    public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    /// <summary>
+    /// Sends a message to a service bus queue and waits for a response.
+    /// </summary>
+    /// <typeparam name="TPayload">The type of the payload in the message.</typeparam>
+    /// <param name="pattern">The pattern of the message.</param>
+    /// <param name="message">The message to send.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response from the service bus.</returns>
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
     {
+        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        {
+            return cachedPayload;
+        }
+        
         // Temporary Queue for Receiver to send their replies into
         var replyQueueName = Guid.NewGuid().ToString();
         await this.serviceBusAdministrationClient.CreateQueueAsync(new CreateQueueOptions(replyQueueName)
@@ -48,13 +69,14 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
         var applicationMessage = new BrokeredMessage
         {
-            Pattern = pattern, 
-            Payload = message, 
+            Pattern = pattern,
+            Payload = message,
             RequestType = message.GetType().FullName
         };
         var serviceBusMessage = new ServiceBusMessage(JsonSerializer.SerializeToUtf8Bytes(applicationMessage))
         {
-            ContentType = "application/json", ReplyTo = replyQueueName,
+            ContentType = "application/json",
+            ReplyTo = replyQueueName,
         };
 
         await serviceBusSender.SendMessageAsync(serviceBusMessage);
@@ -66,20 +88,26 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         if (serviceBusReceivedMessage == null)
         {
             this.logger.LogDebug("Error: didn't receive a response");
-            return new ServiceResponse<TPayload> { Error = ErrorCode.ExecutionTimeout };
+            return new ServiceResponse<TPayload> { Error = ServiceError.ExecutionTimeout };
         }
 
         var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(serviceBusReceivedMessage.Body.ToString());
 
         if (response == null)
         {
-            return new ServiceResponse<TPayload> { Error = ErrorCode.EmptyResponse };
+            return new ServiceResponse<TPayload> { Error = ServiceError.EmptyResponse };
         }
+        
+        this.SetCacheResponse(pattern, message, response);
 
         return response;
     }
 
-    public async Task Shutdown()
+    /// <summary>
+    /// Shuts down the service bus message mediator.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous shutdown operation.</returns>
+    public override async Task Shutdown()
     {
         await this.producerClient.DisposeAsync();
         await this.consumerClient.DisposeAsync();
@@ -91,7 +119,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
 
         serviceBusProcessor.ProcessMessageAsync += async args =>
         {
-            var response = new ServiceResponse<object> { Error = ErrorCode.EmptyRequest };
+            var response = new ServiceResponse<object> { Error = ServiceError.EmptyRequest };
             var brokeredMessage = JsonSerializer.Deserialize<BrokeredMessage>(args.Message.Body.ToString());
 
             if (brokeredMessage != null)
@@ -113,12 +141,12 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
                 catch (ServiceNotFoundException ex)
                 {
                     this.logger.LogDebug("Service not found: {Message}", ex.ToString());
-                    response = new ServiceResponse<object> { Error = ErrorCode.ServiceNotFound };
+                    response = new ServiceResponse<object> { Error = ServiceError.ServiceNotFound };
                 }
                 catch (Exception ex)
                 {
                     this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                    response = new ServiceResponse<object> { Error = ErrorCode.Unknown };
+                    response = new ServiceResponse<object> { Error = ServiceError.Unknown };
                 }
             }
 
@@ -129,14 +157,18 @@ public class ServiceBusMessageMediator : IMessageMediator, IDisposable
         };
     }
 
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.
+    /// </summary>
     public async void Dispose()
     {
         await this.Shutdown();
     }
 
-    public class Configuration
-    {
-        public string QueueName { get; init; }
-        public string ConnectionString { get; init; }
-    }
+    /// <summary>
+    /// Represents the configuration settings for the Service Bus message mediator.
+    /// </summary>
+    /// <param name="QueueName"> Gets or sets the name of the queue. </param>
+    /// <param name="ConnectionString"> Gets or sets the connection string for the Service Bus. </param>
+    public record Configuration(string QueueName, string ConnectionString);
 }

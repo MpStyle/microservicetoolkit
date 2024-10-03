@@ -13,17 +13,17 @@ namespace microservice.toolkit.core.test.utils
         public void ConcatArrays()
         {
             var array = ArrayUtils.ConcatArrays(
-                new[] { 0, 1 },
-                new[] { 2, 3 },
-                new[] { 4, 5 },
-                new[] { 6, 7 },
-                new[] { 8, 9 }
+                [0, 1],
+                [2, 3],
+                [4, 5],
+                [6, 7],
+                [8, 9]
             );
 
-            Assert.AreEqual(10, array.Length);
+            Assert.That(10, Is.EqualTo(array.Length));
             for (var i = 0; i < array.Length; i++)
             {
-                Assert.AreEqual(i, array[i]);
+                Assert.That(i, Is.EqualTo(array[i]));
             }
         }
     }

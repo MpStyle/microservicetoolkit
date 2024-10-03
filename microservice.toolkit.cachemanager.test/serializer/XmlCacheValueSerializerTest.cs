@@ -15,7 +15,7 @@ namespace microservice.toolkit.cachemanager.test.serializer
             var serializer = new XmlCacheValueSerializer();
             var value = new MyGreetings { Greetings = "Hello World!" };
             var revalue = serializer.Deserialize<MyGreetings>(serializer.Serialize(value));
-            Assert.AreEqual(value.Greetings, revalue.Greetings);
+            Assert.That(value.Greetings, Is.EqualTo(revalue.Greetings));
         }
 
         public class MyGreetings

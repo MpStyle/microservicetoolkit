@@ -7,7 +7,7 @@ public static class TsidExtension
     public static byte[] ToBytes(this Tsid tsid)
     {
         var number = tsid.Number;
-        byte[] bytes = new byte[TsidProps.ByteCount];
+        var bytes = new byte[TsidProps.ByteCount];
 
         bytes[0x0] = (byte)(number >>> 56);
         bytes[0x1] = (byte)(number >>> 48);
@@ -49,17 +49,17 @@ public static class TsidExtension
 
     internal static char[] ToCharArray(string s)
     {
-        var chars = s == null ? null : s.ToCharArray();
+        var chars = s?.ToCharArray();
         if (!IsValidCharArray(chars))
         {
-            throw new ArgumentException(String.Format("Invalid TSID: \"%s\"", s));
+            throw new ArgumentException(string.Format("Invalid TSID: \"%s\"", s));
         }
         return chars;
     }
 
     internal static bool IsValidCharArray(char[] chars)
     {
-        if (chars == null || chars.Length != TsidProps.CharCount)
+        if (chars is not { Length: TsidProps.CharCount })
         {
             return false; // null or wrong size!
         }
@@ -71,13 +71,14 @@ public static class TsidExtension
             return false; // overflow!
         }
 
-        for (int i = 0; i < chars.Length; i++)
+        foreach (var t in chars)
         {
-            if (TsidProps.ALPHABET_VALUES[chars[i]] == -1)
+            if (TsidProps.ALPHABET_VALUES[t] == -1)
             {
                 return false; // invalid character!
             }
         }
+        
         return true; // It seems to be OK.
     }
 }

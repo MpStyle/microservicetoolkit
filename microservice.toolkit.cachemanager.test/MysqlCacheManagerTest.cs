@@ -1,4 +1,4 @@
-﻿using microservice.toolkit.connectionmanager;
+﻿using microservice.toolkit.connection.extensions;
 
 using MySqlConnector;
 
@@ -13,85 +13,117 @@ namespace microservice.toolkit.cachemanager.test;
 [ExcludeFromCodeCoverage]
 public class MysqlCacheManagerTest
 {
-    private MySqlConnection connectionManager;
-    private MysqlCacheManager manager;
+    private MySqlConnection dbConnection;
+    private MysqlCacheManager cacheManager;
 
     [Test]
-    public async Task SetAndRetrieve_KeyValue()
+    public async Task SetAsyncAndGetAsync_KeyValue()
     {
-        var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds());
+        var setResponse = await this.cacheManager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds());
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.Get<string>("my_key");
+        var getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
+    }
+    
+    [Test]
+    public void SetAndGet_KeyValue()
+    {
+        var setResponse = this.cacheManager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds());
+
+        Assert.That(setResponse, Is.True);
+
+        var getResponse = this.cacheManager.Get<string>("my_key");
+
+        Assert.That("my_value", Is.EqualTo(getResponse));
     }
 
     [Test]
-    public async Task SetAndRetrieve_KeyValueWithoutExpiration()
+    public async Task SetAsyncAndGetAsync_KeyValueWithoutExpiration()
     {
-        var setResponse = await this.manager.Set("my_key", "my_value");
+        var setResponse = await this.cacheManager.SetAsync("my_key", "my_value");
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.Get<string>("my_key");
+        var getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
     }
 
     [Test]
-    public async Task SetAndRetrieve_ExpiredKeyValue()
+    public async Task SetAsyncAndGetAsync_ExpiredKeyValue()
     {
-        var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
+        var setResponse = await this.cacheManager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
         await Task.Delay(5000);
 
-        var getResponse = await this.manager.Get<string>("my_key");
+        var getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.IsNull(getResponse);
+        Assert.That(getResponse, Is.Null);
     }
 
     [Test]
-    public async Task SetAndRetrieve_UpdateWithNegativeIssuedAt()
+    public async Task SetAsyncAndGetAsync_UpdateWithNegativeIssuedAt()
     {
-        var setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
+        var setResponse = await this.cacheManager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.Get<string>("my_key");
+        var getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
 
-        setResponse = await this.manager.Set("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds());
+        setResponse = await this.cacheManager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds());
 
-        Assert.IsFalse(setResponse);
+        Assert.That(setResponse, Is.False);
 
-        getResponse = await this.manager.Get<string>("my_key");
+        getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.IsNull(getResponse);
+        Assert.That(getResponse, Is.Null);
     }
 
     [Test]
-    public async Task Delete()
+    public async Task DeleteAsync()
     {
-        var setResponse = await this.manager.Set("my_key", "my_value");
+        var setResponse = await this.cacheManager.SetAsync("my_key", "my_value");
 
-        Assert.IsTrue(setResponse);
+        Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.Get<string>("my_key");
+        var getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.AreEqual("my_value", getResponse);
+        Assert.That("my_value", Is.EqualTo(getResponse));
 
-        var deleteResponse = await this.manager.Delete("my_key");
+        var deleteResponse = await this.cacheManager.DeleteAsync("my_key");
 
-        Assert.IsTrue(deleteResponse);
+        Assert.That(deleteResponse, Is.True);
 
-        getResponse = await this.manager.Get<string>("my_key");
+        getResponse = await this.cacheManager.GetAsync<string>("my_key");
 
-        Assert.IsNull(getResponse);
+        Assert.That(getResponse, Is.Null);
+    }
+    
+    [Test]
+    public void Delete()
+    {
+        var setResponse = this.cacheManager.Set("my_key", "my_value");
+
+        Assert.That(setResponse, Is.True);
+
+        var getResponse = this.cacheManager.Get<string>("my_key");
+
+        Assert.That("my_value", Is.EqualTo(getResponse));
+
+        var deleteResponse = this.cacheManager.Delete("my_key");
+
+        Assert.That(deleteResponse, Is.True);
+
+        getResponse = this.cacheManager.Get<string>("my_key");
+
+        Assert.That(getResponse, Is.Null);
     }
 
     #region SetUp & TearDown
@@ -102,7 +134,7 @@ public class MysqlCacheManagerTest
         var rootPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD") ?? "root";
         var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
-        this.connectionManager = new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
+        this.dbConnection = new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
         const string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS cache(
                         id VARCHAR(256) PRIMARY KEY,
@@ -110,20 +142,20 @@ public class MysqlCacheManagerTest
                         issuedAt BIGINT NOT NULL
                     );
                 ";
-        await this.connectionManager.ExecuteAsync(async cmd =>
+        await this.dbConnection.ExecuteAsync(async cmd =>
         {
             cmd.CommandText = createTableQuery;
             return await cmd.ExecuteNonQueryAsync();
         });
 
-        this.manager = new MysqlCacheManager(connectionManager);
+        this.cacheManager = new MysqlCacheManager(this.dbConnection);
     }
 
     [TearDown]
     public async Task TearDown()
     {
         const string createTableQuery = "DROP TABLE IF EXISTS cache;";
-        await this.connectionManager.ExecuteAsync(async cmd =>
+        await this.dbConnection.ExecuteAsync(async cmd =>
         {
             cmd.CommandText = createTableQuery;
             return await cmd.ExecuteNonQueryAsync();

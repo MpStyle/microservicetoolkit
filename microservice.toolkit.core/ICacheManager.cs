@@ -13,7 +13,9 @@ namespace microservice.toolkit.core
         /// </summary>
         /// <param name="key">The key of the entry to remove.</param>
         /// <returns></returns>
-        Task<bool> Delete(string key);
+        bool Delete(string key);
+        
+        Task<bool> DeleteAsync(string key);
 
         /// <summary>
         /// Adds an entry in the cache provider with an expiration time (Unix timestamp in milliseconds).
@@ -26,7 +28,9 @@ namespace microservice.toolkit.core
         /// <exception cref="System.NotSupportedException">
         /// There is no compatible JsonConverter for TValue or its serializable members.
         /// </exception>
-        Task<bool> Set<TValue>(string key, TValue value, long issuedAt);
+        bool Set<TValue>(string key, TValue value, long issuedAt);
+        
+        Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt);
 
         /// <summary>
         /// Adds an entry in the cache provider without an expiration time.
@@ -35,7 +39,9 @@ namespace microservice.toolkit.core
         /// <param name="key">Entry key</param>
         /// <param name="value">Entry value</param>
         /// <returns></returns>
-        Task<bool> Set<TValue>(string key, TValue value);
+        bool Set<TValue>(string key, TValue value);
+        
+        Task<bool> SetAsync<TValue>(string key, TValue value);
 
         /// <summary>
         /// Tries to retrieve the value of the entry using the key. If the entry does not exist or is expired the method returns null.
@@ -43,7 +49,11 @@ namespace microservice.toolkit.core
         /// <typeparam name="TValue">JSON serializable object</typeparam>
         /// <param name="key">Entry key</param>
         /// <returns></returns>
-        Task<TValue> Get<TValue>(string key);
+        TValue Get<TValue>(string key);
+        
+        Task<TValue> GetAsync<TValue>(string key);
+        
+        bool TryGet<TValue>(string key, out TValue value);
     }
 
     public interface ICacheValueSerializer

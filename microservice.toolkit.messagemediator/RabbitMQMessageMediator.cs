@@ -17,7 +17,10 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator
 {
-    public class RabbitMQMessageMediator : IMessageMediator, IDisposable
+    /// <summary>
+    /// Represents a message mediator for RabbitMQ.
+    /// </summary>
+    public class RabbitMQMessageMediator : CachedMessageMediator, IDisposable
     {
         private readonly ILogger<RabbitMQMessageMediator> logger;
         private readonly RabbitMQMessageMediatorConfiguration configuration;
@@ -29,8 +32,14 @@ namespace microservice.toolkit.messagemediator
 
         private readonly ConcurrentDictionary<string, TaskCompletionSource<byte[]>> pendingMessages = new();
 
+        public RabbitMQMessageMediator(RabbitMQMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<RabbitMQMessageMediator> logger)
+            : this(configuration, serviceFactory, null, logger)
+        {
+        }
+        
         public RabbitMQMessageMediator(RabbitMQMessageMediatorConfiguration configuration,
-            ServiceFactory serviceFactory, ILogger<RabbitMQMessageMediator> logger)
+            ServiceFactory serviceFactory, ICacheManager cacheManager, ILogger<RabbitMQMessageMediator> logger)
+            : base(cacheManager)
         {
             this.configuration = configuration;
             this.serviceFactory = serviceFactory;
@@ -58,16 +67,38 @@ namespace microservice.toolkit.messagemediator
                 autoAck: true);
         }
 
-        public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+        /// <summary>
+        /// Sends a message to the specified pattern using the RabbitMQ message mediator.
+        /// </summary>
+        /// <typeparam name="TPayload">The type of the payload in the message.</typeparam>
+        /// <param name="pattern">The pattern to send the message to.</param>
+        /// <param name="message">The message to send.</param>
+        /// <returns>A task representing the asynchronous operation. The task result contains the response from the message mediator.</returns>
+        public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
         {
-            return await this.Send<TPayload>(new BrokeredMessage
+            if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+            {
+                return cachedPayload;
+            }
+            
+            var response= await this.Send<TPayload>(new BrokeredMessage
             {
                 Pattern = pattern,
                 Payload = message,
                 RequestType = message.GetType().FullName,
             });
+            
+            this.SetCacheResponse(pattern, message, response);
+
+            return response;
         }
 
+        /// <summary>
+        /// Sends a brokered message and waits for the response.
+        /// </summary>
+        /// <typeparam name="TPayload">The type of the payload in the response.</typeparam>
+        /// <param name="message">The brokered message to send.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response as a <see cref="ServiceResponse{TPayload}"/>.</returns>
         private async Task<ServiceResponse<TPayload>> Send<TPayload>(BrokeredMessage message)
         {
             var correlationId = Guid.NewGuid().ToString();
@@ -99,7 +130,7 @@ namespace microservice.toolkit.messagemediator
                 this.logger.LogDebug("Time out error: {Message}", ex.ToString());
                 return new ServiceResponse<TPayload>
                 {
-                    Error = ErrorCode.TimeOut
+                    Error = ServiceError.TimeOut
                 };
             }
         }
@@ -137,7 +168,7 @@ namespace microservice.toolkit.messagemediator
 
                 if (service == null)
                 {
-                    throw new RabbitMQMessageMediatorException(ErrorCode.ServiceNotFound);
+                    throw new RabbitMQMessageMediatorException(ServiceError.ServiceNotFound);
                 }
 
                 var json = ((JsonElement)rpcMessage.Payload).GetRawText();
@@ -151,7 +182,7 @@ namespace microservice.toolkit.messagemediator
             catch (Exception ex)
             {
                 this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                response = new ServiceResponse<object> { Error = ErrorCode.Unknown };
+                response = new ServiceResponse<object> { Error = ServiceError.Unknown };
             }
             finally
             {
@@ -166,29 +197,46 @@ namespace microservice.toolkit.messagemediator
             this.Shutdown();
         }
 
-        public Task Shutdown()
+        public override Task Shutdown()
         {
             this.connection.Close();
             return Task.CompletedTask;
         }
     }
 
-    public class RabbitMQMessageMediatorConfiguration
-    {
-        public string QueueName { get; init; }
-        public string ReplyQueueName { get; init; }
-        public string ConnectionString { get; init; }
 
+
+    /// <summary>
+    /// Represents the configuration for the RabbitMQ message mediator.
+    /// </summary>
+    /// <param name="QueueName"> Gets or sets the name of the queue. </param>
+    /// <param name="ReplyQueueName"> Gets or sets the name of the reply queue. </param>
+    /// <param name="ConnectionString"> Gets or sets the connection string for RabbitMQ. </param>
+    public record RabbitMQMessageMediatorConfiguration(string QueueName, string ReplyQueueName, string ConnectionString)
+    {
         /// <summary>
-        /// Milliseconds
+        /// Gets or sets the response timeout in milliseconds.
         /// </summary>
+        /// <remarks>
+        /// The default value is 10000 milliseconds (10 seconds).
+        /// </remarks>
         public int ResponseTimeout { get; init; } = 10000;
     }
 
+    /// <summary>
+    /// Represents an exception that is thrown by the RabbitMQMessageMediator class.
+    /// </summary>
     public class RabbitMQMessageMediatorException : Exception
     {
+        /// <summary>
+        /// Gets the error code associated with the exception.
+        /// </summary>
         public int ErrorCode { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the RabbitMQMessageMediatorException class with the specified error code.
+        /// </summary>
+        /// <param name="errorCode">The error code associated with the exception.</param>
         public RabbitMQMessageMediatorException(int errorCode)
         {
             this.ErrorCode = errorCode;

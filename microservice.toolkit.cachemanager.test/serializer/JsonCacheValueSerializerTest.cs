@@ -15,7 +15,7 @@ public class JsonCacheValueSerializerTest
         var serializer = new JsonCacheValueSerializer();
         var value = new MyGreetings { Greetings = "Hello World!" };
         var revalue = serializer.Deserialize<MyGreetings>(serializer.Serialize(value));
-        Assert.AreEqual(value.Greetings, revalue.Greetings);
+        Assert.That(value.Greetings, Is.EqualTo(revalue.Greetings));
     }
 
     class MyGreetings

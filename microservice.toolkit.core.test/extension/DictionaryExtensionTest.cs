@@ -13,12 +13,12 @@ namespace microservice.toolkit.core.test.extension
         [Test]
         public void IsNullOrEmpty()
         {
-            Assert.IsTrue(DictionaryExtension.IsNullOrEmpty<object, object>(null));
-            Assert.IsTrue(new Dictionary<object, object>().IsNullOrEmpty());
-            Assert.IsFalse(new Dictionary<object, object>
+            Assert.That(DictionaryExtension.IsNullOrEmpty<object, object>(null), Is.True);
+            Assert.That(new Dictionary<object, object>().IsNullOrEmpty(), Is.True);
+            Assert.That(new Dictionary<object, object>
             {
                 {new object(), new object()}
-            }.IsNullOrEmpty());
+            }.IsNullOrEmpty(), Is.False);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿# Cache manager
 
-__The library is a work in progress. It is not yet considered production-ready.__
-
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,17 +12,17 @@ Common interface to manage cache using different providers.
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.cachemanager -Version 0.10.2
+Install-Package microservice.toolkit.cachemanager -Version 2.0.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.cachemanager --version 0.10.2
+dotnet add package microservice.toolkit.cachemanager --version 2.0.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.cachemanager" Version="0.10.2" />
+<PackageReference Include="microservice.toolkit.cachemanager" Version="2.0.1" />
 ```
 
 ## ICacheManager interface
@@ -72,28 +70,6 @@ How to use:
 var manager = new InMemoryCacheManager();
 ```
 
-You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
-
-**Newtonsoft JSON**\
-Install Newtonsoft JSON dependency:
-```
-dotnet add package Newtonsoft.Json --version 13.0.2
-```
-And use the serializer:
-```C#
-var manager = new InMemoryCacheManager(new NewtonsoftJsonCacheValueSerializer());
-```
-
-**System.Text.Json**
-```C#
-var manager = new InMemoryCacheManager(new JsonCacheValueSerializer());
-```
-
-**XML**
-```C#
-var manager = new InMemoryCacheManager(new XmlCacheValueSerializer());
-```
-
 ### SQLite cache manager
 
 <a name="sqlite"></a>
@@ -114,8 +90,8 @@ CREATE TABLE cache(
 
 And instantiate the cache manger:
 ```C#
-var connectionManager = new SqliteConnection($"[CONNECTION_STRING]");
-var manager = new SQLiteCacheManager(connectionManager);
+var dbConnection = new SqliteConnection($"[CONNECTION_STRING]");
+var manager = new SQLiteCacheManager(dbConnection);
 ```
 
 You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
@@ -127,17 +103,17 @@ dotnet add package Newtonsoft.Json --version 13.0.2
 ```
 And use the serializer:
 ```C#
-var manager = new SQLiteCacheManager(connectionManager, new NewtonsoftJsonCacheValueSerializer());
+var manager = new SQLiteCacheManager(dbConnection, new NewtonsoftJsonCacheValueSerializer());
 ```
 
 **System.Text.Json**
 ```C#
-var manager = new SQLiteCacheManager(connectionManager, new JsonCacheValueSerializer());
+var manager = new SQLiteCacheManager(dbConnection, new JsonCacheValueSerializer());
 ```
 
 **XML**
 ```C#
-var manager = new SQLiteCacheManager(connectionManager, new XmlCacheValueSerializer());
+var manager = new SQLiteCacheManager(dbConnection, new XmlCacheValueSerializer());
 ```
 
 ### MySQL cache manager
@@ -160,8 +136,8 @@ CREATE TABLE cache(
 
 And instantiate the cache manger:
 ```C#
-var connectionManager = new MySqlConnection($"[CONNECTION_STRING]");
-var manager = new MysqlCacheManager(connectionManager);
+var dbConnection = new MySqlConnection($"[CONNECTION_STRING]");
+var manager = new MysqlCacheManager(dbConnection);
 ```
 
 You can specify value serializer, choose between "_Newtonsoft JSON_", "_XML_" and "_System.Text.Json_" (default).\
@@ -173,17 +149,17 @@ dotnet add package Newtonsoft.Json --version 13.0.2
 ```
 And use the serializer:
 ```C#
-var manager = new MysqlCacheManager(connectionManager, new NewtonsoftJsonCacheValueSerializer());
+var manager = new MysqlCacheManager(dbConnection, new NewtonsoftJsonCacheValueSerializer());
 ```
 
 **System.Text.Json**
 ```C#
-var manager = new MysqlCacheManager(connectionManager, new JsonCacheValueSerializer());
+var manager = new MysqlCacheManager(dbConnection, new JsonCacheValueSerializer());
 ```
 
 **XML**
 ```C#
-var manager = new MysqlCacheManager(connectionManager, new XmlCacheValueSerializer());
+var manager = new MysqlCacheManager(dbConnection, new XmlCacheValueSerializer());
 ```
 
 ### Memcached

@@ -1,5 +1,5 @@
 ﻿using microservice.toolkit.cachemanager.serializer;
-using microservice.toolkit.connectionmanager;
+using microservice.toolkit.connection.extensions;
 using microservice.toolkit.core;
 
 using Microsoft.Data.Sqlite;
@@ -20,42 +20,74 @@ namespace microservice.toolkit.cachemanager;
 /// );
 /// </code>
 /// </summary>
-public class SQLiteCacheManager : ICacheManager
+public class SQLiteCacheManager(SqliteConnection dbConnection, ICacheValueSerializer serializer)
+    : ICacheManager
 {
-    private readonly SqliteConnection connectionManager;
-    private readonly ICacheValueSerializer serializer;
+    private const string DeleteQuery = """
+                                       DELETE FROM `cache`
+                                       WHERE id = @id;         
+                                       """;
 
-    public SQLiteCacheManager(SqliteConnection connectionManager) : this(connectionManager, new JsonCacheValueSerializer())
+    private const string UpsertQuery = """
+                                       INSERT INTO `cache` (
+                                           id,
+                                           value, 
+                                           issuedAt
+                                       ) VALUES (
+                                           @id, 
+                                           @value,
+                                           @issuedAt
+                                       )
+                                       ON CONFLICT(id) DO UPDATE SET 
+                                           `value` = @value,
+                                           issuedAt = @issuedAt;
+                                       """;
+
+    private const string SelectQuery = """
+                                       SELECT value, issuedAt
+                                       FROM cache 
+                                       WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );         
+                                       """;
+
+    public SQLiteCacheManager(SqliteConnection dbConnection) : this(dbConnection,
+        new JsonCacheValueSerializer())
     {
     }
 
-    public SQLiteCacheManager(SqliteConnection connectionManager, ICacheValueSerializer serializer)
+    /// <summary>
+    /// Retrieves the value associated with the specified key from the cache.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to retrieve.</typeparam>
+    /// <param name="key">The key of the value to retrieve.</param>
+    /// <returns>The value associated with the specified key, or the default value of <typeparamref name="TValue"/> if the key is not found in the cache.</returns>
+    public async Task<TValue> GetAsync<TValue>(string key)
     {
-        this.serializer = serializer;
-        this.connectionManager = connectionManager;
-    }
-
-    public async Task<TValue> Get<TValue>(string key)
-    {
-        var parameters = new Dictionary<string, object>(){
-                {"@CacheId", key},
-                {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() }
-            };
-
-        const string query = @"
-                SELECT value, issuedAt
-                FROM cache 
-                WHERE id = @CacheId AND ( issuedAt = 0 OR issuedAt >= @Now );
-            ";
-
-        var value = await this.connectionManager.ExecuteFirstAsync(query, reader => reader.GetString(0), parameters);
-
-        if (value == null)
+        var parameters = new Dictionary<string, object>()
         {
-            return default;
-        }
+            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
+        };
 
-        return this.serializer.Deserialize<TValue>(value);
+        var value = await dbConnection.ExecuteScalarAsync<string>(SelectQuery, parameters);
+
+        return value == null ? default : serializer.Deserialize<TValue>(value);
+    }
+    
+    public bool TryGet<TValue>(string key, out TValue value)
+    {
+        value = this.Get<TValue>(key);
+        return value != null;
+    }
+
+    public TValue Get<TValue>(string key)
+    {
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@CacheId", key}, {"@Now", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}
+        };
+
+        var value = dbConnection.ExecuteScalar<string>(SelectQuery, parameters);
+
+        return value == null ? default : serializer.Deserialize<TValue>(value);
     }
 
     /// <summary>
@@ -65,54 +97,71 @@ public class SQLiteCacheManager : ICacheManager
     /// <param name="value"></param>
     /// <param name="issuedAt"></param>
     /// <returns></returns>
-    public async Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
+    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            await this.Delete(key);
+            await this.DeleteAsync(key);
             return false;
         }
 
-        const string query = @"
-                INSERT INTO `cache` (
-                    id,
-                    value, 
-                    issuedAt
-                ) VALUES (
-                    @id, 
-                    @value,
-                    @issuedAt
-                )
-                ON CONFLICT(id) DO UPDATE SET 
-                    `value` = @value,
-                    issuedAt = @issuedAt;
-            ";
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@id", key}, {"@value", serializer.Serialize(value)}, {"@issuedAt", issuedAt}
+        };
 
-        var parameters = new Dictionary<string, object>(){
-                {"@id", key},
-                {"@value", this.serializer.Serialize(value)},
-                {"@issuedAt", issuedAt}
-            };
-
-        return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
+        return await dbConnection.ExecuteNonQueryAsync(UpsertQuery, parameters) != 0;
     }
 
-    public Task<bool> Set<TValue>(string key, TValue value)
+    public bool Set<TValue>(string key, TValue value, long issuedAt)
+    {
+        if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
+        {
+            this.Delete(key);
+            return false;
+        }
+
+        var parameters = new Dictionary<string, object>()
+        {
+            {"@id", key}, {"@value", serializer.Serialize(value)}, {"@issuedAt", issuedAt}
+        };
+
+        return dbConnection.ExecuteNonQuery(UpsertQuery, parameters) != 0;
+    }
+
+    /// <summary>
+    /// Sets the value associated with the specified key in the cache.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value to be stored in the cache.</typeparam>
+    /// <param name="key">The key of the value to be stored in the cache.</param>
+    /// <param name="value">The value to be stored in the cache.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a boolean value indicating whether the operation was successful.</returns>
+    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    {
+        return this.SetAsync(key, value, 0);
+    }
+    
+    public bool Set<TValue>(string key, TValue value)
     {
         return this.Set(key, value, 0);
     }
 
-    public async Task<bool> Delete(string key)
+    /// <summary>
+    /// Deletes a cache entry with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the cache entry to delete.</param>
+    /// <returns>A task representing the asynchronous operation. The task result contains a boolean value indicating whether the cache entry was successfully deleted.</returns>
+    public async Task<bool> DeleteAsync(string key)
     {
-        const string query = @"
-                DELETE FROM `cache`
-                WHERE id = @id;
-            ";
+        var parameters = new Dictionary<string, object> {{"@id", key}};
 
-        var parameters = new Dictionary<string, object>(){
-                {"@id", key},
-            };
+        return await dbConnection.ExecuteNonQueryAsync(DeleteQuery, parameters) != 0;
+    }
+    
+    public bool Delete(string key)
+    {
+        var parameters = new Dictionary<string, object> {{"@id", key}};
 
-        return await this.connectionManager.ExecuteNonQueryAsync(query, parameters) != 0;
+        return dbConnection.ExecuteNonQuery(DeleteQuery, parameters) != 0;
     }
 }

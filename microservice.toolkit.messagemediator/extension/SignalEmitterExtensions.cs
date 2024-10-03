@@ -126,12 +126,12 @@ public static class SignalEmitterExtensions
         }
 
         // Check for "MicroService" attribute
-        var attrs = Attribute.GetCustomAttributes(type);
-
-        if (attrs.Any(a => a is Microservice) == false)
-        {
-            return false;
-        }
+        // var attrs = Attribute.GetCustomAttributes(type);
+        //
+        // if (attrs.Any(a => a is Microservice) == false)
+        // {
+        //     return false;
+        // }
 
         // Checks if is a subclass of "SignalHandler<>"
         var fullname = typeof(SignalHandler<>).FullName;

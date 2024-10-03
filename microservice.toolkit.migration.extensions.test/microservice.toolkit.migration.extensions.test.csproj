@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+
+        <LangVersion>12</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.msbuild" Version="3.2.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Evolve" Version="3.2.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+        <PackageReference Include="MySqlConnector" Version="2.3.7" />
+        <PackageReference Include="NUnit" Version="4.1.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+        <PackageReference Include="coverlet.collector" Version="3.2.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\microservice.toolkit.connection.extensions\microservice.toolkit.connection.extensions.csproj" />
+      <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+      <ProjectReference Include="..\microservice.toolkit.migration.extensions\microservice.toolkit.migration.extensions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="data\V1_0_0__Create_user_table.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="data\V2_0_0__Create_admin_user.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>

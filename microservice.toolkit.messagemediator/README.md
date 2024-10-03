@@ -1,7 +1,5 @@
 ﻿# Message mediator
 
-__The library is a work in progress. It is not yet considered production-ready.__
-
 [![Build](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/build.yml)
 [![Release](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml/badge.svg)](https://github.com/MpStyle/microservicetoolkit/actions/workflows/release.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,26 +12,26 @@ An interface to define how cloud microservices interact each other across multi 
 
 ### Package Manager
 ```
-Install-Package microservice.toolkit.messagemediator -Version 0.10.2
+Install-Package microservice.toolkit.messagemediator -Version 2.0.1
 ```
 
 ### .NET CLI
 ```
-dotnet add package microservice.toolkit.messagemediator --version 0.10.2
+dotnet add package microservice.toolkit.messagemediator --version 2.0.1
 ```
 
 ### Package Reference
 ```
-<PackageReference Include="microservice.toolkit.messagemediator" Version="0.10.2" />
+<PackageReference Include="microservice.toolkit.messagemediator" Version="2.0.1" />
 ```
 
 ## Introduction
 In Microservice Toolkit, a microservice has a name (or pattern) and returns with the following structure:
-```json
+```json5
 {
     "error": 12,
     "payload": {
-        ...
+        // ...
     }
 }
 ```
@@ -129,6 +127,8 @@ public class UserExists : Service<UserExistsRequest, UserExistsResponse>
 }
 ```
 
+If the 'MicroService' property is not used, the service will be registered with its full qualified name.
+
 ### Services registration
 
 To register services, service factory and mediator into IoC (using __Microsoft Dependency Injection__), add to program startup ("__services__" is an instance of IServiceCollection):
@@ -159,14 +159,23 @@ private readonly IMessageMediator mediator;
 
 [...]
 
-public MyClass(IMessageMediator mediator){
+// Using dependency injection
+public MyProgram(IMessageMediator mediator){
     this.mediator = mediator;
 }
 
 [...]
 
 // to explicit only payload type:
-var response = await mediator.Send<int>(typeof(SquarePow), 2));
+var response = await mediator.Send<UserExistsResponse>("/user/exists", new UserExistsRequest("Alice")));
 // or, to explicit request and payload type:
-var response = await mediator.Send<int, int>(typeof(SquarePow), 2));
+var response = await mediator.Send<UserExistsRequest, UserExistsResponse>("/user/exists", new UserExistsRequest("Alice")));
+
+if(response.Error != 0){
+    // handle error
+}
+else{
+    // handle payload
+    var responsePayload = response.Payload;
+}
 ```

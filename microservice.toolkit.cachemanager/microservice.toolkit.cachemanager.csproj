@@ -19,28 +19,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\microservice.toolkit.connectionmanager\microservice.toolkit.connectionmanager.csproj" />
+    <ProjectReference Include="..\microservice.toolkit.connection.extensions\microservice.toolkit.connection.extensions.csproj" />
     <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.7.17">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Data.SQLite" Version="8.0.2">
+    <PackageReference Include="Microsoft.Data.SQLite" Version="8.*">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="MySqlConnector" Version="2.3.5">
+    <PackageReference Include="MySqlConnector" Version="2.3.7">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="EnyimMemcachedCore" Version="2.6.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="8.*" />
   </ItemGroup>
 
   <ItemGroup>

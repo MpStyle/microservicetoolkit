@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: microservice_framework_tests
+    ports:
+      - "3306:3306"
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: my_root_password123
+    ports:
+      - "1433:1433"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  memcached:
+    image: memcached:alpine
+    ports:
+      - "11211:11211"
+
+  rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  nats:
+    image: nats:alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+      - "6222:6222"
