@@ -20,11 +20,30 @@ Written in C#, it takes advantage of the power of .NET framework to make possibl
 
 The __Microservice Toolkit__ libraries collects and enriches the already powerful .NET framework and C# libraries. 
 
-- [Message mediator](./microservice.toolkit.messagemediator/README.md): microservices connection on desktop and cloud application
-- [Cache manager](./microservice.toolkit.cachemanager/README.md): warehouse for web and cloud application for frequently requested data
-- [Configuration Extensions](./microservice.toolkit.configuration.extensions/README.md): strongly typed configuration reader using extension methods
-- [Database connection Extensions](./microservice.toolkit.connection.extensions/README.md): enriches the DbConnection object with powerful extension methods
-- [Migration Extensions](./microservice.toolkit.migration.extensions/README.md): version control for databases
+### [Message mediator](./microservice.toolkit.messagemediator/README.md)
+![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.messagemediator)
+![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.messagemediator) \
+Microservices connection on desktop and cloud application
+
+### [Cache manager](./microservice.toolkit.cachemanager/README.md)
+![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.cachemanager)
+![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.cachemanager) \
+Warehouse for web and cloud application for frequently requested data
+
+### [Configuration Extensions](./microservice.toolkit.configuration.extensions/README.md)
+![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.configuration.extensions)
+![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.configuration.extensions) \
+Strongly typed configuration reader using extension methods
+
+### [Database connection Extensions](./microservice.toolkit.connection.extensions/README.md)
+![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.connection.extensions)
+![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.connection.extensions) \
+Enriches the DbConnection object with powerful extension methods
+
+### [Migration Extensions](./microservice.toolkit.migration.extensions/README.md)
+![NuGet Version](https://img.shields.io/nuget/v/microservice.toolkit.migration.extensions)
+![NuGet Downloads](https://img.shields.io/nuget/dt/microservice.toolkit.migration.extensions) \
+Version control for databases
 
 ### Release Notes :page_with_curl:
 [Version history](https://github.com/MpStyle/microservicetoolkit/releases)
