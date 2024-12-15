@@ -50,6 +50,7 @@ public class ServiceTest
     }
 }
 
+[ExcludeFromCodeCoverage]
 class MyServiceWithException : Service<int, int>
 {
     public override Task<ServiceResponse<int>> Run(int request)
@@ -58,6 +59,7 @@ class MyServiceWithException : Service<int, int>
     }
 }
 
+[ExcludeFromCodeCoverage]
 class MyServiceSuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> Run(int request)
@@ -66,6 +68,7 @@ class MyServiceSuccessfulResponseTask : Service<int, int>
     }
 }
 
+[ExcludeFromCodeCoverage]
 class MyServiceUnsuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> Run(int request)
@@ -74,6 +77,7 @@ class MyServiceUnsuccessfulResponseTask : Service<int, int>
     }
 }
 
+[ExcludeFromCodeCoverage]
 class MyServiceResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> Run(int request)

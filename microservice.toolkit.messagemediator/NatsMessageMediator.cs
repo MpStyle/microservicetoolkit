@@ -35,6 +35,11 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
         this.connection = new ConnectionFactory().CreateConnection(this.configuration.ConnectionString);
         this.consumerSubscription = this.connection.SubscribeAsync(this.configuration.Topic, this.OnConsumerReceivesRequest);
     }
+    
+    public override Task Init()
+    {
+        return Task.CompletedTask;
+    }
 
     public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
     {

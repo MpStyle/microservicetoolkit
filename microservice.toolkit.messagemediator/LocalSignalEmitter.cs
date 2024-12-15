@@ -23,6 +23,11 @@ public class LocalSignalEmitter : ISignalEmitter
         this.logger = logger;
     }
 
+    public Task Init()
+    {
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Asynchronously emits a message to the specified pattern.
     /// </summary>

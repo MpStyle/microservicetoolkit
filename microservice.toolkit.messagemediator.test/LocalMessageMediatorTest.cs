@@ -22,6 +22,7 @@ namespace microservice.toolkit.messagemediator.test
             var mediator =
                 new LocalMessageMediator(name => ServiceUtils.PatternOf<SquarePow>().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
+            await mediator.Init();
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int>(ServiceUtils.PatternOf<SquarePow>(), 2)).Payload));
         }
@@ -32,6 +33,7 @@ namespace microservice.toolkit.messagemediator.test
             IMessageMediator mediator =
                 new LocalMessageMediator(name => ServiceUtils.PatternOf<SquarePow>().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
+            await mediator.Init();
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(ServiceUtils.PatternOf<SquarePow>(), 2)).Payload));
         }
@@ -42,6 +44,7 @@ namespace microservice.toolkit.messagemediator.test
             IMessageMediator mediator =
                 new LocalMessageMediator(name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
                     new NullLogger<LocalMessageMediator>());
+            await mediator.Init();
 
             Assert.That(ServiceError.ServiceNotFound, Is.EqualTo((await mediator.Send<int>(ServiceUtils.PatternOf<SquarePowError>(), 2)).Error));
         }
@@ -52,6 +55,7 @@ namespace microservice.toolkit.messagemediator.test
             IMessageMediator mediator =
                 new LocalMessageMediator(name => ServiceUtils.PatternOf<SquarePow>().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
+            await mediator.Init();
 
             var response=await mediator.Send<int, int>("ServiceNotFound", 2);
             

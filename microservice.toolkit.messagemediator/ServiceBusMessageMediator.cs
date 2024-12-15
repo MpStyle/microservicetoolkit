@@ -40,8 +40,12 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
         this.serviceBusAdministrationClient = new ServiceBusAdministrationClient(this.configuration.ConnectionString);
         this.producerClient = new ServiceBusClient(this.configuration.ConnectionString);
         this.consumerClient = new ServiceBusClient(this.configuration.ConnectionString);
+    }
 
+    public override Task Init()
+    {
         this.RegisterConsumer();
+        return Task.CompletedTask;
     }
 
     /// <summary>

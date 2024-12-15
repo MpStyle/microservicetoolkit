@@ -14,6 +14,8 @@ public abstract class CachedMessageMediator : IMessageMediator
     {
         this.cacheManager = cacheManager;
     }
+    
+    public abstract Task Init();
 
     public abstract Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
     public abstract Task Shutdown();

@@ -32,6 +32,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
+            await this.mediator.Init();
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int>(nameof(SquarePow), 2)).Payload));
         }
@@ -42,6 +43,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
+            await this.mediator.Init();
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload));
         }
@@ -52,6 +54,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new NatsMessageMediator(configuration,
                 name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
                 new NullLogger<NatsMessageMediator>());
+            await this.mediator.Init();
 
             Assert.That(-1, Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
         }
@@ -62,9 +65,12 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator01 = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
+            await this.mediator01.Init();
+            
             this.mediator02 = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
+            await this.mediator02.Init();
 
             Assert.That(4, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 2)).Payload));
             Assert.That(4, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 2)).Payload));
