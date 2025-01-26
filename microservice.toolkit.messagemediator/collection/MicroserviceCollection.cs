@@ -43,8 +43,9 @@ static class MicroserviceCollectionExtensions
     public static MicroserviceCollection ToMicroserviceCollection(this IEnumerable<Type> collections)
     {
         return new MicroserviceCollection(collections
-            .GroupBy(x => x.ToPattern())
-            .ToDictionary(x => x.Key, x => x.ToArray()));
+            .SelectMany(t => t.ToPatterns().Select(p => new {pattern = p, type = t}))
+            .GroupBy(x => x.pattern)
+            .ToDictionary(x => x.Key, x => x.Select(y => y.type).ToArray()));
     }
 
     public static MicroserviceCollection ToMicroserviceCollection(this IEnumerable<MicroserviceCollection> collections)

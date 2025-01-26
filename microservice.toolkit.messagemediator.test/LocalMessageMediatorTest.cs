@@ -2,7 +2,6 @@
 using microservice.toolkit.core.attribute;
 using microservice.toolkit.core.entity;
 using microservice.toolkit.core.extension;
-using microservice.toolkit.messagemediator.extension;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -20,22 +19,22 @@ namespace microservice.toolkit.messagemediator.test
         public async Task Run_Object_Int()
         {
             var mediator =
-                new LocalMessageMediator(name => ServiceUtils.PatternOf<SquarePow>().Equals(name) ? new SquarePow() : null,
+                new LocalMessageMediator(name => typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
             await mediator.Init();
 
-            Assert.That(4, Is.EqualTo((await mediator.Send<int>(ServiceUtils.PatternOf<SquarePow>(), 2)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator.Send<int>(typeof(SquarePow).ToPattern(), 2)).Payload));
         }
 
         [Test]
         public async Task Run_Int_Int()
         {
             IMessageMediator mediator =
-                new LocalMessageMediator(name => ServiceUtils.PatternOf<SquarePow>().Equals(name) ? new SquarePow() : null,
+                new LocalMessageMediator(name =>typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
             await mediator.Init();
 
-            Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(ServiceUtils.PatternOf<SquarePow>(), 2)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(typeof(SquarePow).ToPattern(), 2)).Payload));
         }
 
         [Test]
@@ -46,14 +45,14 @@ namespace microservice.toolkit.messagemediator.test
                     new NullLogger<LocalMessageMediator>());
             await mediator.Init();
 
-            Assert.That(ServiceError.ServiceNotFound, Is.EqualTo((await mediator.Send<int>(ServiceUtils.PatternOf<SquarePowError>(), 2)).Error));
+            Assert.That(ServiceError.ServiceNotFound, Is.EqualTo((await mediator.Send<int>(typeof(SquarePowError).ToPattern(), 2)).Error));
         }
 
         [Test]
         public async Task Run_ServiceNotFound()
         {
             IMessageMediator mediator =
-                new LocalMessageMediator(name => ServiceUtils.PatternOf<SquarePow>().Equals(name) ? new SquarePow() : null,
+                new LocalMessageMediator(name => typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
             await mediator.Init();
 

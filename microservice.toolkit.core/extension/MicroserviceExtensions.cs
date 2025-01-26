@@ -10,7 +10,7 @@ public static class MicroserviceExtensions
 {
     public static string ToPattern(this Type type)
     {
-        var attrs = Attribute.GetCustomAttributes(type).FirstOrDefault(x => x is Microservice) as Microservice;
+        var attrs = Attribute.GetCustomAttributes(type).OfType<Microservice>().FirstOrDefault();
 
         if (attrs?.Pattern.IsNullOrEmpty() == false)
         {
@@ -18,7 +18,24 @@ public static class MicroserviceExtensions
         }
 
         Debug.Assert(type.FullName != null, "type.FullName != null");
-        
+
         return type.FullName.Replace(".", "/");
+    }
+
+    public static string[] ToPatterns(this Type type)
+    {
+        var patterns = Attribute.GetCustomAttributes(type).OfType<Microservice>()
+            .Where(a => a.Pattern.IsNullOrEmpty() == false)
+            .Select(a => a.Pattern)
+            .ToArray();
+
+        if (patterns.Any())
+        {
+            return patterns;
+        }
+
+        Debug.Assert(type.FullName != null, "type.FullName != null");
+
+        return [type.FullName.Replace(".", "/")];
     }
 }
