@@ -15,7 +15,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <Description>Common interface to manage cache using different providers.</Description>
     <LangVersion>12</LangVersion>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
