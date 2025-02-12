@@ -11,7 +11,6 @@ namespace microservice.toolkit.messagemediator.extension;
 
 public static class MessageMediatorExtensions
 {
-
     /// <summary>
     /// Returns the implementations of Service&lt;,&gt; found in assembly in which the <i>type</i> is defined.
     /// </summary>
@@ -19,7 +18,7 @@ public static class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Type type)
     {
-        return new[] { type }.GetServices();
+        return new[] {type}.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Type[] types)
@@ -34,7 +33,7 @@ public static class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Assembly assembly)
     {
-        return new[] { assembly }.GetServices();
+        return new[] {assembly}.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Assembly[] assemblies)
@@ -45,47 +44,59 @@ public static class MessageMediatorExtensions
             .ToMicroserviceCollection();
     }
 
-    public static IServiceCollection AddServiceContext(this IServiceCollection services, Type[] types, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(
+        this IServiceCollection services,
+        Type[] types,
+        ServiceLifetime servicesLifeTime = ServiceLifetime.Singleton,
+        ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton
+    )
     {
         var mapper = types.GetServices();
 
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
+        services.AddServices(mapper, servicesLifeTime);
+        services.AddServiceProvider(mapper, serviceProviderLifeTime);
 
         return services;
     }
 
-    public static IServiceCollection AddServiceContext(this IServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Type type,
+        ServiceLifetime servicesLifeTime = ServiceLifetime.Singleton,
+        ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton)
     {
         var mapper = type.GetServices();
 
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
+        services.AddServices(mapper, servicesLifeTime);
+        services.AddServiceProvider(mapper, serviceProviderLifeTime);
 
         return services;
     }
 
-    public static IServiceCollection AddServiceContext(this IServiceCollection services, Assembly[] assemblies, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Assembly[] assemblies,
+        ServiceLifetime servicesLifeTime = ServiceLifetime.Singleton,
+        ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton)
     {
         var mapper = assemblies.GetServices();
 
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
+        services.AddServices(mapper, servicesLifeTime);
+        services.AddServiceProvider(mapper, serviceProviderLifeTime);
 
         return services;
     }
 
-    public static IServiceCollection AddServiceContext(this IServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServiceContext(this IServiceCollection services, Assembly assembly,
+        ServiceLifetime servicesLifeTime = ServiceLifetime.Singleton,
+        ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton)
     {
         var mapper = assembly.GetServices();
 
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
+        services.AddServices(mapper, servicesLifeTime);
+        services.AddServiceProvider(mapper, serviceProviderLifeTime);
 
         return services;
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
+    public static IServiceCollection AddServices(this IServiceCollection services, MicroserviceCollection mapper,
+        ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
         foreach (var type in mapper.ToDictionary().SelectMany(item => item.Value))
         {
@@ -95,9 +106,10 @@ public static class MessageMediatorExtensions
         return services;
     }
 
-    public static IServiceCollection AddServiceProvider(this IServiceCollection services, MicroserviceCollection mapper)
+    public static IServiceCollection AddServiceProvider(this IServiceCollection services, MicroserviceCollection mapper,
+        ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton)
     {
-        services.AddSingleton(serviceProvider => new ServiceFactory(pattern =>
+        services.Add(new ServiceDescriptor(typeof(IServiceProvider), serviceProvider => new ServiceFactory(pattern =>
         {
             var serviceTypes = mapper.ByPatternOrDefault(pattern);
 
@@ -107,7 +119,7 @@ public static class MessageMediatorExtensions
             }
 
             return serviceProvider.GetService(serviceTypes.First()) as IService;
-        }));
+        }), serviceProviderLifeTime));
 
         return services;
     }
