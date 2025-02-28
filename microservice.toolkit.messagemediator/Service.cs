@@ -11,7 +11,7 @@ namespace microservice.toolkit.messagemediator
     /// </summary>
     /// <typeparam name="TRequest">The type of the request.</typeparam>
     /// <typeparam name="TPayload">The type of the response payload.</typeparam>
-    public abstract class Service<TRequest, TPayload> : IService where TPayload : new()
+    public abstract class Service<TRequest, TPayload> : IService
     {
         /// <summary>
         /// Executes the service logic for the specified request.
@@ -52,11 +52,6 @@ namespace microservice.toolkit.messagemediator
         {
             return Task.FromResult(this.SuccessfulResponse(payload));
         }
-        
-        protected Task<ServiceResponse<TPayload>> SuccessfulResponseTask()
-        {
-            return Task.FromResult(this.SuccessfulResponse(new TPayload()));
-        }
 
         /// <summary>
         /// Creates a successful service response with the specified payload.
@@ -67,11 +62,6 @@ namespace microservice.toolkit.messagemediator
         protected ServiceResponse<TPayload> SuccessfulResponse(TPayload payload)
         {
             return this.Response(payload, null);
-        }
-        
-        protected ServiceResponse<TPayload> SuccessfulResponse()
-        {
-            return this.Response(new TPayload(), null);
         }
 
         /// <summary>
