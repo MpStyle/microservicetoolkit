@@ -19,6 +19,57 @@ public class DbDataReaderExtensionTest
         var result = await this.dbConnection.ExecuteFirstAsync("SELECT * FROM myTable", reader =>
         {
             var i = 0;
+            var myInt = reader.TryGetInt32(i++);
+            var myLong = reader.TryGetInt64(i++);
+            var myShort = reader.TryGetInt16(i++);
+            var myBool = reader.TryGetBoolean(i++);
+            var myDecimal = reader.TryGetDecimal(i++);
+            var myDouble = reader.TryGetDouble(i++);
+            var myFloat = reader.TryGetFloat(i++);
+            var myGuid = reader.TryGetGuid(i++);
+            var myString = reader.TryGetString(i++);
+            var nullResult = reader.TryGetInt64(i++, out var nullValue);
+            var invalidPositionResult = reader.TryGetInt32(i++, out var invalidPositionValue);
+
+            return new
+            {
+                myInt,
+                myLong,
+                myShort,
+                myBool,
+                myDecimal,
+                myDouble,
+                myFloat,
+                myGuid,
+                myString,
+                invalidPosition = (invalidPositionResult, invalidPositionValue),
+                nullValue = (nullResult, nullValue),
+            };
+        });
+
+        Assert.That(1, Is.EqualTo(result.myInt));
+        Assert.That(1647860184000, Is.EqualTo(result.myLong));
+        Assert.That(32767, Is.EqualTo(result.myShort));
+        Assert.That(true, Is.EqualTo(result.myBool));
+        Assert.That(999.99, Is.EqualTo(result.myDecimal));
+        Assert.That(10.9998, Is.EqualTo(result.myDouble));
+        Assert.That(10.9997997f, Is.EqualTo(result.myFloat));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myGuid.ToString()));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myString));
+
+        Assert.That(result.invalidPosition.invalidPositionResult, Is.False);
+        Assert.That(default(int), Is.EqualTo(result.invalidPosition.invalidPositionValue));
+
+        Assert.That(result.nullValue.nullResult, Is.False);
+        Assert.That(default(long), Is.EqualTo(result.nullValue.nullValue));
+    }
+
+    [Test]
+    public async Task TryGetValuesOut()
+    {
+        var result = await this.dbConnection.ExecuteFirstAsync("SELECT * FROM myTable", reader =>
+        {
+            var i = 0;
             reader.TryGetInt32(i++, out var myInt);
             reader.TryGetInt64(i++, out var myLong);
             reader.TryGetInt16(i++, out var myShort);
@@ -72,7 +123,8 @@ public class DbDataReaderExtensionTest
         var database = Environment.GetEnvironmentVariable("MYSQL_DATABASE") ?? "microservice_framework_tests";
 
         this.dbConnection =
-            new MySqlConnection($"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
+            new MySqlConnection(
+                $"Server={host};User ID=root;Password={rootPassword};database={database};SSLMode=Required");
 
         // Creates table
         await this.dbConnection.ExecuteNonQueryAsync(@"

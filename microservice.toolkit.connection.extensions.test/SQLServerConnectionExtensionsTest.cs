@@ -14,6 +14,23 @@ public class SQLServerConnectionExtensionsTest
     private SqlConnection dbConnection;
 
     [Test]
+    public void Execute()
+    {
+        var result = this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(-1, Is.EqualTo(result));
+    }
+
+    [Test]
     public async Task ExecuteAsync()
     {
         var result = await this.dbConnection.ExecuteAsync(async cmd =>
@@ -31,6 +48,25 @@ public class SQLServerConnectionExtensionsTest
     }
 
     [Test]
+    public void ExecuteNonQuery()
+    {
+        this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(1,
+            Is.EqualTo(this.dbConnection.ExecuteNonQuery(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+    }
+
+    [Test]
     public async Task ExecuteNonQueryAsync()
     {
         await this.dbConnection.ExecuteAsync(async cmd =>
@@ -45,7 +81,8 @@ public class SQLServerConnectionExtensionsTest
         });
 
         Assert.That(1,
-            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync("INSERT INTO films VALUES ('12345', 'my_title');")));
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
     }
 
     [SetUp]
@@ -55,7 +92,8 @@ public class SQLServerConnectionExtensionsTest
         var port = Environment.GetEnvironmentVariable("SQLSERVER_PORT") ?? "1433";
         var rootPassword = Environment.GetEnvironmentVariable("SQLSERVER_ROOT_PASSWORD") ?? "my_root_password123";
         this.dbConnection =
-            new SqlConnection($"Server={host},{port};Database=Master;User Id=SA;Password={rootPassword};TrustServerCertificate=true");
+            new SqlConnection(
+                $"Server={host},{port};Database=Master;User Id=SA;Password={rootPassword};TrustServerCertificate=true");
     }
 
     [TearDown]
