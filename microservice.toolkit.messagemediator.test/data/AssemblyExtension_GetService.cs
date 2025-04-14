@@ -5,70 +5,69 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.messagemediator.test.data
+namespace microservice.toolkit.messagemediator.test.data;
+
+[ExcludeFromCodeCoverage]
+[Microservice]
+public class ValidService01 : Service<int, int>
 {
-    [ExcludeFromCodeCoverage]
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+    {
+        throw new System.NotImplementedException();
+    }
+
     [Microservice]
-    public class ValidService01 : Service<int, int>
+    public class InvalidNestedService : Service<int, int>
     {
-        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        [Microservice]
-        public class InvalidNestedService : Service<int, int>
-        {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
-            {
-                throw new System.NotImplementedException();
-            }
-        }
-    }
-
-    [ExcludeFromCodeCoverage]
-    [Microservice]
-    public class ValidService02 : Service<int, int>
-    {
-        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
     }
+}
 
-    [ExcludeFromCodeCoverage]
-    [Microservice]
-    public abstract class InvalidAbstractService : Service<int, int>
+[ExcludeFromCodeCoverage]
+[Microservice]
+public class ValidService02 : Service<int, int>
+{
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
     {
+        throw new System.NotImplementedException();
     }
+}
 
-    [ExcludeFromCodeCoverage]
-    [Microservice]
-    public class InvalidGenericService : Service<int, int>
+[ExcludeFromCodeCoverage]
+[Microservice]
+public abstract class InvalidAbstractService : Service<int, int>
+{
+}
+
+[ExcludeFromCodeCoverage]
+[Microservice]
+public class InvalidGenericService : Service<int, int>
+{
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
     {
-        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+        throw new System.NotImplementedException();
     }
+}
 
-    [ExcludeFromCodeCoverage]
-    [Microservice(nameof(ValidService03))]
-    public class ValidService03 : Service<int, int>
+[ExcludeFromCodeCoverage]
+[Microservice(nameof(ValidService03))]
+public class ValidService03 : Service<int, int>
+{
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
     {
-        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+        throw new System.NotImplementedException();
     }
+}
 
-    [ExcludeFromCodeCoverage]
-    [Microservice(nameof(ValidService04))]
-    public class ValidService04 : Service<int, int>
+[ExcludeFromCodeCoverage]
+[Microservice(nameof(ValidService04))]
+public class ValidService04 : Service<int, int>
+{
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
     {
-        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
+        throw new System.NotImplementedException();
     }
 }

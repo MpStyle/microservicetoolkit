@@ -51,12 +51,11 @@ public static class MessageMediatorExtensions
         ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton
     )
     {
-        var mapper = types.GetServices();
+        var microserviceCollection = types.GetServices();
 
-        services.AddServices(mapper, servicesLifeTime);
-        services.AddServiceProvider(mapper, serviceProviderLifeTime);
-
-        return services;
+        return services
+            .AddServices(microserviceCollection, servicesLifeTime)
+            .AddServiceProvider(microserviceCollection, serviceProviderLifeTime);
     }
 
     public static IServiceCollection AddServiceContext(this IServiceCollection services, Type type,
@@ -109,7 +108,7 @@ public static class MessageMediatorExtensions
     public static IServiceCollection AddServiceProvider(this IServiceCollection services, MicroserviceCollection mapper,
         ServiceLifetime serviceProviderLifeTime = ServiceLifetime.Singleton)
     {
-        services.Add(new ServiceDescriptor(typeof(IServiceProvider), serviceProvider => new ServiceFactory(pattern =>
+        services.Add(new ServiceDescriptor(typeof(ServiceFactory), serviceProvider => new ServiceFactory(pattern =>
         {
             var serviceTypes = mapper.ByPatternOrDefault(pattern);
 
