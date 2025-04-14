@@ -9,6 +9,7 @@ using RabbitMQ.Client.Events;
 using System;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
@@ -34,21 +35,27 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
         this.logger = logger;
     }
 
-    public async Task Init()
+    public async Task Init(CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory() {HostName = this.configuration.ConnectionString};
         this.connection = await factory.CreateConnectionAsync();
 
         // Consumer
-        this.consumerChannel = await connection.CreateChannelAsync();
-        await this.consumerChannel.QueueDeclareAsync(this.configuration.QueueName, false, false, false, null);
-        await this.consumerChannel.BasicQosAsync(0, 1, false);
+        this.consumerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        await this.consumerChannel.QueueDeclareAsync(this.configuration.QueueName, false, false, false, null, cancellationToken: cancellationToken);
+        await this.consumerChannel.BasicQosAsync(0, 1, false, cancellationToken);
         var consumer = new AsyncEventingBasicConsumer(this.consumerChannel);
-        await this.consumerChannel.BasicConsumeAsync(this.configuration.QueueName, false, consumer);
-        consumer.ReceivedAsync += this.OnConsumerReceivesRequest;
+        await this.consumerChannel.BasicConsumeAsync(this.configuration.QueueName, false, consumer, cancellationToken: cancellationToken);
+        consumer.ReceivedAsync += (model, ea) 
+            => this.OnConsumerReceivesRequest(model, ea, cancellationToken);
 
         // Producer
         this.producerChannel = await connection.CreateChannelAsync();
+    }
+
+    public async Task Init()
+    {
+        _ = this.Init(CancellationToken.None).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -57,8 +64,9 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
     /// <typeparam name="TEvent">The type of the event being emitted.</typeparam>
     /// <param name="pattern">The pattern for routing the message.</param>
     /// <param name="myEvent">The event to be emitted.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task Emit<TEvent>(string pattern, TEvent myEvent)
+    public async Task Emit<TEvent>(string pattern, TEvent myEvent, CancellationToken cancellationToken)
     {
         var brokeredEvent = new BrokeredEvent
         {
@@ -66,10 +74,17 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
         };
         var eventBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(brokeredEvent));
 
-        await this.producerChannel.BasicPublishAsync("", this.configuration.QueueName, eventBytes);
+        await this.producerChannel.BasicPublishAsync("", this.configuration.QueueName, eventBytes,
+            cancellationToken: cancellationToken);
     }
 
-    private async Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea)
+    public async Task Emit<TEvent>(string pattern, TEvent myEvent)
+    {
+        _ = this.Emit(pattern, myEvent, CancellationToken.None);
+    }
+
+    private async Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea,
+        CancellationToken cancellationToken)
     {
         var body = ea.Body.ToArray();
         var brokeredEvent = JsonSerializer.Deserialize<BrokeredEvent>(Encoding.UTF8.GetString(body));
@@ -88,7 +103,7 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
 
             foreach (var eventHandler in eventHandlers)
             {
-                _ = eventHandler.Run(request).ConfigureAwait(false);
+                _ = eventHandler.Run(request, cancellationToken).ConfigureAwait(false);
             }
         }
         catch (Exception ex)

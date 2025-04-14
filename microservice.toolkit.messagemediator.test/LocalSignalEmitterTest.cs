@@ -3,6 +3,7 @@
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 using static microservice.toolkit.messagemediator.extension.SignalHandlerUtils;
@@ -56,9 +57,9 @@ public class LocalSignalEmitterTest
 
     class SquarePow : SignalHandler<int>
     {
-        public override async Task Run(int request)
+        public override async Task Run(int request, CancellationToken cancellationToken)
         {
-            await Task.Delay(1000);
+            await Task.Delay(1000, cancellationToken);
             isSignalHandlerRunned = true;
         }
     }

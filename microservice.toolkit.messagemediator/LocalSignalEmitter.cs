@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
@@ -23,6 +24,11 @@ public class LocalSignalEmitter : ISignalEmitter
         this.logger = logger;
     }
 
+    public Task Init(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+    
     public Task Init()
     {
         return Task.CompletedTask;
@@ -34,8 +40,9 @@ public class LocalSignalEmitter : ISignalEmitter
     /// <typeparam name="TEvent">The type of the message.</typeparam>
     /// <param name="pattern">The pattern to match the message handlers.</param>
     /// <param name="message">The message to emit.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task Emit<TEvent>(string pattern, TEvent message)
+    public async Task Emit<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken)
     {
         try
         {
@@ -48,7 +55,7 @@ public class LocalSignalEmitter : ISignalEmitter
 
             foreach (var eventHandler in eventHandlers)
             {
-                _ = eventHandler.Run(message).ConfigureAwait(false);
+                _ = eventHandler.Run(message, cancellationToken).ConfigureAwait(false);
             }
         }
         catch (SignalHandlerNotFoundException ex)
@@ -59,6 +66,11 @@ public class LocalSignalEmitter : ISignalEmitter
         {
             this.logger.LogDebug("Generic error: {Message}", ex.ToString());
         }
+    }
+
+    public async Task Emit<TEvent>(string pattern, TEvent message)
+    {
+        await this.Emit(pattern, message, CancellationToken.None);
     }
 }
 

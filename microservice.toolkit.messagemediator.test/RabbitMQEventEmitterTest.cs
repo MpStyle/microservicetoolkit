@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.test
@@ -59,9 +60,9 @@ namespace microservice.toolkit.messagemediator.test
 
         class SquarePow : SignalHandler<int>
         {
-            public override async Task Run(int request)
+            public override async Task Run(int request, CancellationToken cancellationToken)
             {
-                await Task.Delay(3000);
+                await Task.Delay(3000, cancellationToken);
                 isSignalHandlerRunned = true;
             }
         }

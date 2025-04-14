@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
@@ -12,17 +13,24 @@ public abstract class SignalHandler<TEvent> : ISignalHandler
     /// Runs the signal handler for the specified event.
     /// </summary>
     /// <param name="request">The event to handle.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public abstract Task Run(TEvent request);
+    public abstract Task Run(TEvent request, CancellationToken cancellationToken);
 
     /// <summary>
     /// Runs the signal handler for the specified event.
     /// </summary>
     /// <param name="request">The event to handle.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task Run(object request, CancellationToken cancellationToken)
+    {
+        _ = this.Run((TEvent)request, cancellationToken).ConfigureAwait(false);
+    }
+    
     public async Task Run(object request)
     {
-        _ = this.Run((TEvent)request).ConfigureAwait(false);
+        _ = this.Run((TEvent)request, CancellationToken.None).ConfigureAwait(false);
     }
 }
 
@@ -35,7 +43,8 @@ public interface ISignalHandler
     /// Runs the signal handler logic for the specified request.
     /// </summary>
     /// <param name="request">The request object to be processed.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task Run(object request);
+    Task Run(object request, CancellationToken cancellationToken);
 }
 

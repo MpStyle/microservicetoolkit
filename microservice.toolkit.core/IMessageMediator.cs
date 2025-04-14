@@ -14,13 +14,14 @@ namespace microservice.toolkit.core;
 public interface IMessageMediator
 {
     Task Init();
-        
+
     /// <summary>
     /// Sends a generic message.
     /// </summary>
     /// <typeparam name="TPayload"></typeparam>
     /// <param name="pattern"></param>
     /// <param name="message"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken);
 
