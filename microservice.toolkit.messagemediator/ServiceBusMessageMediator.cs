@@ -45,7 +45,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
 
     public override Task Init(CancellationToken cancellationToken)
     {
-        this.RegisterConsumer();
+        this.RegisterConsumer(cancellationToken);
         return Task.CompletedTask;
     }
 
@@ -119,7 +119,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
         await this.consumerClient.DisposeAsync();
     }
 
-    private void RegisterConsumer()
+    private void RegisterConsumer(CancellationToken cancellationToken)
     {
         var serviceBusProcessor = this.consumerClient.CreateProcessor(this.configuration.QueueName);
 
@@ -142,7 +142,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
                     var json = ((JsonElement)brokeredMessage.Payload).GetRawText();
                     var request = JsonSerializer.Deserialize(json, Type.GetType(brokeredMessage.RequestType));
 
-                    response = await service.Run(request);
+                    response = await service.Run(request, cancellationToken);
                 }
                 catch (ServiceNotFoundException ex)
                 {
@@ -159,7 +159,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
             // Sending the reply
             var serviceBusSender = this.consumerClient.CreateSender(args.Message.ReplyTo);
             ServiceBusMessage serviceBusMessage = new(JsonSerializer.Serialize(response));
-            await serviceBusSender.SendMessageAsync(serviceBusMessage);
+            await serviceBusSender.SendMessageAsync(serviceBusMessage, cancellationToken);
         };
     }
 

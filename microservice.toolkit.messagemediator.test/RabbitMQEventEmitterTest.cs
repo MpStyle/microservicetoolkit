@@ -23,7 +23,7 @@ namespace microservice.toolkit.messagemediator.test
             this.signalEmitter = new RabbitMQSignalEmitter(configuration,
                 name => nameof(SquarePow).Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<RabbitMQSignalEmitter>());
-            await this.signalEmitter.Init();
+            await this.signalEmitter.Init(CancellationToken.None);
 
             await signalEmitter.Emit(nameof(SquarePow), 2);
 

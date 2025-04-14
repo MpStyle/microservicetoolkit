@@ -38,7 +38,7 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
     public async Task Init(CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory() {HostName = this.configuration.ConnectionString};
-        this.connection = await factory.CreateConnectionAsync();
+        this.connection = await factory.CreateConnectionAsync(cancellationToken);
 
         // Consumer
         this.consumerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -50,12 +50,7 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
             => this.OnConsumerReceivesRequest(model, ea, cancellationToken);
 
         // Producer
-        this.producerChannel = await connection.CreateChannelAsync();
-    }
-
-    public async Task Init()
-    {
-        _ = this.Init(CancellationToken.None).ConfigureAwait(false);
+        this.producerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
     }
 
     /// <summary>

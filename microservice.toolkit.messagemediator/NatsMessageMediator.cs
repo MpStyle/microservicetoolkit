@@ -19,50 +19,55 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
     private readonly ILogger<NatsMessageMediator> logger;
     private readonly NatsMessageMediatorConfiguration configuration;
     private readonly ServiceFactory serviceFactory;
-    private readonly IConnection connection;
-    private readonly IAsyncSubscription consumerSubscription;
+    private IConnection connection;
+    private IAsyncSubscription consumerSubscription;
 
-    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ILogger<NatsMessageMediator> logger)
+    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory,
+        ILogger<NatsMessageMediator> logger)
         : this(configuration, serviceFactory, null, logger)
     {
     }
-    
-    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory, ICacheManager cacheManager, ILogger<NatsMessageMediator> logger)
+
+    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory,
+        ICacheManager cacheManager, ILogger<NatsMessageMediator> logger)
         : base(cacheManager)
     {
         this.configuration = configuration;
         this.serviceFactory = serviceFactory;
         this.logger = logger;
-        this.connection = new ConnectionFactory().CreateConnection(this.configuration.ConnectionString);
-        this.consumerSubscription = this.connection.SubscribeAsync(this.configuration.Topic, this.OnConsumerReceivesRequest);
     }
-    
+
     public override Task Init(CancellationToken cancellationToken)
     {
+        this.connection = new ConnectionFactory().CreateConnection(this.configuration.ConnectionString);
+        this.consumerSubscription = this.connection.SubscribeAsync(this.configuration.Topic,
+            (model, ea) => this.OnConsumerReceivesRequest(model, ea, cancellationToken));
         return Task.CompletedTask;
     }
 
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message,
+        CancellationToken cancellationToken)
     {
         if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
         {
             return cachedPayload;
         }
-        
-        var responseMessage = await this.connection.RequestAsync(this.configuration.Topic, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
-        {
-            Pattern = pattern,
-            Payload = message,
-            RequestType = message.GetType().FullName,
-        })), this.configuration.ResponseTimeout, cancellationToken);
-        var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
+
+        var responseMessage = await this.connection.RequestAsync(this.configuration.Topic,
+            Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
+            {
+                Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,
+            })), this.configuration.ResponseTimeout, cancellationToken);
+        var response =
+            JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
 
         this.SetCacheResponse(pattern, message, cancellationToken, response);
-        
+
         return response;
     }
 
-    private async void OnConsumerReceivesRequest(object model, MsgHandlerEventArgs ea)
+    private async void OnConsumerReceivesRequest(object model, MsgHandlerEventArgs ea,
+        CancellationToken cancellationToken)
     {
         var response = default(ServiceResponse<object>);
         var body = ea.Message.Data;
@@ -85,16 +90,16 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
 
             var json = ((JsonElement)rpcMessage.Payload).GetRawText();
             var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
-            response = await service.Run(request);
+            response = await service.Run(request, cancellationToken);
         }
         catch (NatsMessageMediatorException ex)
         {
-            response = new ServiceResponse<object> { Error = ex.ErrorCode };
+            response = new ServiceResponse<object> {Error = ex.ErrorCode};
         }
         catch (Exception ex)
         {
             this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-            response = new ServiceResponse<object> { Error = ServiceError.Unknown };
+            response = new ServiceResponse<object> {Error = ServiceError.Unknown};
         }
         finally
         {
