@@ -3,6 +3,7 @@ using microservice.toolkit.core;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager;
@@ -23,7 +24,7 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
         return inMemory.TryRemove(key, out var _);
     }
 
-    public Task<bool> DeleteAsync(string key)
+    public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken)
     {
         return Task.FromResult(this.Delete(key));
     }
@@ -40,7 +41,7 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
         return default;
     }
     
-    public Task<TValue> GetAsync<TValue>(string key)
+    public Task<TValue> GetAsync<TValue>(string key, CancellationToken cancellationToken)
     {
         return Task.FromResult(this.Get<TValue>(key));
     }
@@ -85,7 +86,7 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
         return true;
     }
 
-    public Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
+    public Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt, CancellationToken cancellationToken)
     {
         return Task.FromResult(this.Set(key, value, issuedAt));
     }
@@ -95,7 +96,7 @@ public class InMemoryCacheManager(InMemoryCacheManagerSettings settings) : Dispo
         return this.Set(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds());
     }
 
-    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    public Task<bool> SetAsync<TValue>(string key, TValue value, CancellationToken cancellationToken)
     {
         return Task.FromResult(this.Set(key, value));
     }

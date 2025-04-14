@@ -6,38 +6,35 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.core;
 
-public abstract class CachedMessageMediator : IMessageMediator
+public abstract class CachedMessageMediator(ICacheManager cacheManager) : IMessageMediator
 {
     private const long CacheDuration = 1000;
-    private readonly ICacheManager cacheManager;
 
-    protected CachedMessageMediator(ICacheManager cacheManager)
+    public abstract Task Init(CancellationToken cancellationToken);
+
+    public abstract Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message,
+        CancellationToken cancellationToken);
+
+    public Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
     {
-        this.cacheManager = cacheManager;
-    }
-    
-    public abstract Task Init();
-
-    public abstract Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken);
-
-    public Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message){
         return this.Send<TPayload>(pattern, message, CancellationToken.None);
     }
 
-    public abstract Task Shutdown();
+    public abstract Task Shutdown(CancellationToken cancellationToken);
 
-    protected bool TryGetCachedResponse<TPayload>(string pattern, object message,
+    protected bool TryGetCachedResponse<TPayload>(string pattern, object message, CancellationToken cancellationToken,
         out ServiceResponse<TPayload> response)
     {
         response = default;
 
-        return this.cacheManager != null &&
-               this.cacheManager.TryGet(GetCacheKey(pattern, message), out response);
+        return cacheManager != null &&
+               cacheManager.TryGet(GetCacheKey(pattern, message), out response);
     }
 
-    protected void SetCacheResponse<TPayload>(string pattern, object message, ServiceResponse<TPayload> response)
+    protected void SetCacheResponse<TPayload>(string pattern, object message, CancellationToken cancellationToken,
+        ServiceResponse<TPayload> response)
     {
-        this.cacheManager?.Set(GetCacheKey(pattern, message), response.Payload,
+        cacheManager?.Set(GetCacheKey(pattern, message), response.Payload,
             DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + CacheDuration);
     }
 

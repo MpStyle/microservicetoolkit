@@ -3,6 +3,7 @@
 using microservice.toolkit.core;
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager;
@@ -24,7 +25,7 @@ public class MemcachedCacheManager : Disposable, ICacheManager
     }
 
     /// <inheritdoc/>
-    public Task<bool> DeleteAsync(string key)
+    public Task<bool> DeleteAsync(string key, CancellationToken cancellationToken)
     {
         return this.client.RemoveAsync(key);
     }
@@ -34,7 +35,7 @@ public class MemcachedCacheManager : Disposable, ICacheManager
         return this.client.Remove(key);
     }
 
-    public async Task<TValue> GetAsync<TValue>(string key)
+    public async Task<TValue> GetAsync<TValue>(string key, CancellationToken cancellationToken)
     {
         var result = await this.client.GetAsync<TValue>(key);
 
@@ -55,11 +56,11 @@ public class MemcachedCacheManager : Disposable, ICacheManager
     }
 
     /// <inheritdoc/>
-    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
+    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt, CancellationToken cancellationToken)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            await this.DeleteAsync(key);
+            await this.DeleteAsync(key, cancellationToken);
             return false;
         }
 
@@ -82,9 +83,9 @@ public class MemcachedCacheManager : Disposable, ICacheManager
     }
 
     /// <inheritdoc/>
-    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    public Task<bool> SetAsync<TValue>(string key, TValue value, CancellationToken cancellationToken)
     {
-        return this.SetAsync(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds());
+        return this.SetAsync(key, value, DateTimeOffset.UtcNow.AddYears(100).ToUnixTimeMilliseconds(), cancellationToken);
     }
     
     public bool Set<TValue>(string key, TValue value)

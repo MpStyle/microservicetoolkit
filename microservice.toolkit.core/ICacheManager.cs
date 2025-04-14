@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace microservice.toolkit.core
 {
@@ -15,7 +16,7 @@ namespace microservice.toolkit.core
         /// <returns></returns>
         bool Delete(string key);
         
-        Task<bool> DeleteAsync(string key);
+        Task<bool> DeleteAsync(string key, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds an entry in the cache provider with an expiration time (Unix timestamp in milliseconds).
@@ -30,7 +31,7 @@ namespace microservice.toolkit.core
         /// </exception>
         bool Set<TValue>(string key, TValue value, long issuedAt);
         
-        Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt);
+        Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt, CancellationToken cancellationToken);
 
         /// <summary>
         /// Adds an entry in the cache provider without an expiration time.
@@ -41,7 +42,7 @@ namespace microservice.toolkit.core
         /// <returns></returns>
         bool Set<TValue>(string key, TValue value);
         
-        Task<bool> SetAsync<TValue>(string key, TValue value);
+        Task<bool> SetAsync<TValue>(string key, TValue value, CancellationToken cancellationToken);
 
         /// <summary>
         /// Tries to retrieve the value of the entry using the key. If the entry does not exist or is expired the method returns null.
@@ -51,7 +52,7 @@ namespace microservice.toolkit.core
         /// <returns></returns>
         TValue Get<TValue>(string key);
         
-        Task<TValue> GetAsync<TValue>(string key);
+        Task<TValue> GetAsync<TValue>(string key, CancellationToken cancellationToken);
         
         bool TryGet<TValue>(string key, out TValue value);
     }

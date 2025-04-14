@@ -30,7 +30,7 @@ public class LocalMessageMediator : CachedMessageMediator
         this.logger = logger;
     }
 
-    public override Task Init()
+    public override Task Init(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
@@ -41,10 +41,11 @@ public class LocalMessageMediator : CachedMessageMediator
     /// <typeparam name="TPayload">The type of the payload in the response.</typeparam>
     /// <param name="pattern">The pattern used to identify the service.</param>
     /// <param name="message">The message to send to the service.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{TPayload}"/> object.</returns>
     public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
-        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
         {
             return cachedPayload;
         }
@@ -81,7 +82,7 @@ public class LocalMessageMediator : CachedMessageMediator
             response.Error = ServiceError.Unknown;
         }
 
-        this.SetCacheResponse(pattern, message, response);
+        this.SetCacheResponse(pattern, message, cancellationToken, response);
             
         return response;
     }
@@ -90,7 +91,7 @@ public class LocalMessageMediator : CachedMessageMediator
     /// Shuts down the local message mediator.
     /// </summary>
     /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-    public override Task Shutdown()
+    public override Task Shutdown(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

@@ -6,6 +6,7 @@ using Microsoft.Data.Sqlite;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager;
@@ -59,8 +60,9 @@ public class SQLiteCacheManager(SqliteConnection dbConnection, ICacheValueSerial
     /// </summary>
     /// <typeparam name="TValue">The type of the value to retrieve.</typeparam>
     /// <param name="key">The key of the value to retrieve.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>The value associated with the specified key, or the default value of <typeparamref name="TValue"/> if the key is not found in the cache.</returns>
-    public async Task<TValue> GetAsync<TValue>(string key)
+    public async Task<TValue> GetAsync<TValue>(string key, CancellationToken cancellationToken)
     {
         var parameters = new Dictionary<string, object>()
         {
@@ -96,12 +98,13 @@ public class SQLiteCacheManager(SqliteConnection dbConnection, ICacheValueSerial
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="issuedAt"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
+    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt, CancellationToken cancellationToken)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            await this.DeleteAsync(key);
+            await this.DeleteAsync(key, cancellationToken);
             return false;
         }
 
@@ -135,10 +138,11 @@ public class SQLiteCacheManager(SqliteConnection dbConnection, ICacheValueSerial
     /// <typeparam name="TValue">The type of the value to be stored in the cache.</typeparam>
     /// <param name="key">The key of the value to be stored in the cache.</param>
     /// <param name="value">The value to be stored in the cache.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a boolean value indicating whether the operation was successful.</returns>
-    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    public Task<bool> SetAsync<TValue>(string key, TValue value, CancellationToken cancellationToken)
     {
-        return this.SetAsync(key, value, 0);
+        return this.SetAsync(key, value, 0, cancellationToken);
     }
     
     public bool Set<TValue>(string key, TValue value)
@@ -150,8 +154,9 @@ public class SQLiteCacheManager(SqliteConnection dbConnection, ICacheValueSerial
     /// Deletes a cache entry with the specified key.
     /// </summary>
     /// <param name="key">The key of the cache entry to delete.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation. The task result contains a boolean value indicating whether the cache entry was successfully deleted.</returns>
-    public async Task<bool> DeleteAsync(string key)
+    public async Task<bool> DeleteAsync(string key, CancellationToken cancellationToken)
     {
         var parameters = new Dictionary<string, object> {{"@id", key}};
 

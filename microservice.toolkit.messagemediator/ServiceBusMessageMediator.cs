@@ -43,7 +43,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
         this.consumerClient = new ServiceBusClient(this.configuration.ConnectionString);
     }
 
-    public override Task Init()
+    public override Task Init(CancellationToken cancellationToken)
     {
         this.RegisterConsumer();
         return Task.CompletedTask;
@@ -55,10 +55,11 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
     /// <typeparam name="TPayload">The type of the payload in the message.</typeparam>
     /// <param name="pattern">The pattern of the message.</param>
     /// <param name="message">The message to send.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response from the service bus.</returns>
     public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
-        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
         {
             return cachedPayload;
         }
@@ -68,7 +69,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
         await this.serviceBusAdministrationClient.CreateQueueAsync(new CreateQueueOptions(replyQueueName)
         {
             AutoDeleteOnIdle = TimeSpan.FromSeconds(300)
-        });
+        }, cancellationToken);
 
         // Sending the message
         var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
@@ -88,7 +89,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
 
         // Creating a receiver and waiting for the Receiver to reply
         var serviceBusReceiver = producerClient.CreateReceiver(replyQueueName);
-        var serviceBusReceivedMessage = await serviceBusReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(60));
+        var serviceBusReceivedMessage = await serviceBusReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(60), cancellationToken);
 
         if (serviceBusReceivedMessage == null)
         {
@@ -103,7 +104,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
             return new ServiceResponse<TPayload> { Error = ServiceError.EmptyResponse };
         }
         
-        this.SetCacheResponse(pattern, message, response);
+        this.SetCacheResponse(pattern, message, cancellationToken, response);
 
         return response;
     }
@@ -112,7 +113,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
     /// Shuts down the service bus message mediator.
     /// </summary>
     /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-    public override async Task Shutdown()
+    public override async Task Shutdown(CancellationToken cancellationToken)
     {
         await this.producerClient.DisposeAsync();
         await this.consumerClient.DisposeAsync();
@@ -167,7 +168,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
     /// </summary>
     public async void Dispose()
     {
-        await this.Shutdown();
+        await this.Shutdown(CancellationToken.None);
     }
 
     /// <summary>

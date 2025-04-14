@@ -47,28 +47,28 @@ public class RabbitMQMessageMediator : CachedMessageMediator, IDisposable
         this.logger = logger;
     }
 
-    public override async Task Init()
+    public override async Task Init(CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory() {HostName = this.configuration.ConnectionString};
-        this.connection = await factory.CreateConnectionAsync();
+        this.connection = await factory.CreateConnectionAsync(cancellationToken);
 
         // Consumer
-        this.consumerChannel = await connection.CreateChannelAsync();
-        await this.consumerChannel.QueueDeclareAsync(this.configuration.QueueName, false, false, false, null);
-        await this.consumerChannel.BasicQosAsync(0, 1, false);
+        this.consumerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        await this.consumerChannel.QueueDeclareAsync(this.configuration.QueueName, false, false, false, null, cancellationToken: cancellationToken);
+        await this.consumerChannel.BasicQosAsync(0, 1, false, cancellationToken);
         var consumer = new AsyncEventingBasicConsumer(this.consumerChannel);
-        await this.consumerChannel.BasicConsumeAsync(this.configuration.QueueName, false, consumer);
+        await this.consumerChannel.BasicConsumeAsync(this.configuration.QueueName, false, consumer, cancellationToken: cancellationToken);
         consumer.ReceivedAsync += this.OnConsumerReceivesRequest;
 
         // Producer
-        this.producerChannel = await connection.CreateChannelAsync();
-        await this.producerChannel.QueueDeclareAsync(this.configuration.ReplyQueueName, false, false);
+        this.producerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        await this.producerChannel.QueueDeclareAsync(this.configuration.ReplyQueueName, false, false, cancellationToken: cancellationToken);
         var producer = new AsyncEventingBasicConsumer(this.producerChannel);
         producer.ReceivedAsync += this.OnProducerReceivesResponse;
         await this.producerChannel.BasicConsumeAsync(
             consumer: producer,
             queue: this.configuration.ReplyQueueName,
-            autoAck: true);
+            autoAck: true, cancellationToken: cancellationToken);
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public class RabbitMQMessageMediator : CachedMessageMediator, IDisposable
     /// <returns>A task representing the asynchronous operation. The task result contains the response from the message mediator.</returns>
     public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
-        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
         {
             return cachedPayload;
         }
@@ -90,7 +90,7 @@ public class RabbitMQMessageMediator : CachedMessageMediator, IDisposable
             Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,
         });
 
-        this.SetCacheResponse(pattern, message, response);
+        this.SetCacheResponse(pattern, message, cancellationToken, response);
 
         return response;
     }
@@ -199,12 +199,12 @@ public class RabbitMQMessageMediator : CachedMessageMediator, IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        this.Shutdown();
+        this.Shutdown(CancellationToken.None);
     }
 
-    public override async Task Shutdown()
+    public override async Task Shutdown(CancellationToken cancellationToken)
     {
-        await this.connection.CloseAsync();
+        await this.connection.CloseAsync(cancellationToken);
     }
 }
 

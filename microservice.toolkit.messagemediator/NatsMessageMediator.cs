@@ -37,14 +37,14 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
         this.consumerSubscription = this.connection.SubscribeAsync(this.configuration.Topic, this.OnConsumerReceivesRequest);
     }
     
-    public override Task Init()
+    public override Task Init(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
 
     public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
-        if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
+        if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
         {
             return cachedPayload;
         }
@@ -57,7 +57,7 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
         })), this.configuration.ResponseTimeout, cancellationToken);
         var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
 
-        this.SetCacheResponse(pattern, message, response);
+        this.SetCacheResponse(pattern, message, cancellationToken, response);
         
         return response;
     }
@@ -105,10 +105,10 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
 
     public void Dispose()
     {
-        this.Shutdown().Wait();
+        this.Shutdown(CancellationToken.None).Wait();
     }
 
-    public override async Task Shutdown()
+    public override async Task Shutdown(CancellationToken cancellationToken)
     {
         if (this.consumerSubscription != null)
         {

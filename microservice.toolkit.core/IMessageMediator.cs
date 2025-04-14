@@ -13,7 +13,7 @@ namespace microservice.toolkit.core;
 /// </summary>
 public interface IMessageMediator
 {
-    Task Init();
+    Task Init(CancellationToken cancellationToken);
 
     /// <summary>
     /// Sends a generic message.
@@ -27,5 +27,5 @@ public interface IMessageMediator
 
     Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
 
-    Task Shutdown();
+    Task Shutdown(CancellationToken cancellationToken);
 }

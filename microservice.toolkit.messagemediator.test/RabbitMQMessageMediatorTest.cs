@@ -30,7 +30,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new RabbitMQMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<RabbitMQMessageMediator>());
-            await this.mediator.Init();
+            await this.mediator.Init(CancellationToken.None);
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int>(nameof(SquarePow), 2)).Payload));
         }
@@ -41,7 +41,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new RabbitMQMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<RabbitMQMessageMediator>());
-            await this.mediator.Init();
+            await this.mediator.Init(CancellationToken.None);
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload));
         }
@@ -52,7 +52,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new RabbitMQMessageMediator(configuration,
                 name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
                 new NullLogger<RabbitMQMessageMediator>());
-            await this.mediator.Init();
+            await this.mediator.Init(CancellationToken.None);
 
             Assert.That(-1, Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
         }
@@ -63,12 +63,12 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator01 = new RabbitMQMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<RabbitMQMessageMediator>());
-            await this.mediator01.Init();
+            await this.mediator01.Init(CancellationToken.None);
             
             this.mediator02 = new RabbitMQMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<RabbitMQMessageMediator>());
-            await this.mediator02.Init();
+            await this.mediator02.Init(CancellationToken.None);
 
             Assert.That(4, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 2)).Payload));
             Assert.That(4, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 2)).Payload));
@@ -87,19 +87,19 @@ namespace microservice.toolkit.messagemediator.test
             {
                 if (this.mediator != null)
                 {
-                    await this.mediator.Shutdown();
+                    await this.mediator.Shutdown(CancellationToken.None);
                     this.mediator = null;
                 }
 
                 if (this.mediator01 != null)
                 {
-                    await this.mediator01.Shutdown();
+                    await this.mediator01.Shutdown(CancellationToken.None);
                     this.mediator01 = null;
                 }
 
                 if (this.mediator02 != null)
                 {
-                    await this.mediator02.Shutdown();
+                    await this.mediator02.Shutdown(CancellationToken.None);
                     this.mediator02 = null;
                 }
             }
@@ -113,7 +113,7 @@ namespace microservice.toolkit.messagemediator.test
         [Microservice]
         class SquarePow : Service<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
             {
                 return Task.FromResult(this.SuccessfulResponse(request * request));
             }
@@ -122,7 +122,7 @@ namespace microservice.toolkit.messagemediator.test
         [Microservice]
         class SquarePowError : Service<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
             {
                 return Task.FromResult(this.UnsuccessfulResponse(-1));
             }

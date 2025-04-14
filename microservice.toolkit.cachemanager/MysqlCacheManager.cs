@@ -6,6 +6,7 @@ using MySqlConnector;
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager;
@@ -52,7 +53,7 @@ public class MysqlCacheManager : ICacheManager
         this.dbConnection = dbConnection;
     }
 
-    public async Task<TValue> GetAsync<TValue>(string key)
+    public async Task<TValue> GetAsync<TValue>(string key, CancellationToken cancellationToken)
     {
         var parameters = new Dictionary<string, object>()
         {
@@ -88,12 +89,13 @@ public class MysqlCacheManager : ICacheManager
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="issuedAt"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt)
+    public async Task<bool> SetAsync<TValue>(string key, TValue value, long issuedAt, CancellationToken cancellationToken)
     {
         if (issuedAt != 0 && issuedAt < DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
         {
-            await this.DeleteAsync(key);
+            await this.DeleteAsync(key, cancellationToken);
             return false;
         }
 
@@ -121,9 +123,9 @@ public class MysqlCacheManager : ICacheManager
         return this.dbConnection.ExecuteNonQuery(UpsertQuery, parameters) != 0;   
     }
 
-    public Task<bool> SetAsync<TValue>(string key, TValue value)
+    public Task<bool> SetAsync<TValue>(string key, TValue value, CancellationToken cancellationToken)
     {
-        return this.SetAsync(key, value, 0);
+        return this.SetAsync(key, value, 0, cancellationToken);
     }
     
     public bool Set<TValue>(string key, TValue value)
@@ -131,7 +133,7 @@ public class MysqlCacheManager : ICacheManager
         return this.Set(key, value, 0);
     }
 
-    public async Task<bool> DeleteAsync(string key)
+    public async Task<bool> DeleteAsync(string key, CancellationToken cancellationToken)
     {
         var parameters = new Dictionary<string, object> {{"@id", key},};
 

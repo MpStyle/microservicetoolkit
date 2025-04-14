@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.cachemanager.test;
@@ -17,11 +18,11 @@ public class RedisCacheManagerTest
     [Test]
     public async Task SetAsyncAndGetAsync_KeyValue()
     {
-        var setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds());
+        var setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeMilliseconds(), CancellationToken.None);
 
         Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.GetAsync<string>("my_key");
+        var getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That("my_value", Is.EqualTo(getResponse));
     }
@@ -41,11 +42,11 @@ public class RedisCacheManagerTest
     [Test]
     public async Task SetAsyncAndGetAsync_KeyValueWithoutExpiration()
     {
-        var setResponse = await this.manager.SetAsync("my_key", "my_value");
+        var setResponse = await this.manager.SetAsync("my_key", "my_value", CancellationToken.None);
 
         Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.GetAsync<string>("my_key");
+        var getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That("my_value", Is.EqualTo(getResponse));
     }
@@ -53,13 +54,13 @@ public class RedisCacheManagerTest
     [Test]
     public async Task SetAsyncAndGetAsync_ExpiredKeyValue()
     {
-        var setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
+        var setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds(), CancellationToken.None);
 
         Assert.That(setResponse, Is.True);
 
         await Task.Delay(5000);
 
-        var getResponse = await this.manager.GetAsync<string>("my_key");
+        var getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That(getResponse, Is.Null);
     }
@@ -67,19 +68,19 @@ public class RedisCacheManagerTest
     [Test]
     public async Task SetAsyncAndGetAsync_UpdateWithNegativeIssuedAt()
     {
-        var setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds());
+        var setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeMilliseconds(), CancellationToken.None);
 
         Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.GetAsync<string>("my_key");
+        var getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That("my_value", Is.EqualTo(getResponse));
 
-        setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds());
+        setResponse = await this.manager.SetAsync("my_key", "my_value", DateTimeOffset.UtcNow.AddSeconds(-2).ToUnixTimeMilliseconds(), CancellationToken.None);
 
         Assert.That(setResponse, Is.False);
 
-        getResponse = await this.manager.GetAsync<string>("my_key");
+        getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That(getResponse, Is.Null);
     }
@@ -87,19 +88,19 @@ public class RedisCacheManagerTest
     [Test]
     public async Task DeleteAsync()
     {
-        var setResponse = await this.manager.SetAsync("my_key", "my_value");
+        var setResponse = await this.manager.SetAsync("my_key", "my_value", CancellationToken.None);
 
         Assert.That(setResponse, Is.True);
 
-        var getResponse = await this.manager.GetAsync<string>("my_key");
+        var getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That("my_value", Is.EqualTo(getResponse));
 
-        var deleteResponse = await this.manager.DeleteAsync("my_key");
+        var deleteResponse = await this.manager.DeleteAsync("my_key", CancellationToken.None);
 
         Assert.That(deleteResponse, Is.True);
 
-        getResponse = await this.manager.GetAsync<string>("my_key");
+        getResponse = await this.manager.GetAsync<string>("my_key", CancellationToken.None);
 
         Assert.That(getResponse, Is.Null);
     }
