@@ -4,6 +4,7 @@ using microservice.toolkit.core.entity;
 using Microsoft.Extensions.Logging;
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
@@ -41,7 +42,7 @@ public class LocalMessageMediator : CachedMessageMediator
     /// <param name="pattern">The pattern used to identify the service.</param>
     /// <param name="message">The message to send to the service.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{TPayload}"/> object.</returns>
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
         if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
         {

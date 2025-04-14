@@ -2,6 +2,7 @@ using microservice.toolkit.core.entity;
 
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator
@@ -20,18 +21,22 @@ namespace microservice.toolkit.messagemediator
         /// <typeparam name="TPayload">The type of the response payload.</typeparam>
         /// <param name="request">The request object.</param>
         /// <returns>A task representing the asynchronous operation. The task result contains the service response.</returns>
-        public abstract Task<ServiceResponse<TPayload>> Run(TRequest request);
+        public abstract Task<ServiceResponse<TPayload>> Run(TRequest request, CancellationToken cancellationToken);
+
+        public Task<ServiceResponse<TPayload>> Run(TRequest request){
+            return this.Run(request, CancellationToken.None);
+        }
 
         /// <summary>
         /// Executes the service logic with the specified request.
         /// </summary>
         /// <param name="request">The request object.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object.</returns>
-        public async Task<ServiceResponse<dynamic>> Run(object request)
+        public async Task<ServiceResponse<dynamic>> Run(object request, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await this.Run((TRequest)request);
+                var response = await this.Run((TRequest)request, cancellationToken);
 
                 return new ServiceResponse<dynamic> { Error = response.Error, Payload = response.Payload };
             }
@@ -40,6 +45,11 @@ namespace microservice.toolkit.messagemediator
                 Debug.WriteLine(ex.ToString());
                 return new ServiceResponse<dynamic> { Error = ServiceError.InvalidServiceExecution };
             }
+        }
+
+        public async Task<ServiceResponse<dynamic>> Run(object request)
+        {
+            return await this.Run(request, CancellationToken.None);
         }
 
         /// <summary>
@@ -124,6 +134,6 @@ namespace microservice.toolkit.messagemediator
         /// </summary>
         /// <param name="request">The request object.</param>
         /// <returns>A task that represents the asynchronous operation and contains the service response.</returns>
-        Task<ServiceResponse<dynamic>> Run(object request);
+        Task<ServiceResponse<dynamic>> Run(object request, CancellationToken cancellationToken = default);
     }
 }

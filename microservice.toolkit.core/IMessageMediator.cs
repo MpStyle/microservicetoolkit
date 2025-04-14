@@ -1,5 +1,7 @@
 ﻿using microservice.toolkit.core.entity;
 
+using System.Threading;
+
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.core;
@@ -20,6 +22,8 @@ public interface IMessageMediator
     /// <param name="pattern"></param>
     /// <param name="message"></param>
     /// <returns></returns>
+    Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken);
+
     Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
 
     Task Shutdown();

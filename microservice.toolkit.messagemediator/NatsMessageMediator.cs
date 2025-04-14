@@ -9,6 +9,7 @@ using NATS.Client;
 using System;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
@@ -41,7 +42,7 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
         return Task.CompletedTask;
     }
 
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
         if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
         {
@@ -52,8 +53,8 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
         {
             Pattern = pattern,
             Payload = message,
-            RequestType = message.GetType().FullName
-        })), this.configuration.ResponseTimeout);
+            RequestType = message.GetType().FullName,
+        })), this.configuration.ResponseTimeout, cancellationToken);
         var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
 
         this.SetCacheResponse(pattern, message, response);

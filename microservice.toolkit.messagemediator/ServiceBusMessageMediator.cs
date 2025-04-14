@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
@@ -55,7 +56,7 @@ public class ServiceBusMessageMediator : CachedMessageMediator, IDisposable
     /// <param name="pattern">The pattern of the message.</param>
     /// <param name="message">The message to send.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response from the service bus.</returns>
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
         if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
         {

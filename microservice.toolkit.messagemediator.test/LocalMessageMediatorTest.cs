@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.test
@@ -64,7 +65,7 @@ namespace microservice.toolkit.messagemediator.test
         [Microservice]
         class SquarePow : Service<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request)
+            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
             {
                 return Task.FromResult(this.SuccessfulResponse(request * request));
             }
@@ -73,7 +74,7 @@ namespace microservice.toolkit.messagemediator.test
         [Microservice]
         class SquarePowError : Service<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request)
+            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
             {
                 return Task.FromResult(this.UnsuccessfulResponse(-1));
             }

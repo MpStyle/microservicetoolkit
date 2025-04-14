@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.test;
@@ -53,7 +54,7 @@ public class ServiceTest
 [ExcludeFromCodeCoverage]
 class MyServiceWithException : Service<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request)
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
     {
         throw new System.NotImplementedException();
     }
@@ -62,7 +63,7 @@ class MyServiceWithException : Service<int, int>
 [ExcludeFromCodeCoverage]
 class MyServiceSuccessfulResponseTask : Service<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request)
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
     {
         return this.SuccessfulResponseTask(request);
     }
@@ -71,7 +72,7 @@ class MyServiceSuccessfulResponseTask : Service<int, int>
 [ExcludeFromCodeCoverage]
 class MyServiceUnsuccessfulResponseTask : Service<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request)
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
     {
         return this.UnsuccessfulResponseTask(request);
     }
@@ -80,7 +81,7 @@ class MyServiceUnsuccessfulResponseTask : Service<int, int>
 [ExcludeFromCodeCoverage]
 class MyServiceResponseTask : Service<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request)
+    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
     {
         return this.ResponseTask(request / 2, request * 2);
     }

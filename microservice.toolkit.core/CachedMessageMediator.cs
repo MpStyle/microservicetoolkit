@@ -1,6 +1,7 @@
 ﻿using microservice.toolkit.core.entity;
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.core;
@@ -17,7 +18,12 @@ public abstract class CachedMessageMediator : IMessageMediator
     
     public abstract Task Init();
 
-    public abstract Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
+    public abstract Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken);
+
+    public Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message){
+        return this.Send<TPayload>(pattern, message, CancellationToken.None);
+    }
+
     public abstract Task Shutdown();
 
     protected bool TryGetCachedResponse<TPayload>(string pattern, object message,

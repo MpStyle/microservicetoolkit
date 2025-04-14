@@ -78,7 +78,7 @@ public class RabbitMQMessageMediator : CachedMessageMediator, IDisposable
     /// <param name="pattern">The pattern to send the message to.</param>
     /// <param name="message">The message to send.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains the response from the message mediator.</returns>
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message)
+    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
     {
         if (this.TryGetCachedResponse(pattern, message, out ServiceResponse<TPayload> cachedPayload))
         {
