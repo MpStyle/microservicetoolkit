@@ -1,7 +1,8 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Data.SqlClient;
+
+using NUnit.Framework;
 
 using System;
-using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
