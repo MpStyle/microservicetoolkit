@@ -1,0 +1,4 @@
+- Cancellation token nell'emiter
+- implementare qualcosa tipo MediatR.Extensions.Microsoft.DependencyInjection
+- Rinominare i metodi con che ritornano Task con post fisso Async
+- Sistemare i test
