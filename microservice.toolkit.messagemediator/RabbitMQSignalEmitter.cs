@@ -115,12 +115,12 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IDisposable
     public void Dispose()
     {
         GC.SuppressFinalize(this);
-        this.Shutdown();
+        _ = this.Shutdown(CancellationToken.None);
     }
 
-    public async Task Shutdown()
+    public async Task Shutdown(CancellationToken cancellationToken)
     {
-        await this.connection.CloseAsync();
+        await this.connection.CloseAsync(cancellationToken: cancellationToken);
     }
 }
 

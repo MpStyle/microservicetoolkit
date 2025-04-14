@@ -47,7 +47,7 @@ namespace microservice.toolkit.messagemediator.test
             {
                 if (this.signalEmitter != null)
                 {
-                    await this.signalEmitter.Shutdown();
+                    await this.signalEmitter.Shutdown(CancellationToken.None);
                     this.signalEmitter = null;
                 }
             }

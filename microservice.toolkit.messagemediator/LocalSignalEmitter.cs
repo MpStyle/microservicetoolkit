@@ -72,6 +72,11 @@ public class LocalSignalEmitter : ISignalEmitter
     {
         await this.Emit(pattern, message, CancellationToken.None);
     }
+
+    public Task Shutdown(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
 }
 
 [Serializable]
