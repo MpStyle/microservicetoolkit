@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\image\icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
