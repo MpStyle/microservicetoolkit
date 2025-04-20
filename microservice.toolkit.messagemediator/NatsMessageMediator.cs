@@ -14,59 +14,41 @@ using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator;
 
-public class NatsMessageMediator : CachedMessageMediator, IDisposable
+public class NatsMessageMediator(
+    NatsMessageMediatorConfiguration configuration,
+    ServiceFactory serviceFactory,
+    ILogger<NatsMessageMediator> logger
+) : IMessageMediator, IAsyncDisposable
 {
-    private readonly ILogger<NatsMessageMediator> logger;
-    private readonly NatsMessageMediatorConfiguration configuration;
-    private readonly ServiceFactory serviceFactory;
     private IConnection connection;
     private IAsyncSubscription consumerSubscription;
 
-    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory,
-        ILogger<NatsMessageMediator> logger)
-        : this(configuration, serviceFactory, null, logger)
+    public Task InitAsync(CancellationToken cancellationToken)
     {
-    }
-
-    public NatsMessageMediator(NatsMessageMediatorConfiguration configuration, ServiceFactory serviceFactory,
-        ICacheManager cacheManager, ILogger<NatsMessageMediator> logger)
-        : base(cacheManager)
-    {
-        this.configuration = configuration;
-        this.serviceFactory = serviceFactory;
-        this.logger = logger;
-    }
-
-    public override Task Init(CancellationToken cancellationToken)
-    {
-        this.connection = new ConnectionFactory().CreateConnection(this.configuration.ConnectionString);
-        this.consumerSubscription = this.connection.SubscribeAsync(this.configuration.Topic,
-            (model, ea) => this.OnConsumerReceivesRequest(model, ea, cancellationToken));
+        this.connection = new ConnectionFactory().CreateConnection(configuration.ConnectionString);
+        this.consumerSubscription = this.connection.SubscribeAsync(configuration.Topic,
+            (model, ea) => _ = this.OnConsumerReceivesRequest(model, ea, cancellationToken));
         return Task.CompletedTask;
     }
 
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message,
-        CancellationToken cancellationToken)
+    public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(
+        string pattern,
+        object message,
+        CancellationToken cancellationToken = default
+    )
     {
-        if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
-        {
-            return cachedPayload;
-        }
-
-        var responseMessage = await this.connection.RequestAsync(this.configuration.Topic,
+        var responseMessage = await this.connection.RequestAsync(configuration.Topic,
             Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
             {
                 Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,
-            })), this.configuration.ResponseTimeout, cancellationToken);
+            })), configuration.ResponseTimeout, cancellationToken);
         var response =
             JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
-
-        this.SetCacheResponse(pattern, message, cancellationToken, response);
 
         return response;
     }
 
-    private async void OnConsumerReceivesRequest(object model, MsgHandlerEventArgs ea,
+    private async Task OnConsumerReceivesRequest(object model, MsgHandlerEventArgs ea,
         CancellationToken cancellationToken)
     {
         var response = default(ServiceResponse<object>);
@@ -81,24 +63,42 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
 
         try
         {
-            var service = this.serviceFactory(rpcMessage.Pattern);
+            var service = serviceFactory(rpcMessage.Pattern);
 
             if (service == null)
             {
-                throw new NatsMessageMediatorException(ServiceError.ServiceNotFound);
+                throw new MessageMediatorException(ServiceError.ServiceNotFound);
             }
 
+            var requestType = Type.GetType(rpcMessage.RequestType);
+            
+            if(requestType == null)
+            {
+                throw new MessageMediatorException(ServiceError.InvalidRequestType);
+            }
+            
             var json = ((JsonElement)rpcMessage.Payload).GetRawText();
-            var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
-            response = await service.Run(request, cancellationToken);
+            var request = JsonSerializer.Deserialize(json, requestType);
+
+            response = service switch
+            {
+                IServiceAsync serviceAsync => await serviceAsync.RunAsync(request, cancellationToken),
+                IService s => s.Run(request),
+                _ => null
+            };
+
+            if (response == null)
+            {
+                throw new InvalidServiceException(service.GetType().FullName);
+            }
         }
-        catch (NatsMessageMediatorException ex)
+        catch (MessageMediatorException ex)
         {
             response = new ServiceResponse<object> {Error = ex.ErrorCode};
         }
         catch (Exception ex)
         {
-            this.logger.LogDebug("Generic error: {Message}", ex.ToString());
+            logger.LogDebug("Generic error: {Message}", ex.ToString());
             response = new ServiceResponse<object> {Error = ServiceError.Unknown};
         }
         finally
@@ -108,12 +108,13 @@ public class NatsMessageMediator : CachedMessageMediator, IDisposable
         }
     }
 
-    public void Dispose()
+    public virtual async ValueTask DisposeAsync()
     {
-        this.Shutdown(CancellationToken.None).Wait();
+        await this.ShutdownAsync(CancellationToken.None);
+        GC.SuppressFinalize(this);
     }
 
-    public override async Task Shutdown(CancellationToken cancellationToken)
+    public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
         if (this.consumerSubscription != null)
         {
@@ -137,14 +138,4 @@ public class NatsMessageMediatorConfiguration
     /// Milliseconds
     /// </summary>
     public int ResponseTimeout { get; init; } = 5000;
-}
-
-public class NatsMessageMediatorException : Exception
-{
-    public int ErrorCode { get; }
-
-    public NatsMessageMediatorException(int errorCode)
-    {
-        this.ErrorCode = errorCode;
-    }
 }

@@ -23,14 +23,10 @@ public abstract class SignalHandler<TEvent> : ISignalHandler
     /// <param name="request">The event to handle.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task Run(object request, CancellationToken cancellationToken)
+    public Task Run(object request, CancellationToken cancellationToken = default)
     {
         _ = this.Run((TEvent)request, cancellationToken).ConfigureAwait(false);
-    }
-    
-    public async Task Run(object request)
-    {
-        _ = this.Run((TEvent)request, CancellationToken.None).ConfigureAwait(false);
+        return Task.CompletedTask;
     }
 }
 
@@ -47,4 +43,3 @@ public interface ISignalHandler
     /// <returns>A task representing the asynchronous operation.</returns>
     Task Run(object request, CancellationToken cancellationToken);
 }
-

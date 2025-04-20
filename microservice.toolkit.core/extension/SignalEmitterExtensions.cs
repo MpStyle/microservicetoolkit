@@ -7,6 +7,6 @@ public static class SignalEmitterExtensions
 {
     public static Task Emit<TEvent>(this ISignalEmitter signalEmitter, Type signalEmitterType, TEvent message)
     {
-        return signalEmitter.Emit(signalEmitterType.ToPattern(), message);
+        return signalEmitter.EmitAsync(signalEmitterType.ToPattern(), message);
     }
 }

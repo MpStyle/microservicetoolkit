@@ -12,6 +12,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
+using static microservice.toolkit.messagemediator.utils.ServiceUtils;
+
 namespace microservice.toolkit.messagemediator.test
 {
     [ExcludeFromCodeCoverage]
@@ -33,9 +35,9 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
-            await this.mediator.Init(CancellationToken.None);
+            await this.mediator.InitAsync(CancellationToken.None);
 
-            Assert.That(4, Is.EqualTo((await mediator.Send<int>(nameof(SquarePow), 2)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator.SendAsync<int>(nameof(SquarePow), 2)).Payload));
         }
 
         [Test]
@@ -44,7 +46,7 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
-            await this.mediator.Init(CancellationToken.None);
+            await this.mediator.InitAsync(CancellationToken.None);
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload));
         }
@@ -55,9 +57,9 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator = new NatsMessageMediator(configuration,
                 name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
                 new NullLogger<NatsMessageMediator>());
-            await this.mediator.Init(CancellationToken.None);
+            await this.mediator.InitAsync(CancellationToken.None);
 
-            Assert.That(-1, Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
+            Assert.That(-1, Is.EqualTo((await mediator.SendAsync<int>(nameof(SquarePowError), 2)).Error));
         }
 
         [Test]
@@ -66,12 +68,12 @@ namespace microservice.toolkit.messagemediator.test
             this.mediator01 = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
-            await this.mediator01.Init(CancellationToken.None);
+            await this.mediator01.InitAsync(CancellationToken.None);
             
             this.mediator02 = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
-            await this.mediator02.Init(CancellationToken.None);
+            await this.mediator02.InitAsync(CancellationToken.None);
 
             Assert.That(4, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 2)).Payload));
             Assert.That(4, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 2)).Payload));
@@ -90,19 +92,19 @@ namespace microservice.toolkit.messagemediator.test
             {
                 if (this.mediator != null)
                 {
-                    await this.mediator.Shutdown(CancellationToken.None);
+                    await this.mediator.ShutdownAsync(CancellationToken.None);
                     this.mediator = null;
                 }
 
                 if (this.mediator01 != null)
                 {
-                    await this.mediator01.Shutdown(CancellationToken.None);
+                    await this.mediator01.ShutdownAsync(CancellationToken.None);
                     this.mediator01 = null;
                 }
 
                 if (this.mediator02 != null)
                 {
-                    await this.mediator02.Shutdown(CancellationToken.None);
+                    await this.mediator02.ShutdownAsync(CancellationToken.None);
                     this.mediator02 = null;
                 }
             }
@@ -114,20 +116,20 @@ namespace microservice.toolkit.messagemediator.test
         }
 
         [Microservice]
-        class SquarePow : Service<int, int>
+        class SquarePow : ServiceAsync<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken)
             {
-                return Task.FromResult(this.SuccessfulResponse(request * request));
+                return SuccessfulResponseAsync(request * request);
             }
         }
 
         [Microservice]
-        class SquarePowError : Service<int, int>
+        class SquarePowError : ServiceAsync<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken)
             {
-                return Task.FromResult(this.UnsuccessfulResponse(-1));
+                return UnsuccessfulResponseAsync<int>(-1);
             }
         }
     }

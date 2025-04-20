@@ -12,25 +12,12 @@ namespace microservice.toolkit.messagemediator;
 /// <summary>
 /// Represents a message mediator that handles local message communication.
 /// </summary>
-public class LocalMessageMediator : CachedMessageMediator
+public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
+    : IMessageMediator
 {
-    private readonly ServiceFactory serviceFactory;
-    private readonly ILogger<IMessageMediator> logger;
+    private readonly ILogger<IMessageMediator> logger = logger;
 
-    public LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
-        : this(serviceFactory, null, logger)
-    {
-    }
-
-    public LocalMessageMediator(ServiceFactory serviceFactory, ICacheManager cacheManager,
-        ILogger<LocalMessageMediator> logger)
-        : base(cacheManager)
-    {
-        this.serviceFactory = serviceFactory;
-        this.logger = logger;
-    }
-
-    public override Task Init(CancellationToken cancellationToken)
+    public Task InitAsync(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
@@ -43,25 +30,32 @@ public class LocalMessageMediator : CachedMessageMediator
     /// <param name="message">The message to send to the service.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{TPayload}"/> object.</returns>
-    public override async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken)
+    public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(string pattern, object message,
+        CancellationToken cancellationToken = default)
     {
-        if (this.TryGetCachedResponse(pattern, message, cancellationToken, out ServiceResponse<TPayload> cachedPayload))
-        {
-            return cachedPayload;
-        }
-
         var response = new ServiceResponse<TPayload>();
 
         try
         {
-            var service = this.serviceFactory(pattern);
+            var service = serviceFactory(pattern);
 
             if (service == null)
             {
                 throw new ServiceNotFoundException(pattern);
             }
 
-            var serviceResponse = await service.Run(message);
+            var serviceResponse = service switch
+            {
+                IServiceAsync serviceAsync => await serviceAsync.RunAsync(message, cancellationToken),
+                IService s => s.Run(message),
+                _ => null
+            };
+            
+            if(serviceResponse == null)
+            {
+                throw new InvalidServiceException(service.GetType().FullName);
+            }
+
             if (serviceResponse.Error.HasValue == false)
             {
                 response.Payload = (TPayload)serviceResponse.Payload;
@@ -82,8 +76,6 @@ public class LocalMessageMediator : CachedMessageMediator
             response.Error = ServiceError.Unknown;
         }
 
-        this.SetCacheResponse(pattern, message, cancellationToken, response);
-            
         return response;
     }
 
@@ -91,7 +83,7 @@ public class LocalMessageMediator : CachedMessageMediator
     /// Shuts down the local message mediator.
     /// </summary>
     /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-    public override Task Shutdown(CancellationToken cancellationToken)
+    public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

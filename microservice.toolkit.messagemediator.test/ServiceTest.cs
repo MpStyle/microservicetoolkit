@@ -9,6 +9,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
+using static microservice.toolkit.messagemediator.utils.ServiceUtils;
+
 namespace microservice.toolkit.messagemediator.test;
 
 [ExcludeFromCodeCoverage]
@@ -20,7 +22,7 @@ public class ServiceTest
         var mediator = new LocalMessageMediator(pattern => new MyServiceWithException(),
             new NullLogger<LocalMessageMediator>());
 
-        var response = await mediator.Send<int>("any_service", 2);
+        var response = await mediator.SendAsync<int>("any_service", 2);
 
         Assert.That(response.Error, Is.EqualTo(ServiceError.InvalidServiceExecution));
     }
@@ -29,7 +31,7 @@ public class ServiceTest
     public async Task Run_SuccessfulResponseTask()
     {
         var service = new MyServiceSuccessfulResponseTask();
-        var response = await service.Run(10);
+        var response = await service.RunAsync(10);
         Assert.That(response.Payload, Is.EqualTo(10));
     }
 
@@ -37,7 +39,7 @@ public class ServiceTest
     public async Task Run_UnsuccessfulResponseTask()
     {
         var service = new MyServiceUnsuccessfulResponseTask();
-        var response = await service.Run(10);
+        var response = await service.RunAsync(10);
         Assert.That(response.Error, Is.EqualTo(10));
     }
 
@@ -45,44 +47,44 @@ public class ServiceTest
     public async Task Run_ResponseTask()
     {
         var service = new MyServiceResponseTask();
-        var response = await service.Run(10);
+        var response = await service.RunAsync(10);
         Assert.That(response.Payload, Is.EqualTo(0));
         Assert.That(response.Error, Is.EqualTo(20));
     }
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceWithException : Service<int, int>
+class MyServiceWithException : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
         throw new System.NotImplementedException();
     }
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceSuccessfulResponseTask : Service<int, int>
+class MyServiceSuccessfulResponseTask : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return this.SuccessfulResponseTask(request);
+        return SuccessfulResponseAsync(request);
     }
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceUnsuccessfulResponseTask : Service<int, int>
+class MyServiceUnsuccessfulResponseTask : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return this.UnsuccessfulResponseTask(request);
+        return UnsuccessfulResponseAsync<int>(request);
     }
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceResponseTask : Service<int, int>
+class MyServiceResponseTask : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return this.ResponseTask(request / 2, request * 2);
+        return ResponseAsync(request / 2, request * 2);
     }
 }

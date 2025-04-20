@@ -4,7 +4,6 @@ using microservice.toolkit.core.extension;
 using Microsoft.Extensions.Logging;
 
 using System;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,23 +12,10 @@ namespace microservice.toolkit.messagemediator;
 /// <summary>
 /// Represents a signal emitter that emits signals locally.
 /// </summary>
-public class LocalSignalEmitter : ISignalEmitter
+public class LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<LocalSignalEmitter> logger)
+    : ISignalEmitter
 {
-    private readonly SignalHandlerFactory signalHandlerFactory;
-    private readonly ILogger<LocalSignalEmitter> logger;
-
-    public LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<LocalSignalEmitter> logger)
-    {
-        this.signalHandlerFactory = serviceFactory;
-        this.logger = logger;
-    }
-
-    public Task Init(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
-    
-    public Task Init()
+    public Task InitAsync(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
@@ -42,11 +28,11 @@ public class LocalSignalEmitter : ISignalEmitter
     /// <param name="message">The message to emit.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task Emit<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken)
+    public Task EmitAsync<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken = default)
     {
         try
         {
-            var eventHandlers = this.signalHandlerFactory(pattern);
+            var eventHandlers = serviceFactory(pattern);
 
             if (eventHandlers.IsNullOrEmpty())
             {
@@ -60,20 +46,17 @@ public class LocalSignalEmitter : ISignalEmitter
         }
         catch (SignalHandlerNotFoundException ex)
         {
-            this.logger.LogDebug("Service not found: {Message}", ex.ToString());
+            logger.LogDebug("Service not found: {Message}", ex.ToString());
         }
         catch (Exception ex)
         {
-            this.logger.LogDebug("Generic error: {Message}", ex.ToString());
+            logger.LogDebug("Generic error: {Message}", ex.ToString());
         }
+
+        return Task.CompletedTask;
     }
 
-    public async Task Emit<TEvent>(string pattern, TEvent message)
-    {
-        await this.Emit(pattern, message, CancellationToken.None);
-    }
-
-    public Task Shutdown(CancellationToken cancellationToken)
+    public Task ShutdownAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }
@@ -95,12 +78,6 @@ public class SignalHandlerNotFoundException : Exception
 
     public SignalHandlerNotFoundException(string message, Exception innerException)
         : base(message, innerException)
-    {
-    }
-
-    // Without this constructor, deserialization will fail
-    protected SignalHandlerNotFoundException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 

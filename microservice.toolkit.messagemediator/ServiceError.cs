@@ -10,5 +10,6 @@
         public const int EmptyResponse = 8006;
         public const int EmptyRequest = 8007;
         public const int TimeOut = 8008;
+        public const int InvalidRequestType = 8009;
     }
 }

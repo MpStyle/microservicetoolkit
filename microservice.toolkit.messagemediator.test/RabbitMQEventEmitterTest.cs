@@ -23,9 +23,9 @@ namespace microservice.toolkit.messagemediator.test
             this.signalEmitter = new RabbitMQSignalEmitter(configuration,
                 name => nameof(SquarePow).Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<RabbitMQSignalEmitter>());
-            await this.signalEmitter.Init(CancellationToken.None);
+            await this.signalEmitter.InitAsync(CancellationToken.None);
 
-            await signalEmitter.Emit(nameof(SquarePow), 2);
+            await signalEmitter.EmitAsync(nameof(SquarePow), 2);
 
             Assert.That(isSignalHandlerRunned, Is.False);
 
@@ -47,7 +47,7 @@ namespace microservice.toolkit.messagemediator.test
             {
                 if (this.signalEmitter != null)
                 {
-                    await this.signalEmitter.Shutdown(CancellationToken.None);
+                    await this.signalEmitter.ShutdownAsync(CancellationToken.None);
                     this.signalEmitter = null;
                 }
             }

@@ -9,17 +9,17 @@ namespace microservice.toolkit.messagemediator.test.data;
 
 [ExcludeFromCodeCoverage]
 [Microservice]
-public class ValidService01 : Service<int, int>
+public class ValidService01 : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
         throw new System.NotImplementedException();
     }
 
     [Microservice]
-    public class InvalidNestedService : Service<int, int>
+    public class InvalidNestedService : ServiceAsync<int, int>
     {
-        public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+        public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }
@@ -28,9 +28,9 @@ public class ValidService01 : Service<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice]
-public class ValidService02 : Service<int, int>
+public class ValidService02 : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellAsyncationToken = default)
     {
         throw new System.NotImplementedException();
     }
@@ -44,9 +44,9 @@ public abstract class InvalidAbstractService : Service<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice]
-public class InvalidGenericService : Service<int, int>
+public class InvalidGenericService : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
         throw new System.NotImplementedException();
     }
@@ -54,9 +54,9 @@ public class InvalidGenericService : Service<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice(nameof(ValidService03))]
-public class ValidService03 : Service<int, int>
+public class ValidService03 : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
         throw new System.NotImplementedException();
     }
@@ -64,9 +64,9 @@ public class ValidService03 : Service<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice(nameof(ValidService04))]
-public class ValidService04 : Service<int, int>
+public class ValidService04 : ServiceAsync<int, int>
 {
-    public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken)
+    public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken canceAsyncllationToken = default)
     {
         throw new System.NotImplementedException();
     }

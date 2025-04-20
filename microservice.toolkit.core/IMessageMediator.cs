@@ -1,7 +1,6 @@
 ﻿using microservice.toolkit.core.entity;
 
 using System.Threading;
-
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.core;
@@ -13,7 +12,7 @@ namespace microservice.toolkit.core;
 /// </summary>
 public interface IMessageMediator
 {
-    Task Init(CancellationToken cancellationToken);
+    Task InitAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sends a generic message.
@@ -23,9 +22,16 @@ public interface IMessageMediator
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message, CancellationToken cancellationToken);
+    Task<ServiceResponse<TPayload>> SendAsync<TPayload>(
+        string pattern,
+        object message,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message);
+    public ServiceResponse<TPayload> Send<TPayload>(string pattern, object message)
+    {
+        return SendAsync<TPayload>(pattern, message).Result;
+    }
 
-    Task Shutdown(CancellationToken cancellationToken);
+    Task ShutdownAsync(CancellationToken cancellationToken = default);
 }

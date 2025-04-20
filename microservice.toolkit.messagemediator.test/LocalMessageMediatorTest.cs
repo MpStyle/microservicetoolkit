@@ -11,6 +11,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
+using static microservice.toolkit.messagemediator.utils.ServiceUtils;
+
 namespace microservice.toolkit.messagemediator.test
 {
     [ExcludeFromCodeCoverage]
@@ -22,9 +24,9 @@ namespace microservice.toolkit.messagemediator.test
             var mediator =
                 new LocalMessageMediator(name => typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
-            await mediator.Init(CancellationToken.None);
+            await mediator.InitAsync(CancellationToken.None);
 
-            Assert.That(4, Is.EqualTo((await mediator.Send<int>(typeof(SquarePow).ToPattern(), 2)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator.SendAsync<int>(typeof(SquarePow).ToPattern(), 2)).Payload));
         }
 
         [Test]
@@ -33,7 +35,7 @@ namespace microservice.toolkit.messagemediator.test
             IMessageMediator mediator =
                 new LocalMessageMediator(name =>typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
-            await mediator.Init(CancellationToken.None);
+            await mediator.InitAsync(CancellationToken.None);
 
             Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(typeof(SquarePow).ToPattern(), 2)).Payload));
         }
@@ -44,9 +46,9 @@ namespace microservice.toolkit.messagemediator.test
             IMessageMediator mediator =
                 new LocalMessageMediator(name => nameof(SquarePowError).Equals(name) ? new SquarePowError() : null,
                     new NullLogger<LocalMessageMediator>());
-            await mediator.Init(CancellationToken.None);
+            await mediator.InitAsync(CancellationToken.None);
 
-            Assert.That(ServiceError.ServiceNotFound, Is.EqualTo((await mediator.Send<int>(typeof(SquarePowError).ToPattern(), 2)).Error));
+            Assert.That(ServiceError.ServiceNotFound, Is.EqualTo((await mediator.SendAsync<int>(typeof(SquarePowError).ToPattern(), 2)).Error));
         }
 
         [Test]
@@ -55,7 +57,7 @@ namespace microservice.toolkit.messagemediator.test
             IMessageMediator mediator =
                 new LocalMessageMediator(name => typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
-            await mediator.Init(CancellationToken.None);
+            await mediator.InitAsync(CancellationToken.None);
 
             var response=await mediator.Send<int, int>("ServiceNotFound", 2);
             
@@ -63,20 +65,20 @@ namespace microservice.toolkit.messagemediator.test
         }
 
         [Microservice]
-        class SquarePow : Service<int, int>
+        class SquarePow : ServiceAsync<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {
-                return Task.FromResult(this.SuccessfulResponse(request * request));
+                return SuccessfulResponseAsync(request * request);
             }
         }
 
         [Microservice]
-        class SquarePowError : Service<int, int>
+        class SquarePowError : ServiceAsync<int, int>
         {
-            public override Task<ServiceResponse<int>> Run(int request, CancellationToken cancellationToken = default)
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {
-                return Task.FromResult(this.UnsuccessfulResponse(-1));
+                return UnsuccessfulResponseAsync<int>(-1);
             }
         }
     }
