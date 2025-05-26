@@ -18,7 +18,7 @@ public static class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Type type)
     {
-        return new[] {type}.GetServices();
+        return new[] { type }.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Type[] types)
@@ -33,7 +33,7 @@ public static class MessageMediatorExtensions
     /// <returns></returns>
     public static MicroserviceCollection GetServices(this Assembly assembly)
     {
-        return new[] {assembly}.GetServices();
+        return new[] { assembly }.GetServices();
     }
 
     public static MicroserviceCollection GetServices(this Assembly[] assemblies)
@@ -117,7 +117,7 @@ public static class MessageMediatorExtensions
                 return null;
             }
 
-            return serviceProvider.GetService(serviceTypes.First()) as IService;
+            return serviceProvider.GetService(serviceTypes.First()) as IBaseService;
         }), serviceProviderLifeTime));
 
         return services;
