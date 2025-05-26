@@ -42,7 +42,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
 
     public async Task InitAsync(CancellationToken cancellationToken = default)
     {
-        var factory = new ConnectionFactory() {HostName = this.configuration.ConnectionString};
+        var factory = new ConnectionFactory() { HostName = this.configuration.ConnectionString };
         this.connection = await factory.CreateConnectionAsync(cancellationToken);
 
         // Consumer
@@ -76,11 +76,13 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
     /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation. The task result contains the response from the message mediator.</returns>
     public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(string pattern, object message,
-        CancellationToken cancellationToken=default)
+        CancellationToken cancellationToken = default)
     {
         var response = await this.InternalSendAsync<TPayload>(new BrokeredMessage
         {
-            Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,
+            Pattern = pattern,
+            Payload = message,
+            RequestType = message.GetType().FullName,
         });
 
         return response;
@@ -93,12 +95,13 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
     /// <param name="message">The brokered message to send.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response as a <see cref="ServiceResponse{TPayload}"/>.</returns>
     private async Task<ServiceResponse<TPayload>> InternalSendAsync<TPayload>(BrokeredMessage message,
-        CancellationToken cancellationToken=default)
+        CancellationToken cancellationToken = default)
     {
         var correlationId = Guid.NewGuid().ToString();
         var producerProps = new BasicProperties
         {
-            CorrelationId = correlationId, ReplyTo = this.configuration.ReplyQueueName
+            CorrelationId = correlationId,
+            ReplyTo = this.configuration.ReplyQueueName
         };
         var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
@@ -123,7 +126,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
         catch (Exception ex)
         {
             this.logger.LogDebug("Time out error: {Message}", ex.ToString());
-            return new ServiceResponse<TPayload> {Error = ServiceError.TimeOut};
+            return new ServiceResponse<TPayload> { Error = ServiceError.TimeOut };
         }
     }
 
@@ -143,7 +146,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
         var response = default(ServiceResponse<object>);
         var body = ea.Body.ToArray();
         var props = ea.BasicProperties;
-        var replyProps = new BasicProperties {CorrelationId = props.CorrelationId,};
+        var replyProps = new BasicProperties { CorrelationId = props.CorrelationId, };
 
         var rpcMessage = JsonSerializer.Deserialize<BrokeredMessage>(Encoding.UTF8.GetString(body));
 
@@ -164,12 +167,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
 
             var json = ((JsonElement)rpcMessage.Payload).GetRawText();
             var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
-            response = service switch
-            {
-                IServiceAsync serviceAsync => await serviceAsync.RunAsync(request),
-                IService s => s.Run(request),
-                _ => null
-            };
+            response = await service.RunAsync(request);
 
             if (response == null)
             {
@@ -178,12 +176,12 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
         }
         catch (RabbitMQMessageMediatorException ex)
         {
-            response = new ServiceResponse<object> {Error = ex.ErrorCode};
+            response = new ServiceResponse<object> { Error = ex.ErrorCode };
         }
         catch (Exception ex)
         {
             this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-            response = new ServiceResponse<object> {Error = ServiceError.Unknown};
+            response = new ServiceResponse<object> { Error = ServiceError.Unknown };
         }
         finally
         {

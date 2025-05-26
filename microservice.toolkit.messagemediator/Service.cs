@@ -20,19 +20,24 @@ public abstract class Service<TRequest, TPayload> : IService
     /// <typeparam name="TRequest">The type of the request.</typeparam>
     /// <typeparam name="TPayload">The type of the response payload.</typeparam>
     /// <param name="request">The request object.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation. The task result contains the service response.</returns>
-    public abstract ServiceResponse<TPayload> Run(TRequest request);
+    public abstract Task<ServiceResponse<TPayload>> RunAsync(
+        TRequest request,
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Executes the service logic with the specified request.
     /// </summary>
     /// <param name="request">The request object.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{T}"/> object.</returns>
-    public ServiceResponse<dynamic> Run(object request)
+    public async Task<ServiceResponse<dynamic>> RunAsync(object request, CancellationToken cancellationToken)
     {
         try
         {
-            var response = this.Run((TRequest)request);
+            var response = await this.RunAsync((TRequest)request, cancellationToken);
 
             return new ServiceResponse<dynamic> { Error = response.Error, Payload = response.Payload };
         }
@@ -41,5 +46,10 @@ public abstract class Service<TRequest, TPayload> : IService
             Debug.WriteLine(ex.ToString());
             return new ServiceResponse<dynamic> { Error = ServiceError.InvalidServiceExecution };
         }
+    }
+
+    public async Task<ServiceResponse<dynamic>> RunAsync(object request)
+    {
+        return await this.RunAsync(request, CancellationToken.None);
     }
 }

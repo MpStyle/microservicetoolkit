@@ -9,7 +9,7 @@ namespace microservice.toolkit.messagemediator.test.data;
 
 [ExcludeFromCodeCoverage]
 [Microservice]
-public class ValidService01 : ServiceAsync<int, int>
+public class ValidService01 : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
@@ -17,7 +17,7 @@ public class ValidService01 : ServiceAsync<int, int>
     }
 
     [Microservice]
-    public class InvalidNestedService : ServiceAsync<int, int>
+    public class InvalidNestedService : Service<int, int>
     {
         public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
         {
@@ -28,7 +28,7 @@ public class ValidService01 : ServiceAsync<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice]
-public class ValidService02 : ServiceAsync<int, int>
+public class ValidService02 : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellAsyncationToken = default)
     {
@@ -44,7 +44,7 @@ public abstract class InvalidAbstractService : Service<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice]
-public class InvalidGenericService : ServiceAsync<int, int>
+public class InvalidGenericService : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
@@ -54,7 +54,7 @@ public class InvalidGenericService : ServiceAsync<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice(nameof(ValidService03))]
-public class ValidService03 : ServiceAsync<int, int>
+public class ValidService03 : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
@@ -64,7 +64,7 @@ public class ValidService03 : ServiceAsync<int, int>
 
 [ExcludeFromCodeCoverage]
 [Microservice(nameof(ValidService04))]
-public class ValidService04 : ServiceAsync<int, int>
+public class ValidService04 : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken canceAsyncllationToken = default)
     {

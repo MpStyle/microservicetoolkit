@@ -65,7 +65,7 @@ namespace microservice.toolkit.messagemediator.test
         }
 
         [Microservice]
-        class SquarePow : ServiceAsync<int, int>
+        class SquarePow : Service<int, int>
         {
             public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {
@@ -74,7 +74,7 @@ namespace microservice.toolkit.messagemediator.test
         }
 
         [Microservice]
-        class SquarePowError : ServiceAsync<int, int>
+        class SquarePowError : Service<int, int>
         {
             public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {

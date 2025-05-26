@@ -54,7 +54,7 @@ public class ServiceTest
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceWithException : ServiceAsync<int, int>
+class MyServiceWithException : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
@@ -63,7 +63,7 @@ class MyServiceWithException : ServiceAsync<int, int>
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceSuccessfulResponseTask : ServiceAsync<int, int>
+class MyServiceSuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
@@ -72,7 +72,7 @@ class MyServiceSuccessfulResponseTask : ServiceAsync<int, int>
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceUnsuccessfulResponseTask : ServiceAsync<int, int>
+class MyServiceUnsuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
@@ -81,7 +81,7 @@ class MyServiceUnsuccessfulResponseTask : ServiceAsync<int, int>
 }
 
 [ExcludeFromCodeCoverage]
-class MyServiceResponseTask : ServiceAsync<int, int>
+class MyServiceResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {

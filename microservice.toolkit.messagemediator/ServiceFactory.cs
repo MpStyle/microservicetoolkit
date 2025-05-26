@@ -5,5 +5,5 @@
     /// </summary>
     /// <param name="pattern">The name of the microservice</param>
     /// <returns>The instance of the microservice</returns>
-    public delegate IBaseService ServiceFactory(string pattern);
+    public delegate IService ServiceFactory(string pattern);
 }

@@ -60,17 +60,20 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
         // Temporary Queue for Receiver to send their replies into
         var replyQueueName = Guid.NewGuid().ToString();
         await this.serviceBusAdministrationClient.CreateQueueAsync(
-            new CreateQueueOptions(replyQueueName) {AutoDeleteOnIdle = TimeSpan.FromSeconds(300)}, cancellationToken);
+            new CreateQueueOptions(replyQueueName) { AutoDeleteOnIdle = TimeSpan.FromSeconds(300) }, cancellationToken);
 
         // Sending the message
         var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
         var applicationMessage = new BrokeredMessage
         {
-            Pattern = pattern, Payload = message, RequestType = message.GetType().FullName
+            Pattern = pattern,
+            Payload = message,
+            RequestType = message.GetType().FullName
         };
         var serviceBusMessage = new ServiceBusMessage(JsonSerializer.SerializeToUtf8Bytes(applicationMessage))
         {
-            ContentType = "application/json", ReplyTo = replyQueueName,
+            ContentType = "application/json",
+            ReplyTo = replyQueueName,
         };
 
         await serviceBusSender.SendMessageAsync(serviceBusMessage);
@@ -83,14 +86,14 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
         if (serviceBusReceivedMessage == null)
         {
             this.logger.LogDebug("Error: didn't receive a response");
-            return new ServiceResponse<TPayload> {Error = ServiceError.ExecutionTimeout};
+            return new ServiceResponse<TPayload> { Error = ServiceError.ExecutionTimeout };
         }
 
         var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(serviceBusReceivedMessage.Body.ToString());
 
         if (response == null)
         {
-            return new ServiceResponse<TPayload> {Error = ServiceError.EmptyResponse};
+            return new ServiceResponse<TPayload> { Error = ServiceError.EmptyResponse };
         }
 
         return response;
@@ -112,7 +115,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
 
         serviceBusProcessor.ProcessMessageAsync += async args =>
         {
-            var response = new ServiceResponse<object> {Error = ServiceError.EmptyRequest};
+            var response = new ServiceResponse<object> { Error = ServiceError.EmptyRequest };
             var brokeredMessage = JsonSerializer.Deserialize<BrokeredMessage>(args.Message.Body.ToString());
 
             if (brokeredMessage != null)
@@ -129,12 +132,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
                     var json = ((JsonElement)brokeredMessage.Payload).GetRawText();
                     var request = JsonSerializer.Deserialize(json, Type.GetType(brokeredMessage.RequestType));
 
-                    response = service switch
-                    {
-                        IServiceAsync serviceAsync => await serviceAsync.RunAsync(request, cancellationToken),
-                        IService s => s.Run(request),
-                        _ => null
-                    };
+                    response = await service.RunAsync(request, cancellationToken);
 
                     if (response == null)
                     {
@@ -144,12 +142,12 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
                 catch (ServiceNotFoundException ex)
                 {
                     this.logger.LogDebug("Service not found: {Message}", ex.ToString());
-                    response = new ServiceResponse<object> {Error = ServiceError.ServiceNotFound};
+                    response = new ServiceResponse<object> { Error = ServiceError.ServiceNotFound };
                 }
                 catch (Exception ex)
                 {
                     this.logger.LogDebug("Generic error: {Message}", ex.ToString());
-                    response = new ServiceResponse<object> {Error = ServiceError.Unknown};
+                    response = new ServiceResponse<object> { Error = ServiceError.Unknown };
                 }
             }
 

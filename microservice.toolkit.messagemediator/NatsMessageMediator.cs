@@ -40,7 +40,9 @@ public class NatsMessageMediator(
         var responseMessage = await this.connection.RequestAsync(configuration.Topic,
             Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
             {
-                Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,
+                Pattern = pattern,
+                Payload = message,
+                RequestType = message.GetType().FullName,
             })), configuration.ResponseTimeout, cancellationToken);
         var response =
             JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
@@ -71,21 +73,16 @@ public class NatsMessageMediator(
             }
 
             var requestType = Type.GetType(rpcMessage.RequestType);
-            
-            if(requestType == null)
+
+            if (requestType == null)
             {
                 throw new MessageMediatorException(ServiceError.InvalidRequestType);
             }
-            
+
             var json = ((JsonElement)rpcMessage.Payload).GetRawText();
             var request = JsonSerializer.Deserialize(json, requestType);
 
-            response = service switch
-            {
-                IServiceAsync serviceAsync => await serviceAsync.RunAsync(request, cancellationToken),
-                IService s => s.Run(request),
-                _ => null
-            };
+            response = await service.RunAsync(request, cancellationToken);
 
             if (response == null)
             {
@@ -94,12 +91,12 @@ public class NatsMessageMediator(
         }
         catch (MessageMediatorException ex)
         {
-            response = new ServiceResponse<object> {Error = ex.ErrorCode};
+            response = new ServiceResponse<object> { Error = ex.ErrorCode };
         }
         catch (Exception ex)
         {
             logger.LogDebug("Generic error: {Message}", ex.ToString());
-            response = new ServiceResponse<object> {Error = ServiceError.Unknown};
+            response = new ServiceResponse<object> { Error = ServiceError.Unknown };
         }
         finally
         {

@@ -44,14 +44,9 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
                 throw new ServiceNotFoundException(pattern);
             }
 
-            var serviceResponse = service switch
-            {
-                IServiceAsync serviceAsync => await serviceAsync.RunAsync(message, cancellationToken),
-                IService s => s.Run(message),
-                _ => null
-            };
-            
-            if(serviceResponse == null)
+            var serviceResponse = await service.RunAsync(message, cancellationToken);
+
+            if (serviceResponse == null)
             {
                 throw new InvalidServiceException(service.GetType().FullName);
             }

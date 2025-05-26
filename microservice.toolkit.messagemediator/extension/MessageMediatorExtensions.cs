@@ -117,7 +117,7 @@ public static class MessageMediatorExtensions
                 return null;
             }
 
-            return serviceProvider.GetService(serviceTypes.First()) as IBaseService;
+            return serviceProvider.GetService(serviceTypes.First()) as IService;
         }), serviceProviderLifeTime));
 
         return services;

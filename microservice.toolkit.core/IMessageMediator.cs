@@ -30,7 +30,7 @@ public interface IMessageMediator
 
     public ServiceResponse<TPayload> Send<TPayload>(string pattern, object message)
     {
-        return SendAsync<TPayload>(pattern, message).Result;
+        return this.SendAsync<TPayload>(pattern, message).Result;
     }
 
     Task ShutdownAsync(CancellationToken cancellationToken = default);
