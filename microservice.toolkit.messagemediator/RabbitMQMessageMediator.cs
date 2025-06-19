@@ -109,7 +109,11 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
         {
             var tcs = new TaskCompletionSource<byte[]>();
 
-            cancellationToken.Register(() => tcs.TrySetCanceled(), useSynchronizationContext: false);
+            cancellationToken.Register(() =>
+            {
+                this.pendingMessages.TryRemove(correlationId, out var tcs);
+                tcs.TrySetCanceled();
+            }, useSynchronizationContext: false);
 
             this.pendingMessages.TryAdd(correlationId, tcs);
 
