@@ -1,9 +1,9 @@
-﻿using microservice.toolkit.core.entity;
+﻿using microservice.toolkit.messagemediator.entity;
 
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.core;
+namespace microservice.toolkit.messagemediator;
 
 /// <summary>
 /// IMessageMediator dispatches request/response messages to a single handler.

@@ -1,12 +1,27 @@
+using System;
 using System.Linq;
 
-namespace microservice.toolkit.core.extension
+namespace microservice.toolkit.core.extension;
+
+public static class ArrayExtension
 {
-    public static class ArrayExtension
+    public static bool IsNullOrEmpty<T>(this T[] l)
     {
-        public static bool IsNullOrEmpty<T>(this T[] l)
+        return l == null || l.Length != 0 == false;
+    }
+
+    public static T[] ConcatArrays<T>(this T[] array, params T[][] p)
+    {
+        if (array == null)
         {
-            return l == null || l.Any() == false;
+            throw new ArgumentNullException(nameof(array));
         }
+
+        if (p == null)
+        {
+            return array;
+        }
+
+        return p.Aggregate(array, (current, next) => current.Concat(next).ToArray());
     }
 }

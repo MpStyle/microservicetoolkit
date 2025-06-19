@@ -1,5 +1,4 @@
-﻿using microservice.toolkit.core.attribute;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -7,11 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.extension;
 
 public static class SignalEmitterExtensions
 {
+    public static Task Emit<TEvent>(this ISignalEmitter signalEmitter, Type signalEmitterType, TEvent message)
+    {
+        return signalEmitter.EmitAsync(signalEmitterType.ToPattern(), message);
+    }
 
     /// <summary>
     /// Returns the implementations of Service&lt;,&gt; found in assembly in which the <i>type</i> is defined.
@@ -92,7 +96,7 @@ public static class SignalEmitterExtensions
         {
             foreach (var type in item.Value)
             {
-                services.Add(new ServiceDescriptor(type, type, lifeTime));   
+                services.Add(new ServiceDescriptor(type, type, lifeTime));
             }
         }
 
@@ -104,7 +108,7 @@ public static class SignalEmitterExtensions
         services.AddSingleton(serviceProvider => new SignalHandlerFactory(pattern =>
         {
             var serviceType = mapper.ByPatternOrDefault(pattern)
-                .Select(type=> serviceProvider.GetService(type) as ISignalHandler)
+                .Select(type => serviceProvider.GetService(type) as ISignalHandler)
                 .ToArray();
 
             return serviceType;

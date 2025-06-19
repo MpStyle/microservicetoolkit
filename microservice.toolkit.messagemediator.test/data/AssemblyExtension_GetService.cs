@@ -1,5 +1,5 @@
 ﻿using microservice.toolkit.core.attribute;
-using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator.entity;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;

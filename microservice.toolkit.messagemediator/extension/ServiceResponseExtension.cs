@@ -1,6 +1,6 @@
-﻿using microservice.toolkit.core.entity;
+﻿using microservice.toolkit.messagemediator.entity;
 
-namespace microservice.toolkit.core.extension;
+namespace microservice.toolkit.messagemediator.extension;
 
 public static class ServiceResponseExtension
 {

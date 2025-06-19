@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>microservice.toolkit.messagemediator</AssemblyName>
@@ -29,9 +29,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\image\icon.png">
       <Pack>True</Pack>
       <PackagePath />
@@ -40,5 +37,9 @@
       <Pack>True</Pack>
       <PackagePath />
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
+    <ProjectReference Include="..\microservice.toolkit.messagemediator.abstractions\microservice.toolkit.messagemediator.abstractions.csproj" />
   </ItemGroup>
 </Project>

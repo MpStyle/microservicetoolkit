@@ -32,6 +32,11 @@ jobs:
       - name: Release - Cache Manager
         run: dotnet nuget push ./microservice.toolkit.cachemanager/bin/Release/microservice.toolkit.cachemanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
+      - name: Pack - Cache Manager Abstractions
+        run: dotnet pack ./microservice.toolkit.cachemanager/microservice.toolkit.cachemanager.abstractions.csproj -c Release
+      - name: Release - Cache Manager Abstractions
+        run: dotnet nuget push ./microservice.toolkit.cachemanager/bin/Release/microservice.toolkit.cachemanager.abstractions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
       - name: Pack - Configuration Extensions
         run: dotnet pack ./microservice.toolkit.configuration.extensions/microservice.toolkit.configuration.extensions.csproj -c Release
       - name: Release - Configuration Extensions
@@ -46,6 +51,11 @@ jobs:
         run: dotnet pack ./microservice.toolkit.messagemediator/microservice.toolkit.messagemediator.csproj -c Release
       - name: Release - Message Mediator
         run: dotnet nuget push ./microservice.toolkit.messagemediator/bin/Release/microservice.toolkit.messagemediator.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+
+      - name: Pack - Message Mediator Abstractions
+        run: dotnet pack ./microservice.toolkit.messagemediator/microservice.toolkit.messagemediator.abstractions.csproj -c Release
+      - name: Release - Message Mediator Abstractions
+        run: dotnet nuget push ./microservice.toolkit.messagemediator/bin/Release/microservice.toolkit.messagemediator.abstractions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
 
       - name: Pack - Migration Extensions
         run: dotnet pack ./microservice.toolkit.migration.extensions/microservice.toolkit.migration.extensions.csproj -c Release

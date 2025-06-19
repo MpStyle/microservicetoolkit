@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.core;
+namespace microservice.toolkit.messagemediator;
 
 public interface ISignalEmitter
 {

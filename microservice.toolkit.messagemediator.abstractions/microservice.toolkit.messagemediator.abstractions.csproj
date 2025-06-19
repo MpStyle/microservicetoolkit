@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;netstandard2.1</TargetFrameworks>
+    <AssemblyName>microservice.toolkit.messagemediator.abstractions</AssemblyName>
+    <RootNamespace>microservice.toolkit.messagemediator</RootNamespace>
+    <Authors>Michele Pagnin</Authors>
+    <Product>Microservice Toolkit - Message Mediator Abstractions</Product>
+    <Copyright>MIT License</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Title>Microservice Toolkit - Message Mediator Abstractions</Title>
+    <PackageProjectUrl>https://github.com/MpStyle/microservicetoolkit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/MpStyle/microservicetoolkit</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
+    <PackageIcon>icon.png</PackageIcon>
+    <LangVersion>12</LangVersion>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\image\icon.png">
+      <Pack>True</Pack>
+      <PackagePath />
+    </None>
+    <None Include=".\README.md">
+      <Pack>True</Pack>
+      <PackagePath />
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
+  </ItemGroup>
+</Project>

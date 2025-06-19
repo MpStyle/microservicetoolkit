@@ -1,46 +1,45 @@
 ﻿using System;
 
-namespace microservice.toolkit.core
+namespace microservice.toolkit.core;
+
+public abstract class Disposable : IDisposable
 {
-    public abstract class Disposable : IDisposable
+    private bool disposedValue; // To detect redundant calls
+
+    public virtual void Dispose(bool disposing)
     {
-        private bool disposedValue; // To detect redundant calls
-
-        public virtual void Dispose(bool disposing)
+        if (!disposedValue)
         {
-            if (!disposedValue)
+            if (disposing)
             {
-                if (disposing)
-                {
-                    this.DisposeManage();
-                }
-
-                this.DisposeUnmanage();
-
-                disposedValue = true;
+                this.DisposeManage();
             }
-        }
 
-        ~Disposable()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            this.Dispose(false);
-        }
+            this.DisposeUnmanage();
 
-        // This code added to correctly implement the disposable pattern.
-        void IDisposable.Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            disposedValue = true;
         }
+    }
 
-        protected virtual void DisposeManage()
-        {
-        }
+    ~Disposable()
+    {
+        // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        this.Dispose(false);
+    }
 
-        protected virtual void DisposeUnmanage()
-        {
-        }
+    // This code added to correctly implement the disposable pattern.
+    void IDisposable.Dispose()
+    {
+        // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void DisposeManage()
+    {
+    }
+
+    protected virtual void DisposeUnmanage()
+    {
     }
 }

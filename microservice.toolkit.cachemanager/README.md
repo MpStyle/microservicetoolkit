@@ -6,7 +6,7 @@
 ![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.cachemanager)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.cachemanager)
 
-Common interface to manage cache using different providers.
+Implementations collections of ICacheManager.
 
 ## How to install
 
@@ -24,36 +24,6 @@ dotnet add package microservice.toolkit.cachemanager --version 2.1.0
 ```
 <PackageReference Include="microservice.toolkit.cachemanager" Version="2.1.0" />
 ```
-
-## ICacheManager interface
-
-### bool Set(string, TValue, long);
-
-```C#
-Task<bool> Set<TValue>(string key, TValue value)
-```
-
-### bool Set<TValue>(string, TValue);
-
-```C#
-Task<bool> Set<TValue>(string key, TValue value, long issuedAt)
-```
-
-Adds an entry in the cache provider without expiration time.
-
-### TValue Get(string);
-
-```C#
-Task<TValue> Get<TValue>(string key)
-```
-
-### Delete(string);
-```C#
-Task<bool> Delete(string key);
-```
-
-Removed the entry from the cache provider.
-
 ## Implementations
 - [In-memory](#inmemory)
 - [SqLite](#sqlite)

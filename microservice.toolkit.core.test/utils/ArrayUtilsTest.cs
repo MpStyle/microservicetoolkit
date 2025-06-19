@@ -1,4 +1,4 @@
-using microservice.toolkit.core.utils;
+using microservice.toolkit.core.extension;
 
 using NUnit.Framework;
 
@@ -12,8 +12,7 @@ namespace microservice.toolkit.core.test.utils
         [Test]
         public void ConcatArrays()
         {
-            var array = ArrayUtils.ConcatArrays(
-                [0, 1],
+            var array = new int[] { 0, 1 }.ConcatArrays(
                 [2, 3],
                 [4, 5],
                 [6, 7],

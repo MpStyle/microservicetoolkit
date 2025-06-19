@@ -1,5 +1,4 @@
-using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging.Abstractions;
 

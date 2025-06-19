@@ -19,8 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\microservice.toolkit.cachemanager.abstractions\microservice.toolkit.cachemanager.abstractions.csproj" />
     <ProjectReference Include="..\microservice.toolkit.connection.extensions\microservice.toolkit.connection.extensions.csproj" />
-    <ProjectReference Include="..\microservice.toolkit.core\microservice.toolkit.core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30717.126
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project-items", "project-items", "{0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}"
 	ProjectSection(SolutionItems) = preProject
@@ -31,26 +31,26 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.messagemediator.test", "microservice.toolkit.messagemediator.test\microservice.toolkit.messagemediator.test.csproj", "{31D665D1-EDDC-4B1A-9FFE-58EE9A31F420}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{41198E3E-B08B-4D9B-80CE-917C624F4E4B}"
-ProjectSection(SolutionItems) = preProject
-	doc\Testing.md = doc\Testing.md
-	README.md = README.md
-	CONTRIBUTING.md = CONTRIBUTING.md
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		CONTRIBUTING.md = CONTRIBUTING.md
+		README.md = README.md
+		doc\Testing.md = doc\Testing.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflow", "workflow", "{21F4632F-39C1-4ECF-B71D-B49F87D98771}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\test.yml = .github\workflows\test.yml
-	.github\workflows\publish.yml = .github\workflows\publish.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\publish.yml = .github\workflows\publish.yml
+		.github\workflows\test.yml = .github\workflows\test.yml
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.core.test", "microservice.toolkit.core.test\microservice.toolkit.core.test.csproj", "{B0991DC5-2799-45C2-A9BB-D36258ADB022}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.core.test", "microservice.toolkit.core.test\microservice.toolkit.core.test.csproj", "{B0991DC5-2799-45C2-A9BB-D36258ADB022}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.migration.extensions.test", "microservice.toolkit.migration.extensions.test\microservice.toolkit.migration.extensions.test.csproj", "{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.migration.extensions.test", "microservice.toolkit.migration.extensions.test\microservice.toolkit.migration.extensions.test.csproj", "{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{244E9E5D-0A4D-47EF-9D41-A784EDAE119F}"
-ProjectSection(SolutionItems) = preProject
-	image\icon.png = image\icon.png
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		image\icon.png = image\icon.png
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{8878952E-88DC-4203-AA0A-CA757835BCEE}"
 EndProject
@@ -58,6 +58,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "microservice-toolkit-test",
 	ProjectSection(SolutionItems) = preProject
 		docker\microservice-toolkit-test\docker-compose.yml = docker\microservice-toolkit-test\docker-compose.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.messagemediator.abstractions", "microservice.toolkit.messagemediator.abstractions\microservice.toolkit.messagemediator.abstractions.csproj", "{E698BF5D-7837-428D-90FB-C8F43667D9AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "microservice.toolkit.cachemanager.abstractions", "microservice.toolkit.cachemanager.abstractions\microservice.toolkit.cachemanager.abstractions.csproj", "{30D83284-7553-4A6A-BA65-8A9D0A84869A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,12 +117,17 @@ Global
 		{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D44A2A7-41D1-463F-A1D3-E149ED9F601E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E698BF5D-7837-428D-90FB-C8F43667D9AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E698BF5D-7837-428D-90FB-C8F43667D9AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E698BF5D-7837-428D-90FB-C8F43667D9AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E698BF5D-7837-428D-90FB-C8F43667D9AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30D83284-7553-4A6A-BA65-8A9D0A84869A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30D83284-7553-4A6A-BA65-8A9D0A84869A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30D83284-7553-4A6A-BA65-8A9D0A84869A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30D83284-7553-4A6A-BA65-8A9D0A84869A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {69DA9E1E-9B41-485D-96CE-0C0518A74B31}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{41198E3E-B08B-4D9B-80CE-917C624F4E4B} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
@@ -126,5 +135,8 @@ Global
 		{244E9E5D-0A4D-47EF-9D41-A784EDAE119F} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 		{8878952E-88DC-4203-AA0A-CA757835BCEE} = {0376C6D4-060E-4F2A-8F0C-88C2BE013A8E}
 		{4A216C31-3EDC-4573-ACFD-9B5FA35067E2} = {8878952E-88DC-4203-AA0A-CA757835BCEE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69DA9E1E-9B41-485D-96CE-0C0518A74B31}
 	EndGlobalSection
 EndGlobal

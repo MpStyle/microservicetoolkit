@@ -1,4 +1,4 @@
-using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator.entity;
 
 using System;
 using System.Diagnostics;

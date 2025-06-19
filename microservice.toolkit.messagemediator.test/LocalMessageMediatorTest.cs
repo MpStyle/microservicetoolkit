@@ -1,7 +1,6 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.core.attribute;
-using microservice.toolkit.core.entity;
+﻿using microservice.toolkit.core.attribute;
 using microservice.toolkit.core.extension;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -33,11 +32,11 @@ namespace microservice.toolkit.messagemediator.test
         public async Task Run_Int_Int()
         {
             IMessageMediator mediator =
-                new LocalMessageMediator(name =>typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
+                new LocalMessageMediator(name => typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
                     new NullLogger<LocalMessageMediator>());
             await mediator.InitAsync(CancellationToken.None);
 
-            Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(typeof(SquarePow).ToPattern(), 2)).Payload));
+            Assert.That(4, Is.EqualTo((mediator.Send<int>(typeof(SquarePow).ToPattern(), 2)).Payload));
         }
 
         [Test]
@@ -59,8 +58,8 @@ namespace microservice.toolkit.messagemediator.test
                     new NullLogger<LocalMessageMediator>());
             await mediator.InitAsync(CancellationToken.None);
 
-            var response=await mediator.Send<int, int>("ServiceNotFound", 2);
-            
+            var response = await mediator.SendAsync<int>("ServiceNotFound", 2);
+
             Assert.That(response.Error, Is.EqualTo(ServiceError.ServiceNotFound));
         }
 

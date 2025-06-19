@@ -6,7 +6,7 @@
 ![Nuget](https://img.shields.io/nuget/dt/microservice.toolkit.messagemediator)
 ![Nuget](https://img.shields.io/nuget/v/microservice.toolkit.messagemediator)
 
-An interface to define how cloud microservices interact each other across multi instances, using **request-response** pattern.
+Implementations of microservice midiator..
 
 ## How to install
 

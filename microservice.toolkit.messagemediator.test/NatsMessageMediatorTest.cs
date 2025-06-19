@@ -1,7 +1,5 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.core.attribute;
-using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.attribute;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -48,7 +46,7 @@ namespace microservice.toolkit.messagemediator.test
                 new NullLogger<NatsMessageMediator>());
             await this.mediator.InitAsync(CancellationToken.None);
 
-            Assert.That(4, Is.EqualTo((await mediator.Send<int, int>(nameof(SquarePow), 2)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator.SendAsync<int>(nameof(SquarePow), 2)).Payload));
         }
 
         [Test]
@@ -69,20 +67,20 @@ namespace microservice.toolkit.messagemediator.test
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
             await this.mediator01.InitAsync(CancellationToken.None);
-            
+
             this.mediator02 = new NatsMessageMediator(configuration,
                 name => nameof(SquarePow).Equals(name) ? new SquarePow() : null,
                 new NullLogger<NatsMessageMediator>());
             await this.mediator02.InitAsync(CancellationToken.None);
 
-            Assert.That(4, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 2)).Payload));
-            Assert.That(4, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 2)).Payload));
-            Assert.That(9, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 3)).Payload));
-            Assert.That(9, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 3)).Payload));
-            Assert.That(16, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 4)).Payload));
-            Assert.That(16, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 4)).Payload));
-            Assert.That(25, Is.EqualTo((await mediator01.Send<int, int>(nameof(SquarePow), 5)).Payload));
-            Assert.That(25, Is.EqualTo((await mediator02.Send<int, int>(nameof(SquarePow), 5)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator01.SendAsync<int>(nameof(SquarePow), 2)).Payload));
+            Assert.That(4, Is.EqualTo((await mediator02.SendAsync<int>(nameof(SquarePow), 2)).Payload));
+            Assert.That(9, Is.EqualTo((await mediator01.SendAsync<int>(nameof(SquarePow), 3)).Payload));
+            Assert.That(9, Is.EqualTo((await mediator02.SendAsync<int>(nameof(SquarePow), 3)).Payload));
+            Assert.That(16, Is.EqualTo((await mediator01.SendAsync<int>(nameof(SquarePow), 4)).Payload));
+            Assert.That(16, Is.EqualTo((await mediator02.SendAsync<int>(nameof(SquarePow), 4)).Payload));
+            Assert.That(25, Is.EqualTo((await mediator01.SendAsync<int>(nameof(SquarePow), 5)).Payload));
+            Assert.That(25, Is.EqualTo((await mediator02.SendAsync<int>(nameof(SquarePow), 5)).Payload));
         }
 
         [TearDown]
