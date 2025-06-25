@@ -1,11 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace microservice.toolkit.core.extension;
 
 public static class ArrayExtension
 {
-    public static bool IsNullOrEmpty<T>(this T[] l)
+    public static bool IsNullOrEmpty<T>([NotNullWhen(false)] this T[] l)
     {
         return l == null || l.Length != 0 == false;
     }
