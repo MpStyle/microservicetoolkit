@@ -14,7 +14,101 @@ public class DbDataReaderExtensionTest
     private MySqlConnection dbConnection;
 
     [Test]
-    public async Task TryGetValuesOut()
+    public async Task GetValuesAsync()
+    {
+        var result = await await this.dbConnection.ExecuteFirstAsync("SELECT * FROM myTable", async reader =>
+        {
+            var i = 0;
+
+            var myInt = await reader.GetNullableInt32Async(i++);
+            var myLong = await reader.GetNullableInt64Async(i++);
+            var myShort = await reader.GetNullableInt16Async(i++);
+            var myBool = await reader.GetNullableBooleanAsync(i++);
+            var myDecimal = await reader.GetNullableDecimalAsync(i++);
+            var myDouble = await reader.GetNullableDoubleAsync(i++);
+            var myFloat = await reader.GetNullableFloatAsync(i++);
+            var myGuid = await reader.GetNullableGuidAsync(i++);
+            var myString = await reader.GetNullableStringAsync(i++);
+            var nullValue = await reader.GetNullableInt64Async(i++);
+
+            Assert.Throws<IndexOutOfRangeException>(() => reader.GetNullableInt32(i++));
+
+            return new
+            {
+                myInt,
+                myLong,
+                myShort,
+                myBool,
+                myDecimal,
+                myDouble,
+                myFloat,
+                myGuid,
+                myString,
+                nullValue,
+            };
+        });
+
+        Assert.That(1, Is.EqualTo(result.myInt));
+        Assert.That(1647860184000, Is.EqualTo(result.myLong));
+        Assert.That(32767, Is.EqualTo(result.myShort));
+        Assert.That(true, Is.EqualTo(result.myBool));
+        Assert.That(999.99, Is.EqualTo(result.myDecimal));
+        Assert.That(10.9998, Is.EqualTo(result.myDouble));
+        Assert.That(10.9997997f, Is.EqualTo(result.myFloat));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myGuid.ToString()));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myString));
+        Assert.That(result.nullValue, Is.Null);
+    }
+    
+    [Test]
+    public async Task GetValues()
+    {
+        var result = await this.dbConnection.ExecuteFirstAsync("SELECT * FROM myTable", reader =>
+        {
+            var i = 0;
+
+            var myInt = reader.GetNullableInt32(i++);
+            var myLong = reader.GetNullableInt64(i++);
+            var myShort = reader.GetNullableInt16(i++);
+            var myBool = reader.GetNullableBoolean(i++);
+            var myDecimal = reader.GetNullableDecimal(i++);
+            var myDouble = reader.GetNullableDouble(i++);
+            var myFloat = reader.GetNullableFloat(i++);
+            var myGuid = reader.GetNullableGuid(i++);
+            var myString = reader.GetNullableString(i++);
+            var nullValue = reader.GetNullableInt64(i++);
+
+            Assert.Throws<IndexOutOfRangeException>(() => reader.GetNullableInt32(i++));
+
+            return new
+            {
+                myInt,
+                myLong,
+                myShort,
+                myBool,
+                myDecimal,
+                myDouble,
+                myFloat,
+                myGuid,
+                myString,
+                nullValue,
+            };
+        });
+
+        Assert.That(1, Is.EqualTo(result.myInt));
+        Assert.That(1647860184000, Is.EqualTo(result.myLong));
+        Assert.That(32767, Is.EqualTo(result.myShort));
+        Assert.That(true, Is.EqualTo(result.myBool));
+        Assert.That(999.99, Is.EqualTo(result.myDecimal));
+        Assert.That(10.9998, Is.EqualTo(result.myDouble));
+        Assert.That(10.9997997f, Is.EqualTo(result.myFloat));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myGuid.ToString()));
+        Assert.That("0f8fad5b-d9cb-469f-a165-70867728950e", Is.EqualTo(result.myString));
+        Assert.That(result.nullValue, Is.Null);
+    }
+
+    [Test]
+    public async Task TryGetValues()
     {
         var result = await this.dbConnection.ExecuteFirstAsync("SELECT * FROM myTable", reader =>
         {

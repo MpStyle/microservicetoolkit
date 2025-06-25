@@ -15,6 +15,7 @@
     <Description>Common interface to simplify the access to a SQL database.</Description>
     <LangVersion>12</LangVersion>
     <PackageId>microservice.toolkit.connection.extensions</PackageId>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
