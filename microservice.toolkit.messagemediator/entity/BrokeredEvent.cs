@@ -4,7 +4,8 @@ namespace microservice.toolkit.messagemediator.entity
 {
     internal class BrokeredEvent
     {
-        public BrokeredEvent() {
+        public BrokeredEvent()
+        {
             this.Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
