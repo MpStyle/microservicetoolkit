@@ -57,42 +57,27 @@ public static class SignalEmitterExtensions
 
     public static IServiceCollection AddHandlerContext(this IServiceCollection services, Type[] types, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
-        var mapper = types.GetServices();
-
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
-
-        return services;
+        return services.AddHandlerContext(types.Select(t => t.Assembly).ToArray(), lifeTime);
     }
 
     public static IServiceCollection AddHandlerContext(this IServiceCollection services, Type type, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
-        var mapper = type.GetServices();
-
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
-
-        return services;
+        return services.AddHandlerContext([type.Assembly], lifeTime);
     }
 
     public static IServiceCollection AddHandlerContext(this IServiceCollection services, Assembly[] assemblies, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
-        var mapper = assemblies.GetServices();
+        var mapper = assemblies.GetHandlers();
 
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
+        services.AddHandlers(mapper, lifeTime);
+        services.AddHandlerProvider(mapper);
 
         return services;
     }
 
     public static IServiceCollection AddHandlerContext(this IServiceCollection services, Assembly assembly, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
     {
-        var mapper = assembly.GetServices();
-
-        services.AddServices(mapper, lifeTime);
-        services.AddServiceProvider(mapper);
-
-        return services;
+        return services.AddHandlerContext([assembly], lifeTime);
     }
 
     public static IServiceCollection AddHandlers(this IServiceCollection services, MicroserviceCollection mapper, ServiceLifetime lifeTime = ServiceLifetime.Singleton)
