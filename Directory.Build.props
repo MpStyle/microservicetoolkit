@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>2.1.0</Version>
+    <Version>3.0.0-alpha</Version>
     <Product>Microservice Toolkit</Product>    
     <Authors>Michele Pagnin</Authors>
     <Copyright>MIT License</Copyright>
