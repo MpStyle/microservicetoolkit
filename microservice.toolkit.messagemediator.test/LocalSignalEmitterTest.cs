@@ -1,4 +1,4 @@
-﻿using microservice.toolkit.messagemediator;
+﻿using microservice.toolkit.messagemediator.utils;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -8,9 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static microservice.toolkit.core.utils.SignalHandlerUtils;
-
-namespace microservice.toolkit.core.test;
+namespace microservice.toolkit.messagemediator.test;
 
 [ExcludeFromCodeCoverage]
 public class LocalSignalEmitterTest
@@ -21,11 +19,11 @@ public class LocalSignalEmitterTest
     public async Task Run_Int()
     {
         var signalEmitter =
-            new LocalSignalEmitter(name => PatternOf<SquarePow>().Equals(name) ? [new SquarePow()] : null,
+            new LocalSignalEmitter(name => SignalHandlerUtils.PatternOf<SquarePow>().Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<LocalSignalEmitter>());
         await signalEmitter.Init();
 
-        await signalEmitter.Emit(PatternOf<SquarePow>(), 2);
+        await signalEmitter.Emit(SignalHandlerUtils.PatternOf<SquarePow>(), 2);
 
         Assert.That(isSignalHandlerRunned, Is.False);
 
@@ -42,7 +40,7 @@ public class LocalSignalEmitterTest
                 new NullLogger<LocalSignalEmitter>());
         await signalEmitter.Init();
 
-        await signalEmitter.Emit(PatternOf<SquarePow>(), 2);
+        await signalEmitter.Emit(SignalHandlerUtils.PatternOf<SquarePow>(), 2);
 
         Assert.That(isSignalHandlerRunned, Is.False);
 

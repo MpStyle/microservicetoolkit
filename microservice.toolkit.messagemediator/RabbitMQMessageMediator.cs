@@ -1,13 +1,5 @@
-﻿<<<<<<< TODO: Unmerged change from project 'microservice.toolkit.messagemediator (netstandard2.1)', Before:
-=======
-using microservice;
-using microservice.toolkit;
-using microservice.toolkit.core;
-using microservice.toolkit.messagemediator;
->>>>>>> After
-using microservice.toolkit.core;
-using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.extension;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging;
 

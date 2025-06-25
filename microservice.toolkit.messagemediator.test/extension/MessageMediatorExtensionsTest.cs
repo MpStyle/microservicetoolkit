@@ -1,7 +1,5 @@
-﻿using microservice.toolkit.core.extension;
-using microservice.toolkit.core.test.data;
-using microservice.toolkit.messagemediator;
-using microservice.toolkit.messagemediator.extension;
+﻿using microservice.toolkit.messagemediator.extension;
+using microservice.toolkit.messagemediator.test.data;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
-namespace microservice.toolkit.core.test.extension;
+namespace microservice.toolkit.messagemediator.test.extension;
 
 [ExcludeFromCodeCoverage]
 public class MessageMediatorExtensionsTest

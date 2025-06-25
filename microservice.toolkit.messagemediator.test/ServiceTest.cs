@@ -1,5 +1,5 @@
-using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator;
+using microservice.toolkit.messagemediator.entity;
+using microservice.toolkit.messagemediator.extension;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -9,9 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static microservice.toolkit.core.utils.ServiceUtils;
-
-namespace microservice.toolkit.core.test;
+namespace microservice.toolkit.messagemediator.test;
 
 [ExcludeFromCodeCoverage]
 public class ServiceTest
@@ -67,7 +65,7 @@ class MyServiceSuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return SuccessfulResponseAsync(request);
+        return this.SuccessfulResponseAsync(request);
     }
 }
 
@@ -76,7 +74,7 @@ class MyServiceUnsuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return UnsuccessfulResponseAsync<int>(request);
+        return this.UnsuccessfulResponseAsync<int>(request);
     }
 }
 
@@ -85,6 +83,6 @@ class MyServiceResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return ResponseAsync(request / 2, request * 2);
+        return this.ResponseAsync(request / 2, request * 2);
     }
 }

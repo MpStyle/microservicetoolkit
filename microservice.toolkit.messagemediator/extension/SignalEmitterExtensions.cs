@@ -1,5 +1,4 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.messagemediator.collection;
+﻿using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
 

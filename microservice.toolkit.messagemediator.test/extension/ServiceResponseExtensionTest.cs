@@ -1,11 +1,11 @@
-﻿using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.messagemediator.entity;
+using microservice.toolkit.messagemediator.extension;
 
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace microservice.toolkit.core.test.extension;
+namespace microservice.toolkit.messagemediator.test.extension;
 
 [ExcludeFromCodeCoverage]
 public class ServiceResponseExtensionTest

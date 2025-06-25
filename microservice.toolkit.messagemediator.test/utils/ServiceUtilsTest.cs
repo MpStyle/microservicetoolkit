@@ -1,11 +1,11 @@
-﻿using microservice.toolkit.core.utils;
+﻿using microservice.toolkit.messagemediator.utils;
 
 using NUnit.Framework;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.core.test.utils;
+namespace microservice.toolkit.messagemediator.test.utils;
 
 [ExcludeFromCodeCoverage]
 public class ServiceUtilsTest

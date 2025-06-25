@@ -1,7 +1,6 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.core.entity;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
+using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -159,7 +158,7 @@ public static class MessageMediatorExtensions
 
     private static bool IsService(this Type type)
     {
-        if (type == null || !type.IsClass || type.IsAbstract)
+        if (type == null || !type.IsClass || type.IsAbstract || type.IsNested)
         {
             return false;
         }

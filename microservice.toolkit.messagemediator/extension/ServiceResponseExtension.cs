@@ -1,4 +1,6 @@
-﻿namespace microservice.toolkit.messagemediator.extension;
+﻿using microservice.toolkit.messagemediator.entity;
+
+namespace microservice.toolkit.messagemediator.extension;
 
 public static class ServiceResponseExtension
 {

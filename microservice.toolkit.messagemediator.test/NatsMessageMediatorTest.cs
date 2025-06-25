@@ -1,6 +1,6 @@
-﻿using microservice.toolkit.core.attribute;
-using microservice.toolkit.core.entity;
-using microservice.toolkit.messagemediator;
+﻿using microservice.toolkit.messagemediator.attribute;
+using microservice.toolkit.messagemediator.entity;
+using microservice.toolkit.messagemediator.extension;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -11,9 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static microservice.toolkit.core.utils.ServiceUtils;
-
-namespace microservice.toolkit.core.test
+namespace microservice.toolkit.messagemediator.test
 {
     [ExcludeFromCodeCoverage]
     public class NatsMessageMediatorTest
@@ -119,7 +117,7 @@ namespace microservice.toolkit.core.test
         {
             public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken)
             {
-                return SuccessfulResponseAsync(request * request);
+                return this.SuccessfulResponseAsync(request * request);
             }
         }
 
@@ -128,7 +126,7 @@ namespace microservice.toolkit.core.test
         {
             public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken)
             {
-                return UnsuccessfulResponseAsync<int>(-1);
+                return this.UnsuccessfulResponseAsync<int>(-1);
             }
         }
     }

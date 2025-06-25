@@ -1,3 +1,5 @@
+using microservice.toolkit.messagemediator.entity;
+
 using System.Threading;
 using System.Threading.Tasks;
 
