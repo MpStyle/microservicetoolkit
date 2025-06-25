@@ -1,3 +1,5 @@
+using microservice.toolkit.core;
+using microservice.toolkit.core.entity;
 using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging;

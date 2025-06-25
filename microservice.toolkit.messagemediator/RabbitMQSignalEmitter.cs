@@ -1,4 +1,4 @@
-﻿using microservice.toolkit.messagemediator.entity;
+﻿using microservice.toolkit.core;
 
 using Microsoft.Extensions.Logging;
 

@@ -1,5 +1,3 @@
-using microservice.toolkit.messagemediator.entity;
-
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.messagemediator.utils;

@@ -1,4 +1,5 @@
-﻿using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core;
+using microservice.toolkit.core.extension;
 
 using Microsoft.Extensions.Logging;
 

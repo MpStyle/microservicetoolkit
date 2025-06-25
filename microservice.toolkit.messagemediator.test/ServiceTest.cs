@@ -1,4 +1,5 @@
-using microservice.toolkit.messagemediator.entity;
+using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator;
 
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -8,9 +9,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static microservice.toolkit.messagemediator.utils.ServiceUtils;
+using static microservice.toolkit.core.utils.ServiceUtils;
 
-namespace microservice.toolkit.messagemediator.test;
+namespace microservice.toolkit.core.test;
 
 [ExcludeFromCodeCoverage]
 public class ServiceTest

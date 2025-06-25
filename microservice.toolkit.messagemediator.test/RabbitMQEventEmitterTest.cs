@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
+﻿using microservice.toolkit.messagemediator;
+
+using Microsoft.Extensions.Logging.Abstractions;
 
 using NUnit.Framework;
 
@@ -7,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.messagemediator.test
+namespace microservice.toolkit.core.test
 {
     [ExcludeFromCodeCoverage]
     public class RabbitMQEventEmitterTest

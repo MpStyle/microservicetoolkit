@@ -1,9 +1,8 @@
-﻿namespace microservice.toolkit.messagemediator.entity
+﻿namespace microservice.toolkit.messagemediator.entity;
+
+internal class BrokeredMessage
 {
-    internal class BrokeredMessage
-    {
-        public string Pattern { get; init; }
-        public object Payload { get; init; }
-        public string RequestType { get; init; }
-    }
+    public string Pattern { get; init; }
+    public object Payload { get; init; }
+    public string RequestType { get; init; }
 }

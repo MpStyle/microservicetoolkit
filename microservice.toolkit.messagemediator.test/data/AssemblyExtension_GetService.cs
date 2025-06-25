@@ -1,11 +1,12 @@
 ﻿using microservice.toolkit.core.attribute;
-using microservice.toolkit.messagemediator.entity;
+using microservice.toolkit.core.entity;
+using microservice.toolkit.messagemediator;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace microservice.toolkit.messagemediator.test.data;
+namespace microservice.toolkit.core.test.data;
 
 [ExcludeFromCodeCoverage]
 [Microservice]

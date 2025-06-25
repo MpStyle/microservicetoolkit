@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
+﻿using microservice.toolkit.messagemediator;
+
+using Microsoft.Extensions.Logging.Abstractions;
 
 using NUnit.Framework;
 
@@ -6,9 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static microservice.toolkit.messagemediator.utils.SignalHandlerUtils;
+using static microservice.toolkit.core.utils.SignalHandlerUtils;
 
-namespace microservice.toolkit.messagemediator.test;
+namespace microservice.toolkit.core.test;
 
 [ExcludeFromCodeCoverage]
 public class LocalSignalEmitterTest

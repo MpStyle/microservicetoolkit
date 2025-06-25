@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace microservice.toolkit.core.attribute;
+namespace microservice.toolkit.messagemediator.attribute;
 
 /// <summary>
 /// Specifies the pattern for a <see cref="Service{TRequest, TPayload}"/>.
