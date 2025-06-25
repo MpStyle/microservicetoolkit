@@ -12,7 +12,7 @@ namespace microservice.toolkit.messagemediator;
 /// </summary>
 public interface IMessageMediator
 {
-    Task InitAsync(CancellationToken cancellationToken = default);
+    Task Init(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sends a generic message.
@@ -22,16 +22,11 @@ public interface IMessageMediator
     /// <param name="message"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ServiceResponse<TPayload>> SendAsync<TPayload>(
+    Task<ServiceResponse<TPayload>> Send<TPayload>(
         string pattern,
         object message,
         CancellationToken cancellationToken = default
     );
 
-    public ServiceResponse<TPayload> Send<TPayload>(string pattern, object message)
-    {
-        return this.SendAsync<TPayload>(pattern, message).Result;
-    }
-
-    Task ShutdownAsync(CancellationToken cancellationToken = default);
+    Task Shutdown(CancellationToken cancellationToken = default);
 }

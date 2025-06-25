@@ -21,7 +21,7 @@ public class NatsMessageMediator(
     private IConnection connection;
     private IAsyncSubscription consumerSubscription;
 
-    public Task InitAsync(CancellationToken cancellationToken)
+    public Task Init(CancellationToken cancellationToken)
     {
         this.connection = new ConnectionFactory().CreateConnection(configuration.ConnectionString);
         this.consumerSubscription = this.connection.SubscribeAsync(configuration.Topic,
@@ -29,7 +29,7 @@ public class NatsMessageMediator(
         return Task.CompletedTask;
     }
 
-    public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(
+    public async Task<ServiceResponse<TPayload>> Send<TPayload>(
         string pattern,
         object message,
         CancellationToken cancellationToken = default
@@ -105,11 +105,11 @@ public class NatsMessageMediator(
 
     public virtual async ValueTask DisposeAsync()
     {
-        await this.ShutdownAsync(CancellationToken.None);
+        await this.Shutdown(CancellationToken.None);
         GC.SuppressFinalize(this);
     }
 
-    public async Task ShutdownAsync(CancellationToken cancellationToken)
+    public async Task Shutdown(CancellationToken cancellationToken)
     {
         if (this.consumerSubscription != null)
         {

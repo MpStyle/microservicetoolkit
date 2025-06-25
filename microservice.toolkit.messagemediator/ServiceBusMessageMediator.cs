@@ -35,7 +35,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
         this.consumerClient = new ServiceBusClient(this.configuration.ConnectionString);
     }
 
-    public Task InitAsync(CancellationToken cancellationToken)
+    public Task Init(CancellationToken cancellationToken)
     {
         this.RegisterConsumer(cancellationToken);
         return Task.CompletedTask;
@@ -49,7 +49,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
     /// <param name="message">The message to send.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response from the service bus.</returns>
-    public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(
+    public async Task<ServiceResponse<TPayload>> Send<TPayload>(
         string pattern,
         object message,
         CancellationToken cancellationToken = default
@@ -101,7 +101,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
     /// Shuts down the service bus message mediator.
     /// </summary>
     /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-    public async Task ShutdownAsync(CancellationToken cancellationToken)
+    public async Task Shutdown(CancellationToken cancellationToken)
     {
         await this.producerClient.DisposeAsync();
         await this.consumerClient.DisposeAsync();
@@ -161,7 +161,7 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
     /// </summary>
     public virtual async ValueTask DisposeAsync()
     {
-        await this.ShutdownAsync(CancellationToken.None);
+        await this.Shutdown(CancellationToken.None);
         GC.SuppressFinalize(this);
     }
 

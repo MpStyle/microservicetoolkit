@@ -38,7 +38,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
         this.logger = logger;
     }
 
-    public async Task InitAsync(CancellationToken cancellationToken = default)
+    public async Task Init(CancellationToken cancellationToken = default)
     {
         var factory = new ConnectionFactory() { HostName = this.configuration.ConnectionString };
         this.connection = await factory.CreateConnectionAsync(cancellationToken);
@@ -73,7 +73,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
     /// <param name="message">The message to send.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation. The task result contains the response from the message mediator.</returns>
-    public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(string pattern, object message,
+    public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message,
         CancellationToken cancellationToken = default)
     {
         var response = await this.InternalSendAsync<TPayload>(new BrokeredMessage
@@ -81,7 +81,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
             Pattern = pattern,
             Payload = message,
             RequestType = message.GetType().FullName,
-        });
+        }, cancellationToken);
 
         return response;
     }
@@ -93,7 +93,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
     /// <param name="message">The brokered message to send.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response as a <see cref="ServiceResponse{TPayload}"/>.</returns>
     private async Task<ServiceResponse<TPayload>> InternalSendAsync<TPayload>(BrokeredMessage message,
-        CancellationToken cancellationToken = default)
+    CancellationToken cancellationToken = default)
     {
         var correlationId = Guid.NewGuid().ToString();
         var producerProps = new BasicProperties
@@ -102,27 +102,32 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
             ReplyTo = this.configuration.ReplyQueueName
         };
         var messageBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+        var tcs = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cts.CancelAfter(this.configuration.ResponseTimeout);
+
+        this.pendingMessages.TryAdd(correlationId, tcs);
 
         try
         {
-            var tcs = new TaskCompletionSource<byte[]>();
-
-            cancellationToken.Register(() =>
-            {
-                this.pendingMessages.TryRemove(correlationId, out var tcs);
-                tcs.TrySetCanceled();
-            }, useSynchronizationContext: false);
-
-            this.pendingMessages.TryAdd(correlationId, tcs);
-
-            await this.producerChannel.BasicPublishAsync(exchange: string.Empty,
+            await this.producerChannel.BasicPublishAsync(
+                exchange: string.Empty,
                 routingKey: this.configuration.QueueName,
-                mandatory: true, basicProperties: producerProps, body: messageBytes, cancellationToken: cancellationToken);
+                mandatory: true,
+                basicProperties: producerProps,
+                body: messageBytes,
+                cancellationToken: cancellationToken);
+
+            var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(Timeout.Infinite, cts.Token));
+            if (completedTask != tcs.Task)
+            {
+                this.pendingMessages.TryRemove(correlationId, out _);
+                return new ServiceResponse<TPayload> { Error = ServiceError.TimeOut };
+            }
 
             var rawResponse = await tcs.Task;
-            var response =
-                JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
-
+            var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
             return response;
         }
         catch (Exception ex)
@@ -130,17 +135,20 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
             this.logger.LogDebug("Time out error: {Message}", ex.ToString());
             return new ServiceResponse<TPayload> { Error = ServiceError.TimeOut };
         }
+        finally
+        {
+            this.pendingMessages.TryRemove(correlationId, out _);
+        }
     }
 
-    private async Task OnProducerReceivesResponse(object sender, BasicDeliverEventArgs ea)
+    private Task OnProducerReceivesResponse(object sender, BasicDeliverEventArgs ea)
     {
         var correlationId = ea.BasicProperties.CorrelationId;
-
-        // Check if it is the producer which sent the request
         if (this.pendingMessages.TryRemove(correlationId, out var tcs))
         {
             tcs.SetResult(ea.Body.ToArray());
         }
+        return Task.CompletedTask;
     }
 
     private async Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea)
@@ -196,13 +204,26 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
 
     public virtual async ValueTask DisposeAsync()
     {
-        await this.ShutdownAsync(CancellationToken.None);
+        await this.Shutdown(CancellationToken.None);
         GC.SuppressFinalize(this);
     }
 
-    public async Task ShutdownAsync(CancellationToken cancellationToken)
+    public async Task Shutdown(CancellationToken cancellationToken)
     {
-        await this.connection.CloseAsync(cancellationToken);
+        if (this.consumerChannel != null)
+        {
+            await this.consumerChannel.CloseAsync(cancellationToken);
+        }
+
+        if (this.producerChannel != null)
+        {
+            await this.producerChannel.CloseAsync(cancellationToken);
+        }
+
+        if (this.connection != null)
+        {
+            await this.connection.CloseAsync(cancellationToken);
+        }
     }
 }
 

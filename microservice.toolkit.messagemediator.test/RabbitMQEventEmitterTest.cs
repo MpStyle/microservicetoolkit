@@ -12,7 +12,7 @@ namespace microservice.toolkit.messagemediator.test
     [ExcludeFromCodeCoverage]
     public class RabbitMQEventEmitterTest
     {
-        private readonly RabbitMQSignalEmitterConfiguration configuration = new("test_queue","localhost");
+        private readonly RabbitMQSignalEmitterConfiguration configuration = new("test_queue", "localhost");
 
         private static bool isSignalHandlerRunned;
         private RabbitMQSignalEmitter signalEmitter;
@@ -23,7 +23,7 @@ namespace microservice.toolkit.messagemediator.test
             this.signalEmitter = new RabbitMQSignalEmitter(configuration,
                 name => nameof(SquarePow).Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<RabbitMQSignalEmitter>());
-            await this.signalEmitter.InitAsync(CancellationToken.None);
+            await this.signalEmitter.Init(CancellationToken.None);
 
             await signalEmitter.EmitAsync(nameof(SquarePow), 2);
 
@@ -47,7 +47,7 @@ namespace microservice.toolkit.messagemediator.test
             {
                 if (this.signalEmitter != null)
                 {
-                    await this.signalEmitter.ShutdownAsync(CancellationToken.None);
+                    await this.signalEmitter.Shutdown(CancellationToken.None);
                     this.signalEmitter = null;
                 }
             }

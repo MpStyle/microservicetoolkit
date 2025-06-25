@@ -14,9 +14,9 @@ namespace microservice.toolkit.messagemediator;
 public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
     : IMessageMediator
 {
-    private readonly ILogger<IMessageMediator> logger = logger;
+    private readonly ILogger<LocalMessageMediator> logger = logger;
 
-    public Task InitAsync(CancellationToken cancellationToken = default)
+    public Task Init(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
@@ -29,13 +29,23 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
     /// <param name="message">The message to send to the service.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains a <see cref="ServiceResponse{TPayload}"/> object.</returns>
-    public async Task<ServiceResponse<TPayload>> SendAsync<TPayload>(string pattern, object message,
+    public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message,
         CancellationToken cancellationToken = default)
     {
         var response = new ServiceResponse<TPayload>();
 
         try
         {
+            if (string.IsNullOrWhiteSpace(pattern))
+            {
+                throw new ArgumentException("Pattern must not be null or empty.", nameof(pattern));
+            }
+
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             var service = serviceFactory(pattern);
 
             if (service == null)
@@ -52,7 +62,15 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
 
             if (serviceResponse.Error.HasValue == false)
             {
-                response.Payload = (TPayload)serviceResponse.Payload;
+                if (serviceResponse.Payload is TPayload payload)
+                {
+                    response.Payload = payload;
+                }
+                else
+                {
+                    this.logger.LogDebug($"Payload type mismatch: expected {typeof(TPayload)}, got {serviceResponse.Payload?.GetType()}");
+                    response.Error = ServiceError.Unknown;
+                }
             }
             else
             {
@@ -61,12 +79,12 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
         }
         catch (ServiceNotFoundException ex)
         {
-            this.logger.LogDebug("Service not found: {Message}", ex.ToString());
+            this.logger.LogError(ex, "Service not found: {Pattern}", pattern);
             response.Error = ServiceError.ServiceNotFound;
         }
         catch (Exception ex)
         {
-            this.logger.LogDebug("Generic error: {Message}", ex.ToString());
+            this.logger.LogError(ex, "Generic error while sending message to pattern: {Pattern}", pattern);
             response.Error = ServiceError.Unknown;
         }
 
@@ -77,7 +95,7 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
     /// Shuts down the local message mediator.
     /// </summary>
     /// <returns>A task that represents the asynchronous shutdown operation.</returns>
-    public Task ShutdownAsync(CancellationToken cancellationToken)
+    public Task Shutdown(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

@@ -21,7 +21,7 @@ public class ServiceTest
         var mediator = new LocalMessageMediator(pattern => new MyServiceWithException(),
             new NullLogger<LocalMessageMediator>());
 
-        var response = await mediator.SendAsync<int>("any_service", 2);
+        var response = await mediator.Send<int>("any_service", 2);
 
         Assert.That(response.Error, Is.EqualTo(ServiceError.InvalidServiceExecution));
     }

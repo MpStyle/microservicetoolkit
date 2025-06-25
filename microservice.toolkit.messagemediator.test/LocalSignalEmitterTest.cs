@@ -21,9 +21,9 @@ public class LocalSignalEmitterTest
         var signalEmitter =
             new LocalSignalEmitter(name => PatternOf<SquarePow>().Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<LocalSignalEmitter>());
-        await signalEmitter.InitAsync();
+        await signalEmitter.Init();
 
-        await signalEmitter.EmitAsync(PatternOf<SquarePow>(), 2);
+        await signalEmitter.Emit(PatternOf<SquarePow>(), 2);
 
         Assert.That(isSignalHandlerRunned, Is.False);
 
@@ -38,9 +38,9 @@ public class LocalSignalEmitterTest
         var signalEmitter =
             new LocalSignalEmitter(name => "ServiceNotFound".Equals(name) ? [new SquarePow()] : null,
                 new NullLogger<LocalSignalEmitter>());
-        await signalEmitter.InitAsync();
+        await signalEmitter.Init();
 
-        await signalEmitter.EmitAsync(PatternOf<SquarePow>(), 2);
+        await signalEmitter.Emit(PatternOf<SquarePow>(), 2);
 
         Assert.That(isSignalHandlerRunned, Is.False);
 

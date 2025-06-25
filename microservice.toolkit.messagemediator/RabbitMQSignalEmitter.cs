@@ -1,5 +1,4 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.messagemediator.entity;
+﻿using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.Logging;
 
@@ -26,77 +25,109 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
     private IConnection connection;
     private IChannel consumerChannel;
     private IChannel producerChannel;
+    private readonly object producerLock = new();
 
-    public RabbitMQSignalEmitter(RabbitMQSignalEmitterConfiguration configuration,
-        SignalHandlerFactory serviceFactory, ILogger<RabbitMQSignalEmitter> logger)
+    public RabbitMQSignalEmitter(
+        RabbitMQSignalEmitterConfiguration configuration,
+        SignalHandlerFactory serviceFactory,
+        ILogger<RabbitMQSignalEmitter> logger)
     {
         this.configuration = configuration;
         this.serviceFactory = serviceFactory;
         this.logger = logger;
     }
 
-    public async Task InitAsync(CancellationToken cancellationToken)
+    public async Task Init(CancellationToken cancellationToken)
     {
-        var factory = new ConnectionFactory() {HostName = this.configuration.ConnectionString};
-        this.connection = await factory.CreateConnectionAsync(cancellationToken);
+        var factory = new ConnectionFactory() { HostName = this.configuration.ConnectionString };
+        this.connection = await factory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
 
         // Consumer
-        this.consumerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
-        await this.consumerChannel.QueueDeclareAsync(this.configuration.QueueName, false, false, false,
-            cancellationToken: cancellationToken);
-        await this.consumerChannel.BasicQosAsync(0, 1, false, cancellationToken);
+        this.consumerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        await this.consumerChannel.QueueDeclareAsync(
+            this.configuration.QueueName,
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+        await this.consumerChannel.BasicQosAsync(0, 1, false, cancellationToken).ConfigureAwait(false);
+
         var consumer = new AsyncEventingBasicConsumer(this.consumerChannel);
-        await this.consumerChannel.BasicConsumeAsync(this.configuration.QueueName, false, consumer,
-            cancellationToken: cancellationToken);
-        consumer.ReceivedAsync += (model, ea)
-            => this.OnConsumerReceivesRequest(model, ea, cancellationToken);
+        await this.consumerChannel.BasicConsumeAsync(
+            this.configuration.QueueName,
+            autoAck: false,
+            consumer,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        consumer.ReceivedAsync += (model, ea) => this.OnConsumerReceivesRequest(model, ea, cancellationToken);
 
         // Producer
-        this.producerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken);
+        this.producerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Emits a message to a RabbitMQ exchange.
-    /// </summary>
-    /// <typeparam name="TEvent">The type of the event being emitted.</typeparam>
-    /// <param name="pattern">The pattern for routing the message.</param>
-    /// <param name="myEvent">The event to be emitted.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public async Task EmitAsync<TEvent>(string pattern, TEvent myEvent, CancellationToken cancellationToken)
+    public async Task Emit<TEvent>(string pattern, TEvent myEvent, CancellationToken cancellationToken)
     {
+        if (producerChannel == null)
+            throw new InvalidOperationException("Producer channel is not initialized.");
+
         var brokeredEvent = new BrokeredEvent
         {
-            Pattern = pattern, Payload = myEvent, RequestType = myEvent.GetType().FullName,
+            Pattern = pattern,
+            Payload = myEvent,
+            RequestType = myEvent?.GetType().FullName,
         };
         var eventBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(brokeredEvent));
 
-        await this.producerChannel.BasicPublishAsync("", this.configuration.QueueName, eventBytes,
-            cancellationToken: cancellationToken);
+        // Thread safety for producer channel
+        lock (producerLock)
+        {
+            producerChannel.BasicPublishAsync(
+                exchange: "",
+                routingKey: this.configuration.QueueName,
+                body: eventBytes,
+                cancellationToken: cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
     }
 
     public Task EmitAsync<TEvent>(string pattern, TEvent myEvent)
     {
-        _ = this.EmitAsync(pattern, myEvent, CancellationToken.None);
+        // Fire-and-forget, log exceptions if any
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await this.Emit(pattern, myEvent, CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in EmitAsync");
+            }
+        });
         return Task.CompletedTask;
     }
 
-    private Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea,
-        CancellationToken cancellationToken)
+    private async Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea, CancellationToken cancellationToken)
     {
         var body = ea.Body.ToArray();
-        var brokeredEvent = JsonSerializer.Deserialize<BrokeredEvent>(Encoding.UTF8.GetString(body));
+        BrokeredEvent brokeredEvent = null;
+        try
+        {
+            brokeredEvent = JsonSerializer.Deserialize<BrokeredEvent>(Encoding.UTF8.GetString(body));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to deserialize BrokeredEvent");
+        }
 
-        // Invalid event from queue
         if (brokeredEvent == null)
         {
-            return Task.CompletedTask;
+            logger.LogWarning("Received null or invalid BrokeredEvent from queue.");
+            return;
         }
 
         try
         {
             var requestType = Type.GetType(brokeredEvent.RequestType);
-
             if (requestType == null)
             {
                 throw new SignalEmitterException(ServiceError.InvalidRequestType);
@@ -113,21 +144,36 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            this.logger.LogDebug("Generic error: {Message}", ex.ToString());
+            logger.LogError(ex, "Error handling received event");
         }
-
-        return Task.CompletedTask;
     }
 
     public virtual async ValueTask DisposeAsync()
     {
-        await this.ShutdownAsync(CancellationToken.None);
+        await this.Shutdown(CancellationToken.None).ConfigureAwait(false);
         GC.SuppressFinalize(this);
     }
 
-    public async Task ShutdownAsync(CancellationToken cancellationToken)
+    public async Task Shutdown(CancellationToken cancellationToken)
     {
-        await this.connection.CloseAsync(cancellationToken: cancellationToken);
+        if (producerChannel != null)
+        {
+            await producerChannel.CloseAsync(cancellationToken).ConfigureAwait(false);
+            await producerChannel.DisposeAsync().ConfigureAwait(false);
+            producerChannel = null;
+        }
+        if (consumerChannel != null)
+        {
+            await consumerChannel.CloseAsync(cancellationToken).ConfigureAwait(false);
+            await consumerChannel.DisposeAsync().ConfigureAwait(false);
+            consumerChannel = null;
+        }
+        if (connection != null)
+        {
+            await connection.CloseAsync(cancellationToken).ConfigureAwait(false);
+            await connection.DisposeAsync().ConfigureAwait(false);
+            connection = null;
+        }
     }
 }
 

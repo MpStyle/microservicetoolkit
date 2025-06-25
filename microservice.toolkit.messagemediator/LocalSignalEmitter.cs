@@ -1,5 +1,4 @@
-﻿using microservice.toolkit.core;
-using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core.extension;
 
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +14,7 @@ namespace microservice.toolkit.messagemediator;
 public class LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<LocalSignalEmitter> logger)
     : ISignalEmitter
 {
-    public Task InitAsync(CancellationToken cancellationToken = default)
+    public Task Init(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
@@ -28,7 +27,7 @@ public class LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<Loc
     /// <param name="message">The message to emit.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public Task EmitAsync<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken = default)
+    public Task Emit<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -56,7 +55,7 @@ public class LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<Loc
         return Task.CompletedTask;
     }
 
-    public Task ShutdownAsync(CancellationToken cancellationToken)
+    public Task Shutdown(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

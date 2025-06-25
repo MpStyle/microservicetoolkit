@@ -22,7 +22,7 @@ public static class MessageMediatorExtensions
     public static async Task<ServiceResponse<TPayload>> Send<TPayload>(this IMessageMediator messageMediator,
         Type serviceType, object message)
     {
-        return await messageMediator.SendAsync<TPayload>(serviceType.ToPattern(), message);
+        return await messageMediator.Send<TPayload>(serviceType.ToPattern(), message);
     }
 
     /// <summary>
@@ -37,7 +37,7 @@ public static class MessageMediatorExtensions
     public static async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(this IMessageMediator messageMediator,
         string pattern, TRequest message)
     {
-        return await messageMediator.SendAsync<TPayload>(pattern, message);
+        return await messageMediator.Send<TPayload>(pattern, message);
     }
 
     /// <summary>

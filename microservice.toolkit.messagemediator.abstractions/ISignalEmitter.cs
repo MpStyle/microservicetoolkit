@@ -5,9 +5,9 @@ namespace microservice.toolkit.messagemediator;
 
 public interface ISignalEmitter
 {
-    Task InitAsync(CancellationToken cancellationToken = default);
+    Task Init(CancellationToken cancellationToken = default);
 
-    Task EmitAsync<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken = default);
+    Task Emit<TEvent>(string pattern, TEvent message, CancellationToken cancellationToken = default);
 
-    Task ShutdownAsync(CancellationToken cancellationToken);
+    Task Shutdown(CancellationToken cancellationToken);
 }
