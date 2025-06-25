@@ -1,6 +1,7 @@
-﻿using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core;
+using microservice.toolkit.core.entity;
+using microservice.toolkit.core.extension;
 using microservice.toolkit.messagemediator.collection;
-using microservice.toolkit.messagemediator.entity;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,16 +14,16 @@ namespace microservice.toolkit.messagemediator.extension;
 
 public static class MessageMediatorExtensions
 {
-    public static async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(this IMessageMediator messageMediator,
+    public static Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(this IMessageMediator messageMediator,
         Type serviceType, TRequest message)
     {
-        return await messageMediator.Send<TRequest, TPayload>(serviceType.ToPattern(), message);
+        return messageMediator.Send<TRequest, TPayload>(serviceType.ToPattern(), message);
     }
 
-    public static async Task<ServiceResponse<TPayload>> Send<TPayload>(this IMessageMediator messageMediator,
+    public static Task<ServiceResponse<TPayload>> Send<TPayload>(this IMessageMediator messageMediator,
         Type serviceType, object message)
     {
-        return await messageMediator.Send<TPayload>(serviceType.ToPattern(), message);
+        return messageMediator.Send<TPayload>(serviceType.ToPattern(), message);
     }
 
     /// <summary>
@@ -34,10 +35,10 @@ public static class MessageMediatorExtensions
     /// <param name="pattern"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public static async Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(this IMessageMediator messageMediator,
+    public static Task<ServiceResponse<TPayload>> Send<TRequest, TPayload>(this IMessageMediator messageMediator,
         string pattern, TRequest message)
     {
-        return await messageMediator.Send<TPayload>(pattern, message);
+        return messageMediator.Send<TPayload>(pattern, message);
     }
 
     /// <summary>
@@ -52,7 +53,11 @@ public static class MessageMediatorExtensions
 
     public static MicroserviceCollection GetServices(this Type[] types)
     {
-        return types.Select(Assembly.GetAssembly).ToArray().GetServices();
+        return types
+            .Select(Assembly.GetAssembly)
+            .Where(a => a != null)
+            .ToArray()
+            .GetServices();
     }
 
     /// <summary>
@@ -154,44 +159,23 @@ public static class MessageMediatorExtensions
 
     private static bool IsService(this Type type)
     {
-        if (type == null)
+        if (type == null || !type.IsClass || type.IsAbstract)
         {
             return false;
         }
 
-        if (type.IsClass == false || type.IsAbstract || type.IsGenericType || type.IsNested)
+        var serviceGenericType = typeof(Service<,>);
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == serviceGenericType)
         {
-            return false;
+            return true;
         }
 
-        // Check for "MicroService" attribute
-        // var attrs = Attribute.GetCustomAttributes(type);
-        //
-        // if (attrs.Any(a => a is Microservice) == false)
-        // {
-        //     return false;
-        // }
-
-        // Checks if is a subclass of "Service<,>"
-        var fullname = typeof(Service<,>).FullName;
-
-        if (fullname.IsNullOrEmpty())
+        if (type.BaseType != null && type.BaseType.IsGenericType &&
+            type.BaseType.GetGenericTypeDefinition() == serviceGenericType)
         {
-            return false;
+            return true;
         }
 
-        var name = fullname.Substring(0, fullname.IndexOf('`'));
-        var currentType = type;
-        while (currentType != null)
-        {
-            if (currentType.BaseType?.FullName?.StartsWith(name) == true && currentType.BaseType.IsAbstract)
-            {
-                return true;
-            }
-
-            currentType = currentType.BaseType;
-        }
-
-        return false;
+        return type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == serviceGenericType);
     }
 }

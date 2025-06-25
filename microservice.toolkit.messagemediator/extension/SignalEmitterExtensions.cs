@@ -1,4 +1,4 @@
-﻿using microservice.toolkit.core.extension;
+﻿using microservice.toolkit.core;
 using microservice.toolkit.messagemediator.collection;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +29,12 @@ public static class SignalEmitterExtensions
 
     public static MicroserviceCollection GetHandlers(this Type[] types)
     {
-        return types.Select(Assembly.GetAssembly).ToArray().GetHandlers();
+        return types
+            .Select(Assembly.GetAssembly)
+            .Where(a => a != null)
+            .Distinct()
+            .ToArray()
+            .GetHandlers();
     }
 
     /// <summary>
@@ -45,6 +50,7 @@ public static class SignalEmitterExtensions
     public static MicroserviceCollection GetHandlers(this Assembly[] assemblies)
     {
         return assemblies
+            .Where(a => a != null)
             .SelectMany(a => a.GetExportedTypes())
             .Where(t => t.IsHandler())
             .ToMicroserviceCollection();
@@ -107,11 +113,12 @@ public static class SignalEmitterExtensions
     {
         services.AddSingleton(serviceProvider => new SignalHandlerFactory(pattern =>
         {
-            var serviceType = mapper.ByPatternOrDefault(pattern)
+            var serviceTypes = mapper.ByPatternOrDefault(pattern)
                 .Select(type => serviceProvider.GetService(type) as ISignalHandler)
+                .Where(handler => handler != null)
                 .ToArray();
 
-            return serviceType;
+            return serviceTypes;
         }));
 
         return services;
@@ -124,32 +131,16 @@ public static class SignalEmitterExtensions
             return false;
         }
 
-        if (type.IsClass == false || type.IsAbstract || type.IsGenericType || type.IsNested)
+        if (!type.IsClass || type.IsAbstract || type.IsGenericType || type.IsNested)
         {
             return false;
         }
 
-        // Check for "MicroService" attribute
-        // var attrs = Attribute.GetCustomAttributes(type);
-        //
-        // if (attrs.Any(a => a is Microservice) == false)
-        // {
-        //     return false;
-        // }
-
-        // Checks if is a subclass of "SignalHandler<>"
-        var fullname = typeof(SignalHandler<>).FullName;
-
-        if (fullname.IsNullOrEmpty())
-        {
-            return false;
-        }
-
-        var name = fullname.Substring(0, fullname.IndexOf('`'));
-        var currentType = type;
+        var handlerBaseType = typeof(SignalHandler<>);
+        var currentType = type.BaseType;
         while (currentType != null)
         {
-            if (currentType.BaseType?.FullName?.StartsWith(name) == true && currentType.BaseType.IsAbstract)
+            if (currentType.IsGenericType && currentType.GetGenericTypeDefinition() == handlerBaseType)
             {
                 return true;
             }
