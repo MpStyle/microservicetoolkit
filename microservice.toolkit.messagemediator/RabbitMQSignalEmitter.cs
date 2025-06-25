@@ -39,11 +39,12 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
 
     public async Task Init(CancellationToken cancellationToken)
     {
-        var factory = new ConnectionFactory() { HostName = this.configuration.ConnectionString };
+        var factory = new ConnectionFactory() {HostName = this.configuration.ConnectionString};
         this.connection = await factory.CreateConnectionAsync(cancellationToken).ConfigureAwait(false);
 
         // Consumer
-        this.consumerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        this.consumerChannel =
+            await connection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         await this.consumerChannel.QueueDeclareAsync(
             this.configuration.QueueName,
             durable: false,
@@ -62,30 +63,31 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
         consumer.ReceivedAsync += (model, ea) => this.OnConsumerReceivesRequest(model, ea, cancellationToken);
 
         // Producer
-        this.producerChannel = await connection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        this.producerChannel =
+            await connection.CreateChannelAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task Emit<TEvent>(string pattern, TEvent myEvent, CancellationToken cancellationToken)
+    public Task Emit<TEvent>(string pattern, TEvent myEvent, CancellationToken cancellationToken)
     {
         if (producerChannel == null)
+        {
             throw new InvalidOperationException("Producer channel is not initialized.");
+        }
 
         var brokeredEvent = new BrokeredEvent
         {
-            Pattern = pattern,
-            Payload = myEvent,
-            RequestType = myEvent?.GetType().FullName,
+            Pattern = pattern, Payload = myEvent, RequestType = myEvent?.GetType().FullName,
         };
         var eventBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(brokeredEvent));
 
         // Thread safety for producer channel
         lock (producerLock)
         {
-            producerChannel.BasicPublishAsync(
+            return producerChannel.BasicPublishAsync(
                 exchange: "",
                 routingKey: this.configuration.QueueName,
                 body: eventBytes,
-                cancellationToken: cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+                cancellationToken: cancellationToken).AsTask();
         }
     }
 
@@ -106,7 +108,8 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
         return Task.CompletedTask;
     }
 
-    private async Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea, CancellationToken cancellationToken)
+    private async Task OnConsumerReceivesRequest(object model, BasicDeliverEventArgs ea,
+        CancellationToken cancellationToken)
     {
         var body = ea.Body.ToArray();
         BrokeredEvent brokeredEvent = null;
@@ -162,12 +165,14 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
             await producerChannel.DisposeAsync().ConfigureAwait(false);
             producerChannel = null;
         }
+
         if (consumerChannel != null)
         {
             await consumerChannel.CloseAsync(cancellationToken).ConfigureAwait(false);
             await consumerChannel.DisposeAsync().ConfigureAwait(false);
             consumerChannel = null;
         }
+
         if (connection != null)
         {
             await connection.CloseAsync(cancellationToken).ConfigureAwait(false);
