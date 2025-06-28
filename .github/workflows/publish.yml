@@ -25,32 +25,32 @@ jobs:
       - name: Pack - Core
         run: dotnet pack ./microservice.toolkit.core/microservice.toolkit.core.csproj -c Release
       - name: Release - Core
-        run: dotnet nuget push ./microservice.toolkit.core/bin/Release/microservice.toolkit.core.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.core/bin/Release/microservice.toolkit.core.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Pack - Cache Manager
         run: dotnet pack ./microservice.toolkit.cachemanager/microservice.toolkit.cachemanager.csproj -c Release
       - name: Release - Cache Manager
-        run: dotnet nuget push ./microservice.toolkit.cachemanager/bin/Release/microservice.toolkit.cachemanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.cachemanager/bin/Release/microservice.toolkit.cachemanager.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Pack - Cache Manager Abstractions
         run: dotnet pack ./microservice.toolkit.cachemanager.abstractions/microservice.toolkit.cachemanager.abstractions.csproj -c Release
       - name: Release - Cache Manager Abstractions
-        run: dotnet nuget push ./microservice.toolkit.cachemanager.abstractions/bin/Release/microservice.toolkit.cachemanager.abstractions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.cachemanager.abstractions/bin/Release/microservice.toolkit.cachemanager.abstractions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Pack - Configuration Extensions
         run: dotnet pack ./microservice.toolkit.configuration.extensions/microservice.toolkit.configuration.extensions.csproj -c Release
       - name: Release - Configuration Extensions
-        run: dotnet nuget push ./microservice.toolkit.configuration.extensions/bin/Release/microservice.toolkit.configuration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.configuration.extensions/bin/Release/microservice.toolkit.configuration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Pack - Connection Extensions
         run: dotnet pack ./microservice.toolkit.connection.extensions/microservice.toolkit.connection.extensions.csproj -c Release
       - name: Release - Connection Extensions
-        run: dotnet nuget push ./microservice.toolkit.connection.extensions/bin/Release/microservice.toolkit.connection.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.connection.extensions/bin/Release/microservice.toolkit.connection.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Pack - Message Mediator
         run: dotnet pack ./microservice.toolkit.messagemediator/microservice.toolkit.messagemediator.csproj -c Release
       - name: Release - Message Mediator
-        run: dotnet nuget push ./microservice.toolkit.messagemediator/bin/Release/microservice.toolkit.messagemediator.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.messagemediator/bin/Release/microservice.toolkit.messagemediator.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Pack - Message Mediator Abstractions
         run: dotnet pack ./microservice.toolkit.messagemediator.abstractions/microservice.toolkit.messagemediator.abstractions.csproj -c Release
@@ -60,4 +60,4 @@ jobs:
       - name: Pack - Migration Extensions
         run: dotnet pack ./microservice.toolkit.migration.extensions/microservice.toolkit.migration.extensions.csproj -c Release
       - name: Release - Migration Extensions
-        run: dotnet nuget push ./microservice.toolkit.migration.extensions/bin/Release/microservice.toolkit.migration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./microservice.toolkit.migration.extensions/bin/Release/microservice.toolkit.migration.extensions.${GITHUB_REF#refs/tags/}.nupkg --api-key ${{ secrets.NUGET_GALLERY_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
