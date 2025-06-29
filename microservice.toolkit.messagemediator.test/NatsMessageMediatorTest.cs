@@ -27,6 +27,17 @@ namespace microservice.toolkit.messagemediator.test
         private IMessageMediator mediator02;
 
         [Test]
+        public async Task Run_Object_Delayed()
+        {
+            this.mediator = new NatsMessageMediator(configuration with { ResponseTimeout = 1000},
+                name => nameof(DelayedService).Equals(name) ? new DelayedService() : null,
+                new NullLogger<NatsMessageMediator>());
+            await this.mediator.Init(CancellationToken.None);
+
+            Assert.That(ServiceError.Timeout, Is.EqualTo((await mediator.Send<int>(nameof(DelayedService), 2)).Error));
+        }
+        
+        [Test]
         public async Task Run_Object_Int()
         {
             this.mediator = new NatsMessageMediator(configuration,
@@ -115,7 +126,7 @@ namespace microservice.toolkit.messagemediator.test
         [Microservice]
         class SquarePow : Service<int, int>
         {
-            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken)
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {
                 return this.SuccessfulResponseAsync(request * request);
             }
@@ -124,9 +135,19 @@ namespace microservice.toolkit.messagemediator.test
         [Microservice]
         class SquarePowError : Service<int, int>
         {
-            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken)
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {
                 return this.UnsuccessfulResponseAsync<int>(-1);
+            }
+        }
+        
+        [Microservice]
+        class DelayedService : Service<int, int>
+        {
+            public override async Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
+            {
+                await Task.Delay(5000, cancellationToken);
+                return this.SuccessfulResponse<int>(-1);
             }
         }
     }

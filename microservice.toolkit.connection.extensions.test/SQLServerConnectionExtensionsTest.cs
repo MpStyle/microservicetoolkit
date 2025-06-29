@@ -3,6 +3,7 @@
 using NUnit.Framework;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -75,18 +76,164 @@ public class SQLServerConnectionExtensionsTest
     {
         var result = await this.dbConnection.ExecuteAsync(async cmd =>
         {
-            cmd.CommandText = @"
-                    CREATE TABLE films (
-                        code        char(5) PRIMARY KEY,
-                        title       varchar(40) NOT NULL
-                    );
-                ";
+            cmd.CommandText = """
+                                  CREATE TABLE films (
+                                      code        char(5) PRIMARY KEY,
+                                      title       varchar(40) NOT NULL
+                                  );             
+                              """;
             return await cmd.ExecuteNonQueryAsync();
         });
 
         Assert.That(-1, Is.EqualTo(result));
     }
 
+    [Test]
+    public async Task ExecuteAsyncWithParams()
+    {
+        var result = this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(-1, Is.EqualTo(result));
+
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12346', 'my_title_01');")));
+        
+        var selectResult = await this.dbConnection.ExecuteAsync(
+            "SELECT code, title FROM films WHERE title = @title ORDER BY code DESC", 
+            record => new { code = record.GetString(0), title = record.GetString(1) },
+            new Dictionary<string, object>()
+            {
+                { "@title", "my_title_01" }
+            }
+        );
+        
+        Assert.That(selectResult, Is.Not.Null);
+        Assert.That(selectResult[0].code, Is.EqualTo("12346"));
+        Assert.That(selectResult[0].title, Is.EqualTo("my_title_01"));
+    }
+    
+    [Test]
+    public async Task ExecuteAsyncWithoutMapperFuncWithParams()
+    {
+        var result = this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(-1, Is.EqualTo(result));
+
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12346', 'my_title_01');")));
+        
+        var selectResult = await this.dbConnection.ExecuteAsync<Film>(
+            "SELECT code, title FROM films WHERE title = @title ORDER BY code DESC", 
+            new Dictionary<string, object>()
+            {
+                { "@title", "my_title_01" }
+            }
+        );
+        
+        Assert.That(selectResult, Is.Not.Null);
+        Assert.That(selectResult[0].code, Is.EqualTo("12346"));
+        Assert.That(selectResult[0].title, Is.EqualTo("my_title_01"));
+    }
+
+    [Test]
+    public async Task ExecuteFirstAsyncWithParams()
+    {
+        var result = this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(-1, Is.EqualTo(result));
+
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12346', 'my_title_01');")));
+        
+        var selectResult = await this.dbConnection.ExecuteFirstAsync(
+            "SELECT code, title FROM films WHERE title = @title ORDER BY code DESC", 
+            record => new { code = record.GetString(0), title = record.GetString(1) },
+            new Dictionary<string, object>()
+            {
+                { "@title", "my_title_01" }
+            }
+        );
+        
+        Assert.That(selectResult, Is.Not.Null);
+        Assert.That(selectResult.code, Is.EqualTo("12346"));
+        Assert.That(selectResult.title, Is.EqualTo("my_title_01"));
+    }
+    
+    [Test]
+    public async Task ExecuteFirstAsyncWithoutMapperFuncWithParams()
+    {
+        var result = this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(-1, Is.EqualTo(result));
+
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12346', 'my_title_01');")));
+        
+        var selectResult = await this.dbConnection.ExecuteFirstAsync<Film>(
+            "SELECT code, title FROM films WHERE title = @title ORDER BY code DESC", 
+            new Dictionary<string, object>()
+            {
+                { "@title", "my_title_01" }
+            }
+        );
+        
+        Assert.That(selectResult, Is.Not.Null);
+        Assert.That(selectResult.code, Is.EqualTo("12346"));
+        Assert.That(selectResult.title, Is.EqualTo("my_title_01"));
+    }
+    
     [Test]
     public void ExecuteNonQuery()
     {
@@ -142,4 +289,10 @@ public class SQLServerConnectionExtensionsTest
         await this.dbConnection.ExecuteNonQueryAsync("DROP TABLE IF EXISTS films");
         await this.dbConnection.CloseAsync();
     }
+}
+
+public record Film
+{
+    public string code { get; init; }
+    public string title { get; init; }
 }

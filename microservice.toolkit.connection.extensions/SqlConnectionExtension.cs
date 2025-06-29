@@ -13,7 +13,7 @@ namespace microservice.toolkit.connection.extensions;
 
 public static class SQLConnectionExtension
 {
-    public static SqlParameter ToDbParameter(this SqlCommand command, string name, object value)
+    public static SqlParameter ToDbParameter(this SqlCommand command, string name, object? value)
     {
         var param = command.CreateParameter();
 
@@ -32,7 +32,7 @@ public static class SQLConnectionExtension
     }
 
     public static int ExecuteStoredProcedure(this SqlConnection conn, string storedProcedureName,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         conn.SafeOpen();
         using var cmd = conn.CreateCommand();
@@ -56,7 +56,7 @@ public static class SQLConnectionExtension
     }
 
     public static T[] Execute<T>(this SqlConnection conn, string sql, Func<SqlDataReader, T> lambda,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         return conn.Execute(command =>
         {
@@ -79,8 +79,8 @@ public static class SQLConnectionExtension
         });
     }
 
-    public static T ExecuteFirst<T>(this SqlConnection conn, string sql, Func<SqlDataReader, T> lambda,
-        Dictionary<string, object> parameters = null)
+    public static T? ExecuteFirst<T>(this SqlConnection conn, string sql, Func<SqlDataReader, T> lambda,
+        Dictionary<string, object>? parameters = null)
     {
         var result = conn.Execute(sql, lambda, parameters);
 
@@ -88,7 +88,7 @@ public static class SQLConnectionExtension
     }
 
     public static async Task<int> ExecuteStoredProcedureAsync(this SqlConnection conn, string storedProcedureName,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         await conn.SafeOpenAsync();
         using var cmd = conn.CreateCommand();
@@ -108,20 +108,24 @@ public static class SQLConnectionExtension
     public static async Task<T> ExecuteAsync<T>(this SqlConnection conn, Func<SqlCommand, Task<T>> lambda)
     {
         await conn.SafeOpenAsync();
-        using var cmd = conn.CreateCommand();
+        await using var cmd = conn.CreateCommand();
         return await lambda(cmd);
     }
 
     public static async Task<T[]> ExecuteAsync<T>(this SqlConnection conn, string sql,
         Func<SqlDataReader, T> lambda,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         return await conn.ExecuteAsync(async command =>
         {
             command.CommandText = sql;
-            command.Parameters.AddRange(parameters.ToDbParameter(command));
 
-            using var reader = await command.ExecuteReaderAsync();
+            if (parameters.IsNullOrEmpty() == false)
+            {
+                command.Parameters.AddRange(parameters.ToDbParameter(command));
+            }
+
+            await using var reader = await command.ExecuteReaderAsync();
             var objects = new List<T>();
 
             while (await reader.ReadAsync())
@@ -134,44 +138,52 @@ public static class SQLConnectionExtension
     }
 
     public static async Task<T[]> ExecuteAsync<T>(this SqlConnection conn, string sql,
-        Dictionary<string, object> parameters = null) where T : class, new()
+        Dictionary<string, object>? parameters = null) where T : class, new()
     {
         return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters);
     }
 
-    public static async Task<T> ExecuteFirstAsync<T>(this SqlConnection conn, string sql,
+    public static async Task<T?> ExecuteFirstAsync<T>(this SqlConnection conn, string sql,
         Func<SqlDataReader, T> lambda,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         var result = await conn.ExecuteAsync(sql, lambda, parameters);
 
         return result.IsNullOrEmpty() ? default : result.First();
     }
 
-    public static async Task<T> ExecuteFirstAsync<T>(this SqlConnection conn, string sql,
-        Dictionary<string, object> parameters = null) where T : class, new()
+    public static async Task<T?> ExecuteFirstAsync<T>(this SqlConnection conn, string sql,
+        Dictionary<string, object>? parameters = null) where T : class, new()
     {
         return await conn.ExecuteFirstAsync(sql, MapperFunc<T>(), parameters);
     }
 
     public static int ExecuteNonQuery(this SqlConnection conn, string query,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         conn.SafeOpen();
         using var command = conn.CreateCommand();
         command.CommandText = query;
-        command.Parameters.AddRange(parameters.ToDbParameter(command));
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
 
         return command.ExecuteNonQuery();
     }
 
     public static async Task<int> ExecuteNonQueryAsync(this SqlConnection conn, string query,
-        Dictionary<string, object> parameters = null)
+        Dictionary<string, object>? parameters = null)
     {
         await conn.SafeOpenAsync();
-        using var command = conn.CreateCommand();
+        await using var command = conn.CreateCommand();
         command.CommandText = query;
-        command.Parameters.AddRange(parameters.ToDbParameter(command));
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
 
         return await command.ExecuteNonQueryAsync();
     }
@@ -250,11 +262,11 @@ public static class SQLConnectionExtension
             return;
         }
 
-        await conn.SafeCloseAsync();
+        await conn.CloseAsync();
     }
 
     public static Func<SqlDataReader, T> MapperFunc<T>(
-        Dictionary<string, Func<object, object>> transformations = null,
+        Dictionary<string, Func<object, object>>? transformations = null,
         StringComparison fieldsComparison = StringComparison.OrdinalIgnoreCase) where T : class, new()
     {
         return reader =>
@@ -292,21 +304,25 @@ public static class SQLConnectionExtension
     }
 
     public static T ExecuteScalar<T>(this SqlConnection conn, string sql,
-        Func<object, T> lambda,
-        Dictionary<string, object> parameters = null)
+        Func<object?, T> lambda,
+        Dictionary<string, object>? parameters = null)
     {
         conn.SafeOpen();
         using var command = conn.CreateCommand();
         command.CommandText = sql;
-        command.Parameters.AddRange(parameters.ToDbParameter(command));
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
 
         var input = command.ExecuteScalar();
 
         return lambda(input);
     }
 
-    public static T ExecuteScalar<T>(this SqlConnection conn, string sql,
-        Dictionary<string, object> parameters = null)
+    public static T? ExecuteScalar<T>(this SqlConnection conn, string sql,
+        Dictionary<string, object>? parameters = null)
     {
         return conn.ExecuteScalar(sql, input =>
         {
@@ -327,21 +343,25 @@ public static class SQLConnectionExtension
     }
 
     public static async Task<T> ExecuteScalarAsync<T>(this SqlConnection conn, string sql,
-        Func<object, T> lambda,
-        Dictionary<string, object> parameters = null)
+        Func<object?, T> lambda,
+        Dictionary<string, object>? parameters = null)
     {
         await conn.SafeOpenAsync();
-        using var command = conn.CreateCommand();
+        await using var command = conn.CreateCommand();
         command.CommandText = sql;
-        command.Parameters.AddRange(parameters.ToDbParameter(command));
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
 
         var input = await command.ExecuteScalarAsync();
 
         return lambda(input);
     }
 
-    public static async Task<T> ExecuteScalarAsync<T>(this SqlConnection conn, string sql,
-        Dictionary<string, object> parameters = null)
+    public static async Task<T?> ExecuteScalarAsync<T>(this SqlConnection conn, string sql,
+        Dictionary<string, object>? parameters = null)
     {
         return await conn.ExecuteScalarAsync(sql, input =>
         {
@@ -358,6 +378,6 @@ public static class SQLConnectionExtension
             {
                 return default;
             }
-        }, parameters);
+        }, parameters ?? new Dictionary<string, object>());
     }
 }
