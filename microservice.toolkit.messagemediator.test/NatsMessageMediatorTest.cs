@@ -25,6 +25,36 @@ namespace microservice.toolkit.messagemediator.test
         private IMessageMediator mediator;
         private IMessageMediator mediator01;
         private IMessageMediator mediator02;
+        
+        [Test]
+        public async Task Run_InvalidPattern_ReturnsError()
+        {
+            this.mediator = new NatsMessageMediator(configuration with { ResponseTimeout = 1000},_ => null,
+                    new NullLogger<NatsMessageMediator>());
+            await mediator.Init(CancellationToken.None);
+
+            Assert.That(ServiceError.InvalidPattern, Is.EqualTo((await mediator.Send<int>(null, 2)).Error));
+        }
+    
+        [Test]
+        public async Task Run_InvalidMessage_ReturnsError()
+        {
+            this.mediator = new NatsMessageMediator(configuration with { ResponseTimeout = 1000},name => typeof(SquarePow).ToPattern().Equals(name) ? new SquarePow() : null,
+                    new NullLogger<NatsMessageMediator>());
+            await mediator.Init(CancellationToken.None);
+
+            Assert.That(ServiceError.NullRequest, Is.EqualTo((await mediator.Send<int>(typeof(SquarePow).ToPattern(), null)).Error));
+        }
+    
+        [Test]
+        public async Task Run_ExceptionWhileRunning_ReturnsError()
+        {
+            this.mediator = new NatsMessageMediator(configuration with { ResponseTimeout = 1000},name => typeof(ExceptionService).ToPattern().Equals(name) ? new ExceptionService() : null,
+                    new NullLogger<NatsMessageMediator>());
+            await mediator.Init(CancellationToken.None);
+
+            Assert.That(ServiceError.Unknown, Is.EqualTo((await mediator.Send<int>(typeof(ExceptionService).ToPattern(), 1)).Error));
+        }
 
         [Test]
         public async Task Run_Object_Delayed()
@@ -148,6 +178,15 @@ namespace microservice.toolkit.messagemediator.test
             {
                 await Task.Delay(5000, cancellationToken);
                 return this.SuccessfulResponse<int>(-1);
+            }
+        }
+    
+        [Microservice]
+        class ExceptionService : Service<int, int>
+        {
+            public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
+            {
+                throw new Exception("My exception");
             }
         }
     }

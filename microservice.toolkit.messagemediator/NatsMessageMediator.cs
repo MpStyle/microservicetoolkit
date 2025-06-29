@@ -95,6 +95,14 @@ public class NatsMessageMediator(
                 Error = ServiceError.Timeout,
             };
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Generic error while sending message to pattern: {Pattern}", pattern);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.Unknown
+            };
+        }
     }
 
     private async Task OnConsumerReceivesRequest(object model, MsgHandlerEventArgs ea,
