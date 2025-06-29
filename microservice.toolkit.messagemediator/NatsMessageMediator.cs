@@ -35,17 +35,66 @@ public class NatsMessageMediator(
         CancellationToken cancellationToken = default
     )
     {
-        var responseMessage = await this.connection.RequestAsync(configuration.Topic,
-            Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
+        try
+        {
+            if (string.IsNullOrWhiteSpace(pattern))
             {
-                Pattern = pattern,
-                Payload = message,
-                RequestType = message.GetType().FullName,
-            })), configuration.ResponseTimeout, cancellationToken);
-        var response =
-            JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
+                throw new ArgumentException("Pattern must not be null or empty.", nameof(pattern));
+            }
 
-        return response;
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+            
+            var responseMessage = await this.connection.RequestAsync(configuration.Topic,
+                Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new BrokeredEvent
+                {
+                    Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,
+                })), configuration.ResponseTimeout, cancellationToken);
+
+            if (responseMessage?.Data == null || responseMessage.Data.Length == 0)
+            {
+                throw new InvalidServiceException(pattern);
+            }
+            
+            var response =
+                JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(responseMessage.Data));
+
+            return response;
+        }
+        catch (InvalidServiceException ex)
+        {
+            logger.LogError(ex, "Invalid service: {Message}", ex.Message);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.NullResponse
+            };
+        }
+        catch (ArgumentNullException ex)
+        {
+            logger.LogError(ex, "Argument null: {Message}", ex.Message);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.NullRequest
+            };
+        } 
+        catch (ArgumentException ex)
+        {
+            logger.LogError(ex, "Invalid argument: {Message}", ex.Message);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.InvalidPattern    
+            };
+        }
+        catch (NATSTimeoutException ex)
+        {
+            logger.LogError(ex, "NATSTimeoutException");
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.Timeout,
+            };
+        }
     }
 
     private async Task OnConsumerReceivesRequest(object model, MsgHandlerEventArgs ea,
@@ -124,7 +173,7 @@ public class NatsMessageMediator(
     }
 }
 
-public class NatsMessageMediatorConfiguration
+public record NatsMessageMediatorConfiguration
 {
     public string Topic { get; init; }
     public string ConnectionString { get; init; }

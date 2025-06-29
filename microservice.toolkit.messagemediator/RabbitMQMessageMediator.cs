@@ -76,14 +76,40 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
     public async Task<ServiceResponse<TPayload>> Send<TPayload>(string pattern, object message,
         CancellationToken cancellationToken = default)
     {
-        var response = await this.InternalSendAsync<TPayload>(new BrokeredMessage
+        try
         {
-            Pattern = pattern,
-            Payload = message,
-            RequestType = message.GetType().FullName,
-        }, cancellationToken);
+            if (string.IsNullOrWhiteSpace(pattern))
+            {
+                throw new ArgumentException("Pattern must not be null or empty.", nameof(pattern));
+            }
 
-        return response;
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            var response = await this.InternalSendAsync<TPayload>(
+                new BrokeredMessage {Pattern = pattern, Payload = message, RequestType = message.GetType().FullName,},
+                cancellationToken);
+
+            return response;
+        }
+        catch (ArgumentNullException ex)
+        {
+            logger.LogError(ex, "Argument null: {Message}", ex.Message);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.NullRequest
+            };
+        } 
+        catch (ArgumentException ex)
+        {
+            logger.LogError(ex, "Invalid argument: {Message}", ex.Message);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.InvalidPattern    
+            };
+        }
     }
 
     /// <summary>
@@ -91,6 +117,7 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
     /// </summary>
     /// <typeparam name="TPayload">The type of the payload in the response.</typeparam>
     /// <param name="message">The brokered message to send.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation. The task result contains the response as a <see cref="ServiceResponse{TPayload}"/>.</returns>
     private async Task<ServiceResponse<TPayload>> InternalSendAsync<TPayload>(BrokeredMessage message,
     CancellationToken cancellationToken = default)
@@ -117,23 +144,37 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
                 mandatory: true,
                 basicProperties: producerProps,
                 body: messageBytes,
-                cancellationToken: cancellationToken);
+                cancellationToken: cts.Token);
 
             var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(Timeout.Infinite, cts.Token));
             if (completedTask != tcs.Task)
             {
                 this.pendingMessages.TryRemove(correlationId, out _);
-                return new ServiceResponse<TPayload> { Error = ServiceError.TimeOut };
+                return new ServiceResponse<TPayload> { Error = ServiceError.Timeout };
             }
 
             var rawResponse = await tcs.Task;
+            
+            if (rawResponse == null || rawResponse.Length == 0)
+            {
+                throw new InvalidServiceException(message.Pattern);
+            }
+            
             var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
             return response;
+        }
+        catch (InvalidServiceException ex)
+        {
+            logger.LogError(ex, "Invalid service: {Message}", ex.Message);
+            return new ServiceResponse<TPayload>
+            {
+                Error = ServiceError.NullResponse
+            };
         }
         catch (Exception ex)
         {
             this.logger.LogDebug("Time out error: {Message}", ex.ToString());
-            return new ServiceResponse<TPayload> { Error = ServiceError.TimeOut };
+            return new ServiceResponse<TPayload> { Error = ServiceError.Timeout };
         }
         finally
         {

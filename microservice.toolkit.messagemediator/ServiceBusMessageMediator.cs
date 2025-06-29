@@ -55,46 +55,83 @@ public class ServiceBusMessageMediator : IMessageMediator, IAsyncDisposable
         CancellationToken cancellationToken = default
     )
     {
-        // Temporary Queue for Receiver to send their replies into
-        var replyQueueName = Guid.NewGuid().ToString();
-        await this.serviceBusAdministrationClient.CreateQueueAsync(
-            new CreateQueueOptions(replyQueueName) { AutoDeleteOnIdle = TimeSpan.FromSeconds(300) }, cancellationToken);
-
-        // Sending the message
-        var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
-        var applicationMessage = new BrokeredMessage
+        try
         {
-            Pattern = pattern,
-            Payload = message,
-            RequestType = message.GetType().FullName
-        };
-        var serviceBusMessage = new ServiceBusMessage(JsonSerializer.SerializeToUtf8Bytes(applicationMessage))
-        {
-            ContentType = "application/json",
-            ReplyTo = replyQueueName,
-        };
+            if (string.IsNullOrWhiteSpace(pattern))
+            {
+                throw new ArgumentException("Pattern must not be null or empty.", nameof(pattern));
+            }
 
-        await serviceBusSender.SendMessageAsync(serviceBusMessage);
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
 
-        // Creating a receiver and waiting for the Receiver to reply
-        var serviceBusReceiver = producerClient.CreateReceiver(replyQueueName);
-        var serviceBusReceivedMessage =
-            await serviceBusReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(60), cancellationToken);
+            // Temporary Queue for Receiver to send their replies into
+            var replyQueueName = Guid.NewGuid().ToString();
+            await this.serviceBusAdministrationClient.CreateQueueAsync(
+                new CreateQueueOptions(replyQueueName) {AutoDeleteOnIdle = TimeSpan.FromSeconds(300)},
+                cancellationToken);
 
-        if (serviceBusReceivedMessage == null)
-        {
-            this.logger.LogDebug("Error: didn't receive a response");
-            return new ServiceResponse<TPayload> { Error = ServiceError.ExecutionTimeout };
+            // Sending the message
+            var serviceBusSender = producerClient.CreateSender(this.configuration.QueueName);
+            var applicationMessage = new BrokeredMessage
+            {
+                Pattern = pattern, Payload = message, RequestType = message.GetType().FullName
+            };
+            var serviceBusMessage = new ServiceBusMessage(JsonSerializer.SerializeToUtf8Bytes(applicationMessage))
+            {
+                ContentType = "application/json", ReplyTo = replyQueueName,
+            };
+
+            await serviceBusSender.SendMessageAsync(serviceBusMessage, cancellationToken);
+
+            // Creating a receiver and waiting for the Receiver to reply
+            var serviceBusReceiver = producerClient.CreateReceiver(replyQueueName);
+            var serviceBusReceivedMessage =
+                await serviceBusReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(60), cancellationToken);
+
+            if (serviceBusReceivedMessage == null)
+            {
+                this.logger.LogDebug("Error: didn't receive a response");
+                return new ServiceResponse<TPayload> {Error = ServiceError.ExecutionTimeout};
+            }
+
+            if (serviceBusReceivedMessage?.Body == null || serviceBusReceivedMessage.Body.ToArray().Length == 0)
+            {
+                throw new InvalidServiceException(pattern);
+            }
+
+            var response =
+                JsonSerializer.Deserialize<ServiceResponse<TPayload>>(serviceBusReceivedMessage.Body.ToString());
+
+            if (response == null)
+            {
+                return new ServiceResponse<TPayload> {Error = ServiceError.EmptyResponse};
+            }
+
+            return response;
         }
-
-        var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(serviceBusReceivedMessage.Body.ToString());
-
-        if (response == null)
+        catch (InvalidServiceException ex)
         {
-            return new ServiceResponse<TPayload> { Error = ServiceError.EmptyResponse };
+            logger.LogError(ex, "Invalid service: {Message}", ex.Message);
+            return new ServiceResponse<TPayload> {Error = ServiceError.NullResponse};
         }
-
-        return response;
+        catch (ArgumentNullException ex)
+        {
+            logger.LogError(ex, "Argument null: {Message}", ex.Message);
+            return new ServiceResponse<TPayload> {Error = ServiceError.NullRequest};
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogError(ex, "Invalid argument: {Message}", ex.Message);
+            return new ServiceResponse<TPayload> {Error = ServiceError.InvalidPattern};
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Generic error: {Message}", ex.Message);
+            return new ServiceResponse<TPayload> {Error = ServiceError.Unknown};
+        }
     }
 
     /// <summary>

@@ -14,8 +14,6 @@ namespace microservice.toolkit.messagemediator;
 public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMessageMediator> logger)
     : IMessageMediator
 {
-    private readonly ILogger<LocalMessageMediator> logger = logger;
-
     public Task Init(CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
@@ -68,7 +66,8 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
                 }
                 else
                 {
-                    this.logger.LogDebug($"Payload type mismatch: expected {typeof(TPayload)}, got {serviceResponse.Payload?.GetType()}");
+                    logger.LogDebug(
+                        $"Payload type mismatch: expected {typeof(TPayload)}, got {serviceResponse.Payload?.GetType()}");
                     response.Error = ServiceError.Unknown;
                 }
             }
@@ -77,14 +76,29 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
                 response.Error = serviceResponse.Error;
             }
         }
+        catch (InvalidServiceException ex)
+        {
+            logger.LogError(ex, "Invalid service: {Message}", ex.Message);
+            response.Error = ServiceError.NullResponse;
+        }
+        catch (ArgumentNullException ex)
+        {
+            logger.LogError(ex, "Argument null: {Message}", ex.Message);   
+            response.Error = ServiceError.NullRequest;
+        } 
+        catch (ArgumentException ex)
+        {
+            logger.LogError(ex, "Invalid argument: {Message}", ex.Message);
+            response.Error = ServiceError.InvalidPattern;
+        }
         catch (ServiceNotFoundException ex)
         {
-            this.logger.LogError(ex, "Service not found: {Pattern}", pattern);
+            logger.LogError(ex, "Service not found: {Pattern}", pattern);
             response.Error = ServiceError.ServiceNotFound;
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, "Generic error while sending message to pattern: {Pattern}", pattern);
+            logger.LogError(ex, "Generic error while sending message to pattern: {Pattern}", pattern);
             response.Error = ServiceError.Unknown;
         }
 
@@ -98,25 +112,5 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
     public Task Shutdown(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
-    }
-}
-
-[Serializable]
-public class ServiceNotFoundException : Exception
-{
-    private readonly string pattern;
-
-    /// <summary>
-    /// Gets a message that describes the current exception.
-    /// </summary>
-    public override string Message => $"Service \"{pattern}\" not found";
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ServiceNotFoundException"/> class with a specified pattern.
-    /// </summary>
-    /// <param name="pattern">The pattern used to search for the service.</param>
-    public ServiceNotFoundException(string pattern)
-    {
-        this.pattern = pattern;
     }
 }

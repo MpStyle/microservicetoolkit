@@ -62,23 +62,9 @@ public class LocalSignalEmitter(SignalHandlerFactory serviceFactory, ILogger<Loc
 }
 
 [Serializable]
-public class SignalHandlerNotFoundException : Exception
+public class SignalHandlerNotFoundException(string pattern) : Exception
 {
-    private readonly string pattern;
-
-    public SignalHandlerNotFoundException(string pattern)
-    {
-        this.pattern = pattern;
-    }
-
-    public SignalHandlerNotFoundException()
-    {
-    }
-
-    public SignalHandlerNotFoundException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
+    private readonly string pattern = pattern;
 
     public override string Message => $"Signal handler \"{pattern}\" not found";
 }
