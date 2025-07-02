@@ -19,9 +19,9 @@ public class RabbitMQMessageMediatorTest
     private readonly RabbitMQMessageMediatorConfiguration configuration = new($"test_queue_{Guid.NewGuid()}",
         $"test_reply_queue_{Guid.NewGuid()}", "localhost");
 
-    private IMessageMediator mediator;
-    private IMessageMediator mediator01;
-    private IMessageMediator mediator02;
+    private IMessageMediator? mediator;
+    private IMessageMediator? mediator01;
+    private IMessageMediator? mediator02;
 
     [Test]
     public async Task Run_Object_Int()
