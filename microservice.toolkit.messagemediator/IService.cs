@@ -16,5 +16,5 @@ public interface IService
     /// <param name="request">The request object.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>A task that represents the asynchronous operation and contains the service response.</returns>
-    Task<ServiceResponse<dynamic>> RunAsync(object request, CancellationToken cancellationToken = default);
+    Task<ServiceResponse<dynamic>> RunAsync(object request, CancellationToken cancellationToken);
 }

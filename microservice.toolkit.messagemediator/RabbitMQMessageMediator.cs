@@ -217,8 +217,8 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
             }
 
             var json = ((JsonElement)rpcMessage.Payload).GetRawText();
-            var request = JsonSerializer.Deserialize(json, Type.GetType(rpcMessage.RequestType));
-            response = await service.RunAsync(request);
+            var request = JsonSerializer.Deserialize(json, rpcMessage.RequestType.GetType());
+            response = await service.RunAsync(request, CancellationToken.None);
 
             if (response == null)
             {
