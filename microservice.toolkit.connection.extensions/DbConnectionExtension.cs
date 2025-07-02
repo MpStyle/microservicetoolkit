@@ -301,7 +301,7 @@ public static class DbConnectionExtension
     }
     
     public static T ExecuteScalar<T>(this DbConnection conn, string sql,
-        Func<object, T> lambda,
+        Func<object?, T> lambda,
         Dictionary<string, object>? parameters = null)
     {
         conn.SafeOpen();
@@ -340,7 +340,7 @@ public static class DbConnectionExtension
     }
 
     public static async Task<T> ExecuteScalarAsync<T>(this DbConnection conn, string sql,
-        Func<object, T> lambda,
+        Func<object?, T> lambda,
         Dictionary<string, object>? parameters = null)
     {
         await conn.SafeOpenAsync();
@@ -369,7 +369,7 @@ public static class DbConnectionExtension
         
             try
             {
-                return (T)Convert.ChangeType(input, typeof(T));
+                return (T?)Convert.ChangeType(input, typeof(T));
             }
             catch (Exception)
             {

@@ -91,7 +91,7 @@ public static class SQLConnectionExtension
         Dictionary<string, object>? parameters = null)
     {
         await conn.SafeOpenAsync();
-        using var cmd = conn.CreateCommand();
+        await using var cmd = conn.CreateCommand();
         cmd.CommandText = storedProcedureName;
 
         cmd.CommandType = CommandType.StoredProcedure;
@@ -333,7 +333,7 @@ public static class SQLConnectionExtension
 
             try
             {
-                return (T)Convert.ChangeType(input, typeof(T));
+                return (T?)Convert.ChangeType(input, typeof(T));
             }
             catch (Exception)
             {
@@ -372,7 +372,7 @@ public static class SQLConnectionExtension
 
             try
             {
-                return (T)Convert.ChangeType(input, typeof(T));
+                return (T?)Convert.ChangeType(input, typeof(T));
             }
             catch (Exception)
             {

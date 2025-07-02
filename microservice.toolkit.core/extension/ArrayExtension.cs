@@ -11,7 +11,7 @@ public static class ArrayExtension
         return l == null || l.Length != 0 == false;
     }
 
-    public static T[] ConcatArrays<T>(this T[] array, params T[][]? p)
+    public static T[] ConcatArrays<T>(this T[]? array, params T[][]? p)
     {
         if (array == null)
         {

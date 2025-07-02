@@ -13,7 +13,7 @@ public class ListExtensionTest
     [Test]
     public void IsNullOrEmpty_NullList_ReturnsTrue()
     {
-        List<int> l = null;
+        List<int>? l = null;
         Assert.That(l.IsNullOrEmpty(), Is.True);
     }
     
