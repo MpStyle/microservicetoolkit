@@ -4,6 +4,7 @@
 
 **What's New**
 - Added Service<TRequest, TPayload> extension methods to create a service response
+- Improved migration to Nullable projects
 
 **Fixes**
 - 
@@ -22,3 +23,4 @@
   - InvalidRequestType: "mt_9"
   - NullRequest: "mt_10"
   - NullResponse: "mt_11"
+- Removed default value of CancellationToken in RunAsync method of IService interface 
