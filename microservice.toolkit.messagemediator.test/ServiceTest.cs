@@ -17,7 +17,7 @@ public class ServiceTest
     [Test]
     public async Task Run_With_exception()
     {
-        var mediator = new LocalMessageMediator(pattern => new MyServiceWithException(),
+        var mediator = new LocalMessageMediator(_ => new MyServiceWithException(),
             new NullLogger<LocalMessageMediator>());
 
         var response = await mediator.Send<int>("any_service", 2);
@@ -38,7 +38,7 @@ public class ServiceTest
     {
         var service = new MyServiceUnsuccessfulResponseTask();
         var response = await service.RunAsync(10);
-        Assert.That(response.Error, Is.EqualTo(10));
+        Assert.That(response.Error, Is.EqualTo("10"));
     }
 
     [Test]
@@ -47,7 +47,7 @@ public class ServiceTest
         var service = new MyServiceResponseTask();
         var response = await service.RunAsync(10);
         Assert.That(response.Payload, Is.EqualTo(0));
-        Assert.That(response.Error, Is.EqualTo(20));
+        Assert.That(response.Error, Is.EqualTo("20"));
     }
 }
 
@@ -74,7 +74,7 @@ class MyServiceUnsuccessfulResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return this.UnsuccessfulResponseAsync<int>(request);
+        return this.UnsuccessfulResponseAsync<int>(request.ToString());
     }
 }
 
@@ -83,6 +83,6 @@ class MyServiceResponseTask : Service<int, int>
 {
     public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
     {
-        return this.ResponseAsync(request / 2, request * 2);
+        return this.ResponseAsync(request / 2, (request * 2).ToString());
     }
 }

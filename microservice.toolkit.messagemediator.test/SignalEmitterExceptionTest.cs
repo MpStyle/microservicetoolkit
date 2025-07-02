@@ -11,7 +11,7 @@ public class SignalEmitterExceptionTests
     public void Constructor_SetsErrorCodeInMessage()
     {
         // Arrange
-        var errorCode = 42;
+        const string errorCode = "42";
 
         // Act
         var ex = new SignalEmitterException(errorCode);

@@ -1,4 +1,5 @@
 ﻿using microservice.toolkit.messagemediator.entity;
+using microservice.toolkit.messagemediator.extension;
 
 using Microsoft.Extensions.Logging;
 
@@ -58,7 +59,7 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
                 throw new InvalidServiceException(service.GetType().FullName);
             }
 
-            if (serviceResponse.Error.HasValue == false)
+            if (serviceResponse.IsSuccessful())
             {
                 if (serviceResponse.Payload is TPayload payload)
                 {
@@ -83,9 +84,9 @@ public class LocalMessageMediator(ServiceFactory serviceFactory, ILogger<LocalMe
         }
         catch (ArgumentNullException ex)
         {
-            logger.LogError(ex, "Argument null: {Message}", ex.Message);   
+            logger.LogError(ex, "Argument null: {Message}", ex.Message);
             response.Error = ServiceError.NullRequest;
-        } 
+        }
         catch (ArgumentException ex)
         {
             logger.LogError(ex, "Invalid argument: {Message}", ex.Message);

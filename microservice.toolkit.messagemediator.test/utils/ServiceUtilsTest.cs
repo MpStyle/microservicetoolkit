@@ -33,7 +33,7 @@ public class ServiceUtilsTest
     [Test]
     public void UnsuccessfulResponse_ShouldReturnResponseWithError_AndNullPayload()
     {
-        var error = 123;
+        var error = "123";
         var response = ServiceUtils.UnsuccessfulResponse<string>(error);
 
         Assert.That(response.Error, Is.EqualTo(error));
@@ -43,7 +43,7 @@ public class ServiceUtilsTest
     [Test]
     public async Task UnsuccessfulResponseAsync_ShouldReturnResponseWithError_AndNullPayload()
     {
-        var error = 456;
+        var error = "456";
         var response = await ServiceUtils.UnsuccessfulResponseAsync<string>(error);
 
         Assert.That(response.Error, Is.EqualTo(error));
@@ -53,8 +53,8 @@ public class ServiceUtilsTest
     [Test]
     public void Response_ShouldReturnResponseWithPayload_WhenErrorIsNull()
     {
-        var payload = "payload";
-        int? error = null;
+        const string payload = "payload";
+        string? error = null;
         var response = ServiceUtils.Response(payload, error);
 
         Assert.That(response.Payload, Is.EqualTo(payload));
@@ -64,8 +64,8 @@ public class ServiceUtilsTest
     [Test]
     public void Response_ShouldReturnResponseWithError_WhenErrorIsNotNull()
     {
-        var payload = "payload";
-        int? error = 99;
+        const string payload = "payload";
+        const string? error = "99";
         var response = ServiceUtils.Response(payload, error);
 
         Assert.That(response.Payload, Is.Null);
@@ -75,8 +75,8 @@ public class ServiceUtilsTest
     [Test]
     public async Task ResponseAsync_ShouldReturnResponseWithPayload_WhenErrorIsNull()
     {
-        var payload = 100;
-        int? error = null;
+        const int payload = 100;
+        string? error = null;
         var response = await ServiceUtils.ResponseAsync(payload, error);
 
         Assert.That(response.Payload, Is.EqualTo(payload));
@@ -87,7 +87,7 @@ public class ServiceUtilsTest
     public async Task ResponseAsync_ShouldReturnResponseWithError_WhenErrorIsNotNull()
     {
         int? payload = 200;
-        int? error = 77;
+        const string? error = "77";
         var response = await ServiceUtils.ResponseAsync(payload, error);
 
         Assert.That(response.Payload, Is.Null);

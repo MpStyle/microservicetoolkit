@@ -12,7 +12,7 @@ public class RabbitMQMessageMediatorExceptionTests
     public void Constructor_SetsErrorCode()
     {
         // Arrange
-        var expectedErrorCode = 42;
+        const string expectedErrorCode = "42";
 
         // Act
         var ex = new RabbitMQMessageMediatorException(expectedErrorCode);
@@ -25,7 +25,7 @@ public class RabbitMQMessageMediatorExceptionTests
     public void Inherits_FromException()
     {
         // Act
-        var ex = new RabbitMQMessageMediatorException(1);
+        var ex = new RabbitMQMessageMediatorException("1");
 
         // Assert
         Assert.That(ex, Is.InstanceOf<Exception>());

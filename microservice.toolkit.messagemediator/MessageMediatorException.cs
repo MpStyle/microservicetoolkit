@@ -2,9 +2,9 @@ using System;
 
 namespace microservice.toolkit.messagemediator;
 
-public class MessageMediatorException(int errorCode) : Exception
+public class MessageMediatorException(string errorCode) : Exception
 {
-    public int ErrorCode { get; } = errorCode;
+    public string ErrorCode { get; } = errorCode;
 
     public override string Message => $"MessageMediator error code: {this.ErrorCode}";
 }

@@ -25,7 +25,7 @@ public class ServiceResponseExtensionTest
     public void IsSuccessful_ShouldReturnFalse_WhenErrorIsNotNull()
     {
         // Arrange
-        var serviceResponse = new ServiceResponse<string> { Payload = "Failure", Error = 1 };
+        var serviceResponse = new ServiceResponse<string> { Payload = "Failure", Error = "1" };
         // Act
         var result = serviceResponse.IsSuccessful();
         // Assert
@@ -36,7 +36,7 @@ public class ServiceResponseExtensionTest
     public void IsError_ShouldReturnTrue_WhenErrorIsNotNull()
     {
         // Arrange
-        var serviceResponse = new ServiceResponse<string> { Payload = "Failure", Error = 1 };
+        var serviceResponse = new ServiceResponse<string> { Payload = "Failure", Error = "1" };
         // Act
         var result = serviceResponse.IsError();
         // Assert

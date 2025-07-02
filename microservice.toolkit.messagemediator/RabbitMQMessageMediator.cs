@@ -293,13 +293,13 @@ public class RabbitMQMessageMediatorException : Exception
     /// <summary>
     /// Gets the error code associated with the exception.
     /// </summary>
-    public int ErrorCode { get; }
+    public string ErrorCode { get; }
 
     /// <summary>
     /// Initializes a new instance of the RabbitMQMessageMediatorException class with the specified error code.
     /// </summary>
     /// <param name="errorCode">The error code associated with the exception.</param>
-    public RabbitMQMessageMediatorException(int errorCode)
+    public RabbitMQMessageMediatorException(string errorCode)
     {
         this.ErrorCode = errorCode;
     }

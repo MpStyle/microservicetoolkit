@@ -124,7 +124,7 @@ public class RabbitMQSignalEmitter : ISignalEmitter, IAsyncDisposable
 
         if (brokeredEvent == null)
         {
-            logger.LogWarning("Received null or invalid BrokeredEvent from queue.");
+            logger.LogWarning("Received null or invalid BrokeredEvent from queue");
             return;
         }
 

@@ -69,14 +69,29 @@ public class RabbitMQMessageMediatorTest
             new NullLogger<RabbitMQMessageMediator>());
         await this.mediator02.Init(CancellationToken.None);
 
-        Assert.That(4, Is.EqualTo((await mediator01.Send<int>(nameof(SquarePow), 2)).Payload));
-        Assert.That(4, Is.EqualTo((await mediator02.Send<int>(nameof(SquarePow), 2)).Payload));
-        Assert.That(9, Is.EqualTo((await mediator01.Send<int>(nameof(SquarePow), 3)).Payload));
-        Assert.That(9, Is.EqualTo((await mediator02.Send<int>(nameof(SquarePow), 3)).Payload));
-        Assert.That(16, Is.EqualTo((await mediator01.Send<int>(nameof(SquarePow), 4)).Payload));
-        Assert.That(16, Is.EqualTo((await mediator02.Send<int>(nameof(SquarePow), 4)).Payload));
-        Assert.That(25, Is.EqualTo((await mediator01.Send<int>(nameof(SquarePow), 5)).Payload));
-        Assert.That(25, Is.EqualTo((await mediator02.Send<int>(nameof(SquarePow), 5)).Payload));
+        var mediator1SquareOf2 = (await this.mediator01.Send<int>(nameof(SquarePow), 2));
+        Assert.That(4, Is.EqualTo(mediator1SquareOf2.Payload));
+
+        var mediator2SquareOf2 = (await this.mediator02.Send<int>(nameof(SquarePow), 2));
+        Assert.That(4, Is.EqualTo(mediator2SquareOf2.Payload));
+
+        var mediator1SquareOf3 = (await this.mediator01.Send<int>(nameof(SquarePow), 3));
+        Assert.That(9, Is.EqualTo(mediator1SquareOf3.Payload));
+
+        var mediator2SquareOf3 = (await this.mediator02.Send<int>(nameof(SquarePow), 3));
+        Assert.That(9, Is.EqualTo(mediator2SquareOf3.Payload));
+
+        var mediator1SquareOf4 = (await this.mediator01.Send<int>(nameof(SquarePow), 4));
+        Assert.That(16, Is.EqualTo(mediator1SquareOf4.Payload));
+
+        var mediator2SquareOf4 = (await this.mediator02.Send<int>(nameof(SquarePow), 4));
+        Assert.That(16, Is.EqualTo(mediator2SquareOf4.Payload));
+
+        var mediator1SquareOf5 = (await this.mediator01.Send<int>(nameof(SquarePow), 5));
+        Assert.That(25, Is.EqualTo(mediator1SquareOf5.Payload));
+
+        var mediator2SquareOf5 = (await this.mediator02.Send<int>(nameof(SquarePow), 5));
+        Assert.That(25, Is.EqualTo(mediator2SquareOf5.Payload));
     }
 
     [TearDown]
@@ -123,7 +138,7 @@ public class RabbitMQMessageMediatorTest
     {
         public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
         {
-            return this.UnsuccessfulResponseAsync<int>(-1);
+            return this.UnsuccessfulResponseAsync<int>("-1");
         }
     }
 }

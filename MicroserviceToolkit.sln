@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project-items", "project-it
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
+		CHANGELOG.md = CHANGELOG.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "microservice.toolkit.core", "microservice.toolkit.core\microservice.toolkit.core.csproj", "{606BE81D-57E9-465D-B6D4-40DD6F7C4C55}"

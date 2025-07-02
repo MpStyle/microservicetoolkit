@@ -109,7 +109,7 @@ public class LocalMessageMediatorTest
     {
         public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
         {
-            return this.UnsuccessfulResponseAsync<int>(-1);
+            return this.UnsuccessfulResponseAsync<int>("-1");
         }
     }
     

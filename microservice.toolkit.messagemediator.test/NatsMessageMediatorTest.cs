@@ -97,7 +97,7 @@ namespace microservice.toolkit.messagemediator.test
                 new NullLogger<NatsMessageMediator>());
             await this.mediator.Init(CancellationToken.None);
 
-            Assert.That(-1, Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
+            Assert.That("-1", Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
         }
 
         [Test]
@@ -167,7 +167,7 @@ namespace microservice.toolkit.messagemediator.test
         {
             public override Task<ServiceResponse<int>> RunAsync(int request, CancellationToken cancellationToken = default)
             {
-                return this.UnsuccessfulResponseAsync<int>(-1);
+                return this.UnsuccessfulResponseAsync<int>("-1");
             }
         }
         
