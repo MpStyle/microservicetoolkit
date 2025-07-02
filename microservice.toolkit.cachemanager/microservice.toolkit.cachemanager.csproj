@@ -47,11 +47,11 @@
   <ItemGroup>
     <None Include="..\image\icon.png">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath />
     </None>
     <None Include=".\README.md">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath />
     </None>
   </ItemGroup>
 
