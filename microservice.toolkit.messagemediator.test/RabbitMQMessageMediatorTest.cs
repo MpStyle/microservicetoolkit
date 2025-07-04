@@ -53,7 +53,7 @@ public class RabbitMQMessageMediatorTest
             new NullLogger<RabbitMQMessageMediator>());
         await this.mediator.Init(CancellationToken.None);
 
-        Assert.That(-1, Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
+        Assert.That("-1", Is.EqualTo((await mediator.Send<int>(nameof(SquarePowError), 2)).Error));
     }
 
     [Test]

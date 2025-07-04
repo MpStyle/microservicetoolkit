@@ -13,4 +13,6 @@ public static class ServiceError
     public const string InvalidRequestType = "mt_9";
     public const string NullRequest = "mt_10";
     public const string NullResponse = "mt_11";
+    public const string ResponseDeserializationError = "mt_12";
+    public const string RequestDeserializationError = "mt_13";
 }

@@ -15,7 +15,7 @@
     <PackageTags>microservice, microservices, cloud, mediator, message, event, events, messages</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <LangVersion>12</LangVersion>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\image\icon.png">

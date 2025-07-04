@@ -146,30 +146,32 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
                 body: messageBytes,
                 cancellationToken: cts.Token);
 
-            var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(Timeout.Infinite, cts.Token));
+            var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(this.configuration.ResponseTimeout, cts.Token));
             if (completedTask != tcs.Task)
             {
                 this.pendingMessages.TryRemove(correlationId, out _);
-                return new ServiceResponse<TPayload> { Error = ServiceError.Timeout };
+                return new ServiceResponse<TPayload> {Error = ServiceError.Timeout};
             }
 
             var rawResponse = await tcs.Task;
-            
+
             if (rawResponse == null || rawResponse.Length == 0)
             {
                 throw new InvalidServiceException(message.Pattern);
             }
-            
-            var response = JsonSerializer.Deserialize<ServiceResponse<TPayload>>(Encoding.UTF8.GetString(rawResponse));
+
+            var response = JsonSerializer.Deserialize<ServiceResponse<TPayload?>>(Encoding.UTF8.GetString(rawResponse));
             return response;
         }
         catch (InvalidServiceException ex)
         {
             logger.LogError(ex, "Invalid service: {Message}", ex.Message);
-            return new ServiceResponse<TPayload>
-            {
-                Error = ServiceError.NullResponse
-            };
+            return new ServiceResponse<TPayload> {Error = ServiceError.NullResponse};
+        }
+        catch (JsonException ex)
+        {
+            logger.LogError(ex, "JSON deserialization error: {Message}", ex.Message);
+            return new ServiceResponse<TPayload> { Error = ServiceError.ResponseDeserializationError };
         }
         catch (Exception ex)
         {
@@ -216,8 +218,14 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
                 throw new RabbitMQMessageMediatorException(ServiceError.ServiceNotFound);
             }
 
-            var json = ((JsonElement)rpcMessage.Payload).GetRawText();
-            var request = JsonSerializer.Deserialize(json, rpcMessage.RequestType.GetType());
+            var requestType = Type.GetType(rpcMessage.RequestType);
+
+            if (requestType == null)
+            {
+                throw new RabbitMQMessageMediatorException(ServiceError.InvalidRequestType);
+            }
+            
+            var request=((JsonElement)rpcMessage.Payload).Deserialize(requestType);
             response = await service.RunAsync(request, CancellationToken.None);
 
             if (response == null)
@@ -227,11 +235,17 @@ public class RabbitMQMessageMediator : IMessageMediator, IAsyncDisposable
         }
         catch (RabbitMQMessageMediatorException ex)
         {
-            response = new ServiceResponse<object> { Error = ex.ErrorCode };
+            this.logger.LogError(ex, "RabbitMQ message mediator error: {Message}", ex.Message);
+            response = new ServiceResponse<object> {Error = ex.ErrorCode};
+        }
+        catch (JsonException ex)
+        {
+            this.logger.LogError(ex, "JSON deserialization error: {Message}", ex.Message);
+            response = new ServiceResponse<object> { Error = ServiceError.RequestDeserializationError };
         }
         catch (Exception ex)
         {
-            this.logger.LogDebug("Generic error: {Message}", ex.ToString());
+            this.logger.LogError("Generic error: {Message}", ex.ToString());
             response = new ServiceResponse<object> { Error = ServiceError.Unknown };
         }
         finally
