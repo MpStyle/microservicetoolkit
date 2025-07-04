@@ -5,6 +5,7 @@
 **What's New**
 - Added Service<TRequest, TPayload> extension methods to create a service response
 - Improved migration to Nullable projects
+- Improved error handling in RabbitMQ message mediator
 
 **Fixes**
 - 
