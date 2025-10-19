@@ -21,9 +21,9 @@ internal static class TypeMapper
             throw new Exception($"Invalid full name");
         }
 
-        if (sharedDatabase.ContainsKey(fullNameType))
+        if (sharedDatabase.TryGetValue(fullNameType, out var map))
         {
-            return sharedDatabase[fullNameType];
+            return map;
         }
 
         sharedDatabase.Add(fullNameType, new TypeMap(target));

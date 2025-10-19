@@ -4,31 +4,20 @@ using System.Reflection;
 
 namespace microservice.toolkit.connection.extensions.objectmapper;
 
-internal class TypeProperty
+internal class TypeProperty(PropertyInfo propertyInfo)
 {
-    private readonly PropertyInfo propertyInfo;
-
-    public string Name { get; }
-    public bool IsReadable { get;  }
-    public bool IsWritable { get;  }
-    public Type Type { get; }
-
-    public TypeProperty(PropertyInfo propertyInfo)
-    {
-        this.propertyInfo = propertyInfo;
-        this.Name = propertyInfo.Name;
-        this.IsReadable = propertyInfo.CanRead;
-        this.IsWritable = propertyInfo.CanWrite;
-        this.Type = propertyInfo.PropertyType;
-    }
+    public string Name { get; } = propertyInfo.Name;
+    public bool IsReadable { get;  } = propertyInfo.CanRead;
+    public bool IsWritable { get;  } = propertyInfo.CanWrite;
+    public Type Type { get; } = propertyInfo.PropertyType;
 
     public object? GetValue(object target)
     {
-        return this.propertyInfo.GetValue(target);
+        return propertyInfo.GetValue(target);
     }
     
     public void SetValue(object target, object? value)
     {
-        this.propertyInfo.SetValue(target, value);
+        propertyInfo.SetValue(target, value);
     }
 }

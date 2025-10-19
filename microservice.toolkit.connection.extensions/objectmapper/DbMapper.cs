@@ -51,17 +51,17 @@ internal static class DbMapper
         [typeof(object)] = DbType.Object
     };
 
-    internal static DbParameter[] ToDbParameter(this Dictionary<string, object> obj, SqlCommand command)
+    internal static DbParameter[] ToDbParameter(this Dictionary<string, object>? obj, SqlCommand command)
     {
         if (obj == null)
         {
             return [];
         }
 
-        return obj.Select(item => command.ToDbParameter(item.Key, item.Value)).ToArray();
+        return obj.Select(item => command.ToDbParameter(item.Key, item.Value)).ToArray<DbParameter>();
     }
     
-    internal static DbParameter[] ToDbParameter(this Dictionary<string, object> obj, DbCommand command)
+    internal static DbParameter[] ToDbParameter(this Dictionary<string, object>? obj, DbCommand command)
     {
         if (obj == null)
         {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace microservice.toolkit.connection.extensions;
@@ -87,9 +88,9 @@ public static class DbConnectionExtension
     }
 
     public static async Task<int> ExecuteStoredProcedureAsync(this DbConnection conn, string storedProcedureName,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default)
     {
-        await conn.SafeOpenAsync();
+        await conn.SafeOpenAsync(cancellationToken);
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = storedProcedureName;
 
@@ -101,19 +102,21 @@ public static class DbConnectionExtension
             cmd.Parameters.AddRange(values);
         }
 
-        return await cmd.ExecuteNonQueryAsync();
+        return await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public static async Task<T> ExecuteAsync<T>(this DbConnection conn, Func<DbCommand, Task<T>> lambda)
+    public static async Task<T> ExecuteAsync<T>(this DbConnection conn, Func<DbCommand, Task<T>> lambda,
+        CancellationToken cancellationToken = default)
     {
-        await conn.SafeOpenAsync();
+        await conn.SafeOpenAsync(cancellationToken: cancellationToken);
         await using var cmd = conn.CreateCommand();
         return await lambda(cmd);
     }
 
     public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
         Func<DbDataReader, T> lambda,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null,
+        CancellationToken cancellationToken = default)
     {
         return await conn.ExecuteAsync(async command =>
         {
@@ -124,37 +127,39 @@ public static class DbConnectionExtension
                 command.Parameters.AddRange(parameters.ToDbParameter(command));
             }
 
-            await using var reader = await command.ExecuteReaderAsync();
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
             var objects = new List<T>();
 
-            while (await reader.ReadAsync())
+            while (await reader.ReadAsync(cancellationToken))
             {
                 objects.Add(lambda(reader));
             }
 
             return objects.ToArray();
-        });
+        }, cancellationToken: cancellationToken);
     }
 
     public static async Task<T[]> ExecuteAsync<T>(this DbConnection conn, string sql,
-        Dictionary<string, object>? parameters = null) where T : class, new()
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default)
+        where T : class, new()
     {
-        return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters);
+        return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters, cancellationToken: cancellationToken);
     }
 
     public static async Task<T?> ExecuteFirstAsync<T>(this DbConnection conn, string sql,
         Func<DbDataReader, T> lambda,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null,
+        CancellationToken cancellationToken = default)
     {
-        var result = await conn.ExecuteAsync(sql, lambda, parameters);
+        var result = await conn.ExecuteAsync(sql, lambda, parameters, cancellationToken: cancellationToken);
 
         return result.IsNullOrEmpty() ? default : result.First();
     }
 
     public static async Task<T?> ExecuteFirstAsync<T>(this DbConnection conn, string sql,
-        Dictionary<string, object>? parameters = null) where T : class, new()
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default) where T : class, new()
     {
-        return await conn.ExecuteFirstAsync(sql, MapperFunc<T>(), parameters);
+        return await conn.ExecuteFirstAsync(sql, MapperFunc<T>(), parameters, cancellationToken: cancellationToken);
     }
 
     public static int ExecuteNonQuery(this DbConnection conn, string query,
@@ -173,9 +178,9 @@ public static class DbConnectionExtension
     }
 
     public static async Task<int> ExecuteNonQueryAsync(this DbConnection conn, string query,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default)
     {
-        await conn.SafeOpenAsync();
+        await conn.SafeOpenAsync(cancellationToken: cancellationToken);
         await using var command = conn.CreateCommand();
         command.CommandText = query;
 
@@ -184,7 +189,7 @@ public static class DbConnectionExtension
             command.Parameters.AddRange(parameters.ToDbParameter(command));
         }
 
-        return await command.ExecuteNonQueryAsync();
+        return await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
     /// <summary>
@@ -215,7 +220,7 @@ public static class DbConnectionExtension
     /// a database connection.
     /// </summary>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public static async Task SafeOpenAsync(this DbConnection conn)
+    public static async Task SafeOpenAsync(this DbConnection conn, CancellationToken cancellationToken = default)
     {
         if (conn.State.HasFlag(ConnectionState.Open))
         {
@@ -224,14 +229,14 @@ public static class DbConnectionExtension
 
         if (conn.State.HasFlag(ConnectionState.Closed))
         {
-            await conn.OpenAsync();
+            await conn.OpenAsync(cancellationToken);
             return;
         }
 
         if (conn.State.HasFlag(ConnectionState.Broken))
         {
             await conn.SafeCloseAsync();
-            await conn.OpenAsync();
+            await conn.OpenAsync(cancellationToken);
         }
     }
 
@@ -268,7 +273,7 @@ public static class DbConnectionExtension
     {
         return reader =>
         {
-            var accessor = objectmapper.TypeMapper.Map(typeof(T));
+            var accessor = TypeMapper.Map(typeof(T));
             var members = accessor.TypeTypeProperties;
             var t = new T();
 
@@ -299,7 +304,7 @@ public static class DbConnectionExtension
             return t;
         };
     }
-    
+
     public static T ExecuteScalar<T>(this DbConnection conn, string sql,
         Func<object?, T> lambda,
         Dictionary<string, object>? parameters = null)
@@ -319,7 +324,7 @@ public static class DbConnectionExtension
     }
 
     public static T? ExecuteScalar<T>(this DbConnection conn, string sql,
-        Dictionary<string, object>? parameters = null) 
+        Dictionary<string, object>? parameters = null)
     {
         return conn.ExecuteScalar(sql, input =>
         {
@@ -341,9 +346,10 @@ public static class DbConnectionExtension
 
     public static async Task<T> ExecuteScalarAsync<T>(this DbConnection conn, string sql,
         Func<object?, T> lambda,
-        Dictionary<string, object>? parameters = null)
+        Dictionary<string, object>? parameters = null,
+        CancellationToken cancellationToken = default)
     {
-        await conn.SafeOpenAsync();
+        await conn.SafeOpenAsync(cancellationToken: cancellationToken);
         await using var command = conn.CreateCommand();
         command.CommandText = sql;
 
@@ -352,13 +358,13 @@ public static class DbConnectionExtension
             command.Parameters.AddRange(parameters.ToDbParameter(command));
         }
 
-        var input = await command.ExecuteScalarAsync();
+        var input = await command.ExecuteScalarAsync(cancellationToken);
 
         return lambda(input);
     }
 
     public static async Task<T?> ExecuteScalarAsync<T>(this DbConnection conn, string sql,
-        Dictionary<string, object>? parameters = null) 
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default)
     {
         return await conn.ExecuteScalarAsync(sql, input =>
         {
@@ -366,7 +372,7 @@ public static class DbConnectionExtension
             {
                 return inputT;
             }
-        
+
             try
             {
                 return (T?)Convert.ChangeType(input, typeof(T));
@@ -375,6 +381,6 @@ public static class DbConnectionExtension
             {
                 return default;
             }
-        }, parameters);
+        }, parameters, cancellationToken: cancellationToken);
     }
 }
