@@ -12,5 +12,12 @@
         "Hello",
         "World",
         "!"
-    ]
+    ],
+
+    "boolMalformed": "notabool",
+    "intMalformed": "notanint",
+    "boolEmpty": "",
+
+    "stringArrayEmpty": [],
+    "intArrayEmpty": []
 }

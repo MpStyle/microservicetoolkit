@@ -94,6 +94,97 @@ namespace microservice.toolkit.configuration.extensions.test
             Assert.That(7, Is.EqualTo(intArrayValue[3]));
         }
 
+        [Test]
+        public void GetNullableBool()
+        {
+            var boolValue = this.configurationExtensions.GetNullableBool("boolValue");
+            Assert.That(boolValue.HasValue && boolValue.Value, Is.True);
+        }
+
+        [Test]
+        public void GetNullableBool_Default()
+        {
+            var boolValue = this.configurationExtensions.GetNullableBool("boolDefaultValue", true);
+            Assert.That(boolValue.HasValue && boolValue.Value, Is.True);
+
+            var nullBool = this.configurationExtensions.GetNullableBool("missingBoolValue");
+            Assert.That(nullBool, Is.Null);
+        }
+
+        [Test]
+        public void GetNullableInt()
+        {
+            var intValue = this.configurationExtensions.GetNullableInt("intValue");
+            Assert.That(intValue, Is.EqualTo(666));
+        }
+
+        [Test]
+        public void GetNullableInt_Default()
+        {
+            var intValue = this.configurationExtensions.GetNullableInt("intDefaultValue", 69);
+            Assert.That(intValue, Is.EqualTo(69));
+
+            var nullInt = this.configurationExtensions.GetNullableInt("missingIntValue");
+            Assert.That(nullInt, Is.Null);
+        }
+
+        [Test]
+        public void GetBool_Malformed_Default()
+        {
+            // malformed bool should return the provided default
+            var boolValue = this.configurationExtensions.GetBool("boolMalformed", true);
+            Assert.That(boolValue, Is.True);
+        }
+
+        [Test]
+        public void GetNullableBool_Malformed_Default()
+        {
+            // malformed bool with nullable default should return the provided default
+            var boolValue = this.configurationExtensions.GetNullableBool("boolMalformed", true);
+            Assert.That(boolValue.HasValue && boolValue.Value, Is.True);
+        }
+
+        [Test]
+        public void GetNullableBool_Empty_ReturnsNull()
+        {
+            // empty string should be treated as missing => returns null default
+            var boolValue = this.configurationExtensions.GetNullableBool("boolEmpty");
+            Assert.That(boolValue, Is.Null);
+
+            var boolValueWithDefault = this.configurationExtensions.GetNullableBool("boolEmpty", false);
+            Assert.That(boolValueWithDefault.HasValue && boolValueWithDefault.Value, Is.False);
+        }
+
+        [Test]
+        public void GetInt_Malformed_Default()
+        {
+            var intValue = this.configurationExtensions.GetInt("intMalformed", 123);
+            Assert.That(intValue, Is.EqualTo(123));
+        }
+
+        [Test]
+        public void GetNullableInt_Malformed_DefaultNull()
+        {
+            var intValue = this.configurationExtensions.GetNullableInt("intMalformed");
+            Assert.That(intValue, Is.Null);
+        }
+
+        [Test]
+        public void GetStringArray_Empty()
+        {
+            var arr = this.configurationExtensions.GetStringArray("stringArrayEmpty");
+            Assert.That(arr, Is.Not.Null);
+            Assert.That(arr.Length, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void GetIntArray_Empty()
+        {
+            var arr = this.configurationExtensions.GetIntArray("intArrayEmpty");
+            Assert.That(arr, Is.Not.Null);
+            Assert.That(arr.Length, Is.EqualTo(0));
+        }
+
         #region SetUp & TearDown
 
         [SetUp]
