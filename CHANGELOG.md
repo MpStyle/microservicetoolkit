@@ -7,6 +7,7 @@
 - Improved migration to Nullable projects
 - Improved error handling in RabbitMQ message mediator
 - Added support for cancellation tokens in asynchronous methods within the Connection Extensions project.
+- Add nullable support for boolean and integer configuration retrieval methods in Configuration Extensions library.
 
 **Fixes**
 - 
