@@ -272,6 +272,74 @@ public class SQLServerConnectionExtensionsTest
                 "INSERT INTO films VALUES ('12345', 'my_title');")));
     }
 
+    [Test]
+    public void ExecuteReader()
+    {
+        this.dbConnection.Execute(cmd =>
+        {
+            cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                ";
+            return cmd.ExecuteNonQuery();
+        });
+
+        Assert.That(1,
+            Is.EqualTo(this.dbConnection.ExecuteNonQuery(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+        Assert.That(1,
+            Is.EqualTo(this.dbConnection.ExecuteNonQuery(
+                "INSERT INTO films VALUES ('12346', 'my_title_01');")));
+
+        using var reader = this.dbConnection.ExecuteReader("SELECT code, title FROM films ORDER BY code");
+
+        var results = new System.Collections.Generic.List<(string Code, string Title)>();
+        while (reader.Read())
+        {
+            results.Add((reader.GetString(0), reader.GetString(1)));
+        }
+
+        Assert.That(results.Count, Is.EqualTo(2));
+        Assert.That(results[0].Code, Is.EqualTo("12345"));
+        Assert.That(results[0].Title, Is.EqualTo("my_title"));
+    }
+
+    [Test]
+    public async System.Threading.Tasks.Task ExecuteReaderAsync()
+    {
+        await this.dbConnection.ExecuteAsync(async cmd =>
+        {
+            cmd.CommandText = """
+                    CREATE TABLE films (
+                        code        char(5) PRIMARY KEY,
+                        title       varchar(40) NOT NULL
+                    );
+                """;
+            return await cmd.ExecuteNonQueryAsync();
+        });
+
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12345', 'my_title');")));
+        Assert.That(1,
+            Is.EqualTo(await this.dbConnection.ExecuteNonQueryAsync(
+                "INSERT INTO films VALUES ('12346', 'my_title_01');")));
+
+        await using var reader = await this.dbConnection.ExecuteReaderAsync("SELECT code, title FROM films ORDER BY code");
+
+        var results = new System.Collections.Generic.List<(string Code, string Title)>();
+        while (await reader.ReadAsync())
+        {
+            results.Add((reader.GetString(0), reader.GetString(1)));
+        }
+
+        Assert.That(results.Count, Is.EqualTo(2));
+        Assert.That(results[1].Code, Is.EqualTo("12346"));
+        Assert.That(results[1].Title, Is.EqualTo("my_title_01"));
+    }
+
     [SetUp]
     public void SetUp()
     {

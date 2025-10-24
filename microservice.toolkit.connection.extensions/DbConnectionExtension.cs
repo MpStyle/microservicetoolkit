@@ -161,6 +161,37 @@ public static class DbConnectionExtension
     {
         return await conn.ExecuteFirstAsync(sql, MapperFunc<T>(), parameters, cancellationToken: cancellationToken);
     }
+    
+    public static DbDataReader ExecuteReader(this DbConnection conn, string query,
+        Dictionary<string, object>? parameters = null)
+    {
+        conn.SafeOpen();
+        var command = conn.CreateCommand();
+        command.CommandText = query;
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
+
+        return command.ExecuteReader();
+    }
+
+    public static async Task<DbDataReader> ExecuteReaderAsync(this DbConnection conn, string query,
+        Dictionary<string, object>? parameters = null,
+        CancellationToken cancellationToken = default)
+    {
+        await conn.SafeOpenAsync(cancellationToken: cancellationToken);
+        var command = conn.CreateCommand();
+        command.CommandText = query;
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
+
+        return await command.ExecuteReaderAsync(cancellationToken);
+    }
 
     public static int ExecuteNonQuery(this DbConnection conn, string query,
         Dictionary<string, object>? parameters = null)

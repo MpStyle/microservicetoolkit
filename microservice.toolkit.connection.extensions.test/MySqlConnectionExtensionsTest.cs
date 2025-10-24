@@ -154,6 +154,44 @@ namespace microservice.toolkit.connection.extensions.test
                     })));
         }
 
+        [Test]
+        public void ExecuteReader()
+        {
+            using var reader = this.dbConnection.ExecuteReader(
+                "SELECT * FROM films WHERE code < @code",
+                new Dictionary<string, object> { { "@code", 3 } });
+
+            var results = new List<(int Code, string Title)>();
+
+            while (reader.Read())
+            {
+                results.Add((reader.GetInt16(0), reader.GetString(1)));
+            }
+
+            Assert.That(2, Is.EqualTo(results.Count));
+            Assert.That(1, Is.EqualTo(results[0].Code));
+            Assert.That("my_title 1", Is.EqualTo(results[0].Title));
+        }
+
+        [Test]
+        public async Task ExecuteReaderAsync()
+        {
+            await using var reader = await this.dbConnection.ExecuteReaderAsync(
+                "SELECT * FROM films WHERE code < @code",
+                new Dictionary<string, object> { { "@code", 3 } });
+
+            var results = new List<(int Code, string Title)>();
+
+            while (await reader.ReadAsync())
+            {
+                results.Add((reader.GetInt16(0), reader.GetString(1)));
+            }
+
+            Assert.That(2, Is.EqualTo(results.Count));
+            Assert.That(1, Is.EqualTo(results[0].Code));
+            Assert.That("my_title 1", Is.EqualTo(results[0].Title));
+        }
+
         [SetUp]
         public async Task SetUp()
         {

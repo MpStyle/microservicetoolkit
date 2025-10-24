@@ -8,6 +8,7 @@
 - Improved error handling in RabbitMQ message mediator
 - Added support for cancellation tokens in asynchronous methods within the Connection Extensions project.
 - Add nullable support for boolean and integer configuration retrieval methods in Configuration Extensions library.
+- Add ExecuteReader and ExecuteReaderAsync methods for DbConnection and SQLConnection extensions methods to facilitate data retrieval operations and integration with ORM libraries.
 
 **Fixes**
 - 

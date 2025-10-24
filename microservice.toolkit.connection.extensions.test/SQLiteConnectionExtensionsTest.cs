@@ -138,6 +138,66 @@ namespace microservice.toolkit.connection.extensions.test
             Assert.That("my_title", Is.EqualTo(result));
         }
 
+        [Test]
+        public void ExecuteReader()
+        {
+            this.dbConnection.Execute(cmd =>
+            {
+                cmd.CommandText = @"
+                    CREATE TABLE films (
+                        code        INTEGER PRIMARY KEY,
+                        title       TEXT NOT NULL
+                    );
+                ";
+                return cmd.ExecuteNonQuery();
+            });
+
+            this.dbConnection.ExecuteNonQuery("INSERT INTO films VALUES (1, 'my_title 1');");
+            this.dbConnection.ExecuteNonQuery("INSERT INTO films VALUES (2, 'my_title 2');");
+
+            using var reader = this.dbConnection.ExecuteReader("SELECT code, title FROM films WHERE code < @code", new System.Collections.Generic.Dictionary<string, object> { { "@code", 3 } });
+
+            var results = new List<(int Code, string Title)>();
+            while (reader.Read())
+            {
+                results.Add((reader.GetInt32(0), reader.GetString(1)));
+            }
+
+            Assert.That(2, Is.EqualTo(results.Count));
+            Assert.That(1, Is.EqualTo(results[0].Code));
+            Assert.That("my_title 1", Is.EqualTo(results[0].Title));
+        }
+
+        [Test]
+        public async System.Threading.Tasks.Task ExecuteReaderAsync()
+        {
+            await this.dbConnection.ExecuteAsync(async cmd =>
+            {
+                cmd.CommandText = """
+                    CREATE TABLE films (
+                        code        INTEGER PRIMARY KEY,
+                        title       TEXT NOT NULL
+                    );
+                """;
+                return await cmd.ExecuteNonQueryAsync();
+            });
+
+            await this.dbConnection.ExecuteNonQueryAsync("INSERT INTO films VALUES (1, 'my_title 1');");
+            await this.dbConnection.ExecuteNonQueryAsync("INSERT INTO films VALUES (2, 'my_title 2');");
+
+            await using var reader = await this.dbConnection.ExecuteReaderAsync("SELECT code, title FROM films WHERE code < @code", new System.Collections.Generic.Dictionary<string, object> { { "@code", 3 } });
+
+            var results = new System.Collections.Generic.List<(int Code, string Title)>();
+            while (await reader.ReadAsync())
+            {
+                results.Add((reader.GetInt32(0), reader.GetString(1)));
+            }
+
+            Assert.That(2, Is.EqualTo(results.Count));
+            Assert.That(1, Is.EqualTo(results[0].Code));
+            Assert.That("my_title 1", Is.EqualTo(results[0].Title));
+        }
+
         [SetUp]
         public void SetUp()
         {

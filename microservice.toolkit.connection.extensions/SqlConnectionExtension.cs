@@ -106,7 +106,8 @@ public static class SQLConnectionExtension
         return await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public static async Task<T> ExecuteAsync<T>(this SqlConnection conn, Func<SqlCommand, Task<T>> lambda, CancellationToken cancellationToken = default)
+    public static async Task<T> ExecuteAsync<T>(this SqlConnection conn, Func<SqlCommand, Task<T>> lambda,
+        CancellationToken cancellationToken = default)
     {
         await conn.SafeOpenAsync(cancellationToken: cancellationToken);
         await using var cmd = conn.CreateCommand();
@@ -140,7 +141,8 @@ public static class SQLConnectionExtension
     }
 
     public static async Task<T[]> ExecuteAsync<T>(this SqlConnection conn, string sql,
-        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default) where T : class, new()
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default)
+        where T : class, new()
     {
         return await conn.ExecuteAsync(sql, MapperFunc<T>(), parameters, cancellationToken: cancellationToken);
     }
@@ -156,9 +158,41 @@ public static class SQLConnectionExtension
     }
 
     public static async Task<T?> ExecuteFirstAsync<T>(this SqlConnection conn, string sql,
-        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default) where T : class, new()
+        Dictionary<string, object>? parameters = null, CancellationToken cancellationToken = default)
+        where T : class, new()
     {
         return await conn.ExecuteFirstAsync(sql, MapperFunc<T>(), parameters, cancellationToken: cancellationToken);
+    }
+
+    public static SqlDataReader ExecuteReader(this SqlConnection conn, string query,
+        Dictionary<string, object>? parameters = null)
+    {
+        conn.SafeOpen();
+        var command = conn.CreateCommand();
+        command.CommandText = query;
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
+
+        return command.ExecuteReader();
+    }
+
+    public static async Task<SqlDataReader> ExecuteReaderAsync(this SqlConnection conn, string query,
+        Dictionary<string, object>? parameters = null,
+        CancellationToken cancellationToken = default)
+    {
+        await conn.SafeOpenAsync(cancellationToken: cancellationToken);
+        var command = conn.CreateCommand();
+        command.CommandText = query;
+
+        if (parameters.IsNullOrEmpty() == false)
+        {
+            command.Parameters.AddRange(parameters.ToDbParameter(command));
+        }
+
+        return await command.ExecuteReaderAsync(cancellationToken);
     }
 
     public static int ExecuteNonQuery(this SqlConnection conn, string query,
