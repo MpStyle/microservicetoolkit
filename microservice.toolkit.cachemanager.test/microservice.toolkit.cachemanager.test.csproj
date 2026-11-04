@@ -21,7 +21,7 @@
     
     <PackageReference Include="StackExchange.Redis" Version="2.8.31" />
     <PackageReference Include="Microsoft.Data.SQLite" Version="9.0.4" />
-    <PackageReference Include="MySqlConnector" Version="2.4.0" />
+    <PackageReference Include="MySqlConnector" Version="2.6.1" />
     <PackageReference Include="EnyimMemcachedCore" Version="3.3.2" />
   </ItemGroup>
 
